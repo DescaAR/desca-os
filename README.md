@@ -59,3 +59,18 @@ Backend Supabase dapat ditambahkan pada fase berikutnya untuk authentication, mu
 ## Repository
 
 `desca-os`
+
+
+## Deployment status
+
+Source di branch `main` divalidasi otomatis oleh GitHub Actions dengan `node --check app.js`.
+
+### Canonical hosting
+
+Repository sudah siap diimpor sebagai static project ke Vercel tanpa build command.
+
+Untuk GitHub Pages, workflow `.github/workflows/pages.yml` sudah disediakan. Setelah Pages diaktifkan dengan source **GitHub Actions**, jalankan workflow **Deploy Desca OS to GitHub Pages** dari tab Actions.
+
+### Static CDN snapshot
+
+Karena seluruh aplikasi bersifat static dan dependency-free, setiap commit immutable dapat langsung disajikan melalui CDN yang mendukung GitHub raw content dengan MIME type HTML/CSS/JS yang tepat.

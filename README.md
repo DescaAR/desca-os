@@ -88,3 +88,36 @@ Karena seluruh aplikasi bersifat static dan dependency-free, setiap commit immut
 - Study Intelligence memakai sesi bertimestamp 90 hari terakhir untuk memeringkat blok waktu 2-jam berdasarkan durasi rata-rata, completion, dan jumlah bukti sesi.
 - Rekomendasi baru muncul setelah minimal 3 sesi bertimestamp agar tidak mengarang pola dari data terlalu sedikit.
 - PWA cache menggunakan network-first untuk file aplikasi agar pembaruan cepat terlihat setelah deploy.
+
+
+## Google Hub setup
+
+Desca OS dapat membaca Google Calendar, Gmail metadata, dan Google Drive metadata langsung dari browser dengan Google OAuth 2.0 / Google Identity Services.
+
+### Google Cloud
+
+1. Buat atau pilih satu Google Cloud project.
+2. Enable:
+   - Google Calendar API
+   - Gmail API
+   - Google Drive API
+3. Konfigurasikan Google Auth Platform / OAuth consent screen.
+4. Bila status aplikasi masih **Testing**, tambahkan akun Google yang akan dipakai sebagai **Test user**.
+5. Buat OAuth 2.0 Client ID dengan tipe **Web application**.
+6. Tambahkan Authorized JavaScript origin:
+   - `https://descaar.github.io`
+   - opsional saat development: `http://localhost:3000`
+7. Copy Client ID berakhiran `.apps.googleusercontent.com`.
+8. Di Desca OS buka **Settings → Google Integration**, paste Client ID, lalu Save.
+9. Buka **Google Hub → Connect Google**.
+
+### Scope yang digunakan
+
+- `openid`
+- `email`
+- `profile`
+- `https://www.googleapis.com/auth/calendar.readonly`
+- `https://www.googleapis.com/auth/gmail.metadata`
+- `https://www.googleapis.com/auth/drive.metadata.readonly`
+
+Google token hanya disimpan di memori runtime browser dan tidak dimasukkan ke `localStorage`. Reload halaman akan meminta koneksi kembali.

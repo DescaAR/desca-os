@@ -8,11 +8,15 @@ Desca OS adalah personal productivity operating system yang menghubungkan tujuan
 
 - Today command center
 - Tasks + Inbox + Calendar
-- Focus timer yang otomatis masuk activity log
+- Pomodoro otomatis (25/5, 50/10, custom) yang masuk activity log saat sesi selesai
+- Focus session menyimpan jam mulai untuk analisis waktu belajar
 - Goals + milestones
 - GitHub-style activity heatmap
-- XP, level, streak, achievements
-- Study, Research, Projects, Health trackers
+- XP otomatis dari durasi aktivitas, kategori, prioritas task, goal, Pomodoro, dan presensi
+- Level, streak, achievements
+- Study tracker dengan evaluasi 90 hari dan rekomendasi jam belajar berdasarkan histori
+- Presensi harian satu tombol + attendance streak
+- Research, Projects, Health trackers
 - Finance ringan
 - Daily journal
 - Weekly review + analytics
@@ -74,3 +78,13 @@ Untuk GitHub Pages, workflow `.github/workflows/pages.yml` sudah disediakan. Set
 ### Static CDN snapshot
 
 Karena seluruh aplikasi bersifat static dan dependency-free, setiap commit immutable dapat langsung disajikan melalui CDN yang mendukung GitHub raw content dengan MIME type HTML/CSS/JS yang tepat.
+
+
+## Automation v2
+
+- Tidak ada input XP manual.
+- Presensi memberi +15 XP dan tercatat sekali per hari.
+- Pomodoro focus yang selesai otomatis menjadi activity lengkap dengan waktu mulai.
+- Study Intelligence memakai sesi bertimestamp 90 hari terakhir untuk memeringkat blok waktu 2-jam berdasarkan durasi rata-rata, completion, dan jumlah bukti sesi.
+- Rekomendasi baru muncul setelah minimal 3 sesi bertimestamp agar tidak mengarang pola dari data terlalu sedikit.
+- PWA cache menggunakan network-first untuk file aplikasi agar pembaruan cepat terlihat setelah deploy.

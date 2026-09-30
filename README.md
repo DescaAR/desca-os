@@ -4,28 +4,33 @@
 
 Desca OS adalah personal productivity operating system yang menghubungkan tujuan, task, focus session, activity log, progress, review, dan analytics dalam satu alur data.
 
-## Fitur MVP
+## Fitur Utama
 
-- Today command center
-- Tasks + Inbox + month-view Calendar dengan event detail dan completion XP
-- Pomodoro otomatis (25/5, 50/10, custom) yang masuk activity log saat sesi selesai
+- Today command center + Needs Attention + Smart Daily Planner
+- Tasks + Inbox dengan status Backlog/Planned/Doing/Done, subtasks, tags, dependencies, deadline, recurring task, dan Start Task → timer
+- Calendar Month / Week / Day dengan drag-and-drop task antar tanggal, event detail, dan completion XP
+- Pomodoro otomatis (25/5, 50/10, custom) + fullscreen Focus Mode
+- Universal Activity Timer untuk Study, Research, Project, Health, English, Personal, dan task
 - Focus session menyimpan jam mulai untuk analisis waktu belajar
-- Goals + milestones
+- Goals + milestones + automatic progress dari milestone dan linked task
 - GitHub-style activity heatmap
 - XP otomatis dari durasi aktivitas, kategori, prioritas task, goal, Pomodoro, dan presensi
 - Level, streak, achievements
 - Study tracker dengan evaluasi 90 hari dan rekomendasi jam belajar berdasarkan histori
 - Presensi harian satu tombol + attendance streak
-- Research, Projects, Health trackers
+- Research dan Projects tracker
+- Health dashboard: sleep, steps, weight, water, energy, mood, running, workout, dan historical association
 - Life Log untuk routine, kegiatan wajib, planned vs actual, dan aktivitas spontan
-- Finance lengkap: cashflow, budgeting kategori, portfolio investasi, gain/loss, dan financial goals
+- Finance lengkap: cashflow, needs/wants/savings, budgeting, recurring transaction, portfolio investasi, debt tracker, net worth snapshots, dan financial goals
 - Daily journal
-- Weekly review + analytics
+- Weekly review otomatis: improvement signals, warnings, goal check, finance, sleep, routine, dan study signal
 - Dark mode
-- Global search / command search
+- Command Center (Ctrl/⌘+K): search + quick commands seperti `task`, `spent`, `income`, `studied`, dan `timer`
+- Browser notifications untuk task/routine, deadline besok, budget warning, dan Pomodoro (saat app aktif)
 - Export/import backup JSON
 - PWA + offline cache
 - Local-first storage via `localStorage`
+- Optional Supabase login + cloud upload/download untuk multi-device state sync
 
 ## Menjalankan lokal
 
@@ -49,9 +54,7 @@ Output directory: **.**
 
 ## Data & privasi
 
-Versi MVP bersifat local-first. Semua data pengguna disimpan di browser perangkat menggunakan `localStorage`. Tidak ada analytics pihak ketiga atau cloud sync.
-
-Backend Supabase dapat ditambahkan pada fase berikutnya untuk authentication, multi-device sync, PostgreSQL, dan Row Level Security.
+Desca OS tetap **local-first**. Semua data utama disimpan di browser menggunakan `localStorage`, dan aplikasi tetap bisa dipakai tanpa akun. Optional Cloud Sync dapat diaktifkan dengan Supabase. Hanya **Project URL** dan **anon/publishable key** yang boleh dimasukkan ke browser; jangan pernah memakai service-role key.
 
 ## Brand
 
@@ -98,3 +101,52 @@ Karena seluruh aplikasi bersifat static dan dependency-free, setiap commit immut
 - Event dapat ditandai selesai langsung dari Calendar; Task memperoleh XP otomatis berdasarkan estimasi dan prioritas, sedangkan Routine dicatat sebagai activity dan memperoleh Activity XP.
 - Finance mencakup transaksi, monthly budgeting per kategori, realisasi budget otomatis dari expense, investment portfolio tracker, gain/loss dan allocation, serta financial goals.
 - Nilai investasi diupdate manual; Desca OS tidak memberikan rekomendasi investasi atau mengambil harga pasar eksternal.
+
+
+## Desca OS vNext
+
+### Universal Timer
+
+Task dapat dijalankan melalui tombol **Start**. Timer aktivitas disimpan sebagai timestamp pada state, jadi reload halaman tidak menghilangkan waktu mulai. Saat dihentikan, timer otomatis menghasilkan Activity Log, XP, dan menyelesaikan linked task.
+
+### Smart Daily Planner
+
+Planner membaca:
+- routine yang memiliki jam,
+- task hari ini,
+- deadline,
+- prioritas,
+- dependency,
+- estimasi durasi,
+- slot waktu kosong,
+- rekomendasi jam belajar historis bila datanya cukup.
+
+Auto-plan hanya memberi jam kepada task yang belum memiliki waktu dan tidak mengubah fixed routine.
+
+### Notifications
+
+Browser notification digunakan untuk reminder saat Desca OS sedang aktif:
+- task mendekati jam mulai,
+- task/routine terlambat,
+- deadline besok,
+- budget kategori >= 80%,
+- Pomodoro selesai,
+- gap beberapa hari pada study/health log.
+
+Static PWA tanpa push server tidak dapat menjamin scheduled notification ketika browser sepenuhnya tertutup.
+
+### Optional Supabase Cloud Sync
+
+Cloud Sync tidak diperlukan untuk memakai Desca OS. Jika ingin sinkron lintas perangkat:
+
+1. Buat project Supabase.
+2. Buka SQL Editor dan jalankan isi `supabase.sql`.
+3. Pastikan Email Auth aktif.
+4. Dari Supabase Project Settings, salin:
+   - Project URL
+   - anon / publishable key
+5. Masukkan keduanya di **Settings → Cloud Sync**.
+6. Sign Up / Login.
+7. Gunakan **Upload State** untuk mengirim state lokal ke cloud atau **Download State** untuk memuat state cloud.
+
+RLS pada `supabase.sql` membatasi satu pengguna hanya ke row miliknya sendiri. Jangan pernah menaruh `service_role` key pada Desca OS frontend.

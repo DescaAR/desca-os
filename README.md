@@ -186,3 +186,20 @@ Scopes yang dipakai:
 - `https://www.googleapis.com/auth/drive.appdata`
 
 Desca OS tidak meminta Gmail, Contacts, atau akses seluruh Google Drive.
+
+
+## DMath Learning Growth Dashboard
+
+Desca OS memiliki kategori khusus **DMath Learning** untuk memantau perkembangan brand secara terpisah dari project umum.
+
+Dashboard mencakup:
+- Instagram: current metric, target, progress, notes.
+- YouTube: current metric, target, progress, notes.
+- Facebook: current metric, target, progress, notes.
+- Website: current metric, target, progress, notes.
+- Overall progress dari empat platform.
+- Histori perubahan metric.
+- Task khusus DMath Learning dengan badge merah.
+- Activity time, XP, dan grafik kerja 14 hari khusus DMath Learning.
+
+Kategori `dmath` juga tersedia di Task, Activity Log, Universal Timer, Progress, Analytics, dan pencarian global.

@@ -318,6 +318,13 @@ document.addEventListener('click',e=>{
 
   if(a==='checkIn')checkIn();
   if(a==='requestNotifications')requestNotifications();
+  if(a==='googleConnect')connectGoogle();
+  if(a==='googleSync'){const sel=$('#googleTaskListSelect');if(sel&&sel.value){S.settings.googleTaskListId=sel.value;S.settings.googleTaskListTitle=sel.options[sel.selectedIndex]?.text||'';save()}googleSyncAll()}
+  if(a==='googleDisconnect')disconnectGoogle();
+  if(a==='googleDriveBackup')backupToGoogleDrive();
+  if(a==='googleDriveRestore')restoreFromGoogleDrive();
+  if(a==='importGoogleEvent')importGoogleEvent(id);
+  if(a==='openExternal'){const u=x.dataset.url;if(/^https:\/\//.test(u||''))window.open(u,'_blank','noopener,noreferrer')}
 
   if(a==='cloudLogin'||a==='cloudSignup'){
     const url=$('#ssupaurl')?.value.trim()||S.settings.supabaseUrl,key=$('#ssupakey')?.value.trim()||S.settings.supabaseAnonKey;
@@ -339,7 +346,7 @@ document.addEventListener('click',e=>{
     S.settings.plannerEnd=$('#splanend')?.value||'22:00';
     S.settings.reminderLead=clamp(+$('#slead')?.value||30,0,180);
     S.settings.supabaseUrl=$('#ssupaurl')?.value.trim()||'';
-    S.settings.supabaseAnonKey=$('#ssupakey')?.value.trim()||'';
+    S.settings.supabaseAnonKey=$('#ssupakey')?.value.trim()||'';S.settings.googleClientId=$('#googleClientId')?.value.trim()||S.settings.googleClientId||'';const gsl=$('#googleTaskListSelect');if(gsl&&gsl.value){S.settings.googleTaskListId=gsl.value;S.settings.googleTaskListTitle=gsl.options[gsl.selectedIndex]?.text||S.settings.googleTaskListTitle||''}
     const pf=$('#spf'),ps=$('#sps'),pl=$('#spl'),pc=$('#spc');
     if(pf){S.settings.pomodoroFocus=clamp(+pf.value||25,5,180);S.settings.pomodoroShortBreak=clamp(+ps.value||5,1,60);S.settings.pomodoroLongBreak=clamp(+pl.value||15,1,90);S.settings.pomodoroCycles=clamp(+pc.value||4,1,12);S.settings.pomodoroPreset='custom';syncPomodoro()}
     save();toast('Settings tersimpan');render()
@@ -356,8 +363,8 @@ document.addEventListener('submit',e=>{
 
   if(f.id==='taskForm'){
     let old=S.tasks.find(x=>x.id===d.id),oldSubs=old?.subtasks||[],titles=(d.subtasks||'').split(/\n+/).map(x=>x.trim()).filter(Boolean),subs=titles.map(title=>({title,done:oldSubs.find(s=>s.title===title)?.done||false}));
-    let o={id:d.id||uid('t'),title:d.title.trim(),date:d.inbox==='true'?null:d.date,deadline:d.deadline||'',status:d.status||old?.status||'planned',priority:d.priority||'medium',category:d.category||'personal',goalId:d.goalId||null,estimate:+d.estimate||60,startTime:d.startTime||'',notes:(d.notes||'').trim(),inbox:d.inbox==='true',subtasks:subs,tags:(d.tags||'').split(',').map(x=>x.trim()).filter(Boolean),recurrence:d.recurrence||'none',dependsOn:d.dependsOn||null,recurringSpawned:old?.recurringSpawned||false};
-    const justCompleted=o.status==='done'&&old?.status!=='done';old?Object.assign(old,o):S.tasks.push(o);if(justCompleted)spawnRecurringTask(old||o);refreshGoalProgress();save();close();toast('Task tersimpan');render()
+    let o={id:d.id||uid('t'),title:d.title.trim(),date:d.inbox==='true'?null:d.date,deadline:d.deadline||'',status:d.status||old?.status||'planned',priority:d.priority||'medium',category:d.category||'personal',goalId:d.goalId||null,estimate:+d.estimate||60,startTime:d.startTime||'',notes:(d.notes||'').trim(),inbox:d.inbox==='true',subtasks:subs,tags:(d.tags||'').split(',').map(x=>x.trim()).filter(Boolean),recurrence:d.recurrence||'none',dependsOn:d.dependsOn||null,googleTaskSync:d.googleTaskSync==='true',googleCalendarSync:d.googleCalendarSync==='true',googleTaskId:old?.googleTaskId||null,googleTaskListId:old?.googleTaskListId||S.settings.googleTaskListId||null,googleCalendarEventId:old?.googleCalendarEventId||null,googleOrigin:old?.googleOrigin||false,recurringSpawned:old?.recurringSpawned||false};
+    const justCompleted=o.status==='done'&&old?.status!=='done';old?Object.assign(old,o):S.tasks.push(o);if(justCompleted)spawnRecurringTask(old||o);refreshGoalProgress();save();const target=old||o;if(googleReady()&&(target.googleTaskSync||target.googleCalendarSync))syncTaskGoogle(target);close();toast('Task tersimpan');render()
   }
 
   if(f.id==='activityForm'){const a={id:uid('a'),date:d.date,title:d.title,category:d.category,duration:Math.max(1,+d.duration||1),startTime:d.startTime||localTime(),goalId:d.goalId||null,source:'manual',completed:true,rhythm:d.rhythm||'nonroutine',obligation:d.obligation||'important',planned:d.planned!=='false',notes:(d.notes||'').trim()};S.activities.push(a);refreshGoalProgress();save();close();toast('Kegiatan tercatat · +'+activityXP(a)+' XP otomatis');render()}
@@ -394,6 +401,6 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('dragstart',e=>{const el=e.target.closest('[data-drag-task]');if(el&&e.dataTransfer){e.dataTransfer.setData('text/desca-task',el.dataset.dragTask);e.dataTransfer.effectAllowed='move'}});
 document.addEventListener('dragover',e=>{if(e.target.closest('[data-drop-date]'))e.preventDefault()});
-document.addEventListener('drop',e=>{const zone=e.target.closest('[data-drop-date]');if(!zone||!e.dataTransfer)return;e.preventDefault();const id=e.dataTransfer.getData('text/desca-task'),t=S.tasks.find(x=>x.id===id);if(t){t.date=zone.dataset.dropDate;t.inbox=false;save();toast('Task dipindah ke '+fmt(t.date,{day:'numeric',month:'short'}));render()}});
+document.addEventListener('drop',e=>{const zone=e.target.closest('[data-drop-date]');if(!zone||!e.dataTransfer)return;e.preventDefault();const id=e.dataTransfer.getData('text/desca-task'),t=S.tasks.find(x=>x.id===id);if(t){t.date=zone.dataset.dropDate;t.inbox=false;save();if(googleReady()&&t.googleCalendarSync)syncTaskGoogle(t);toast('Task dipindah ke '+fmt(t.date,{day:'numeric',month:'short'}));render()}});
 window.onhashchange=()=>{let r=location.hash.slice(1);if(R[r]){route=r;render()}};if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});render();
 })();

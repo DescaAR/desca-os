@@ -150,3 +150,39 @@ Cloud Sync tidak diperlukan untuk memakai Desca OS. Jika ingin sinkron lintas pe
 7. Gunakan **Upload State** untuk mengirim state lokal ke cloud atau **Download State** untuk memuat state cloud.
 
 RLS pada `supabase.sql` membatasi satu pengguna hanya ke row miliknya sendiri. Jangan pernah menaruh `service_role` key pada Desca OS frontend.
+
+
+## Google Integration
+
+Google tidak dibuat sebagai hub terpisah. Integrasi masuk langsung ke modul Desca OS:
+
+- **Calendar**: Google Calendar events ditampilkan di Month/Week/Day view. Event Google dapat diimpor menjadi task Desca OS.
+- **Tasks**: task Desca OS dapat dipilih untuk disinkronkan ke Google Tasks. Google Tasks pada list yang dipilih juga dapat ditarik ke Desca OS.
+- **Drive App Data**: backup state Desca OS dapat disimpan ke folder aplikasi tersembunyi Google Drive dan dipulihkan kembali.
+- OAuth access token hanya disimpan di memory session dan hilang setelah reload/disconnect.
+- Client secret tidak digunakan di frontend.
+
+### Google Cloud setup
+
+1. Buat atau pilih Google Cloud project.
+2. Enable:
+   - Google Calendar API
+   - Google Tasks API
+   - Google Drive API
+3. Konfigurasi OAuth consent screen.
+4. Buat OAuth Client ID tipe **Web application**.
+5. Tambahkan Authorized JavaScript origin:
+   - `https://descaar.github.io`
+   - untuk development lokal, tambahkan origin lokal yang benar-benar dipakai.
+6. Jika OAuth app masih Testing, tambahkan akun Google yang dipakai sebagai test user.
+7. Salin **Client ID** yang berakhiran `.apps.googleusercontent.com`.
+8. Masukkan Client ID ke **Settings → Google Integration → Google OAuth Client ID**.
+9. Tekan **Connect Google**.
+
+Scopes yang dipakai:
+
+- `https://www.googleapis.com/auth/calendar.events`
+- `https://www.googleapis.com/auth/tasks`
+- `https://www.googleapis.com/auth/drive.appdata`
+
+Desca OS tidak meminta Gmail, Contacts, atau akses seluruh Google Drive.

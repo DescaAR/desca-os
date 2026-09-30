@@ -7,7 +7,7 @@ Desca OS adalah personal productivity operating system yang menghubungkan tujuan
 ## Fitur MVP
 
 - Today command center
-- Tasks + Inbox + Calendar
+- Tasks + Inbox + month-view Calendar dengan event detail dan completion XP
 - Pomodoro otomatis (25/5, 50/10, custom) yang masuk activity log saat sesi selesai
 - Focus session menyimpan jam mulai untuk analisis waktu belajar
 - Goals + milestones
@@ -17,7 +17,8 @@ Desca OS adalah personal productivity operating system yang menghubungkan tujuan
 - Study tracker dengan evaluasi 90 hari dan rekomendasi jam belajar berdasarkan histori
 - Presensi harian satu tombol + attendance streak
 - Research, Projects, Health trackers
-- Finance ringan
+- Life Log untuk routine, kegiatan wajib, planned vs actual, dan aktivitas spontan
+- Finance lengkap: cashflow, budgeting kategori, portfolio investasi, gain/loss, dan financial goals
 - Daily journal
 - Weekly review + analytics
 - Dark mode
@@ -90,34 +91,10 @@ Karena seluruh aplikasi bersifat static dan dependency-free, setiap commit immut
 - PWA cache menggunakan network-first untuk file aplikasi agar pembaruan cepat terlihat setelah deploy.
 
 
-## Google Hub setup
+## Calendar & Finance v2
 
-Desca OS dapat membaca Google Calendar, Gmail metadata, dan Google Drive metadata langsung dari browser dengan Google OAuth 2.0 / Google Identity Services.
-
-### Google Cloud
-
-1. Buat atau pilih satu Google Cloud project.
-2. Enable:
-   - Google Calendar API
-   - Gmail API
-   - Google Drive API
-3. Konfigurasikan Google Auth Platform / OAuth consent screen.
-4. Bila status aplikasi masih **Testing**, tambahkan akun Google yang akan dipakai sebagai **Test user**.
-5. Buat OAuth 2.0 Client ID dengan tipe **Web application**.
-6. Tambahkan Authorized JavaScript origin:
-   - `https://descaar.github.io`
-   - opsional saat development: `http://localhost:3000`
-7. Copy Client ID berakhiran `.apps.googleusercontent.com`.
-8. Di Desca OS buka **Settings → Google Integration**, paste Client ID, lalu Save.
-9. Buka **Google Hub → Connect Google**.
-
-### Scope yang digunakan
-
-- `openid`
-- `email`
-- `profile`
-- `https://www.googleapis.com/auth/calendar.readonly`
-- `https://www.googleapis.com/auth/gmail.metadata`
-- `https://www.googleapis.com/auth/drive.metadata.readonly`
-
-Google token hanya disimpan di memori runtime browser dan tidak dimasukkan ke `localStorage`. Reload halaman akan meminta koneksi kembali.
+- Google Hub dihapus dari aplikasi.
+- Calendar memakai tampilan bulanan 6×7. Task dan routine muncul sebagai event biru; event dapat dibuka untuk melihat tanggal, jam, durasi, kategori, prioritas/sifat, linked goal, catatan, status, dan XP completion.
+- Event dapat ditandai selesai langsung dari Calendar; Task memperoleh XP otomatis berdasarkan estimasi dan prioritas, sedangkan Routine dicatat sebagai activity dan memperoleh Activity XP.
+- Finance mencakup transaksi, monthly budgeting per kategori, realisasi budget otomatis dari expense, investment portfolio tracker, gain/loss dan allocation, serta financial goals.
+- Nilai investasi diupdate manual; Desca OS tidak memberikan rekomendasi investasi atau mengambil harga pasar eksternal.

@@ -1338,3 +1338,58 @@ body.focus-zen-active{overflow:hidden}
 .subtask-chip.done{ text-decoration:line-through }
 .task-blocked{border-color:color-mix(in srgb,var(--error) 18%,var(--line));background:color-mix(in srgb,var(--error) 2.5%,var(--card))}
 .task-actions .mini-btn:disabled{opacity:.42;cursor:not-allowed}
+
+
+/* =========================================================
+   Google Integration
+   ========================================================= */
+.google-integration-card{
+  border-color:color-mix(in srgb,#4285F4 18%,var(--line));
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,#4285F4 7%,transparent),transparent 16rem),
+    var(--card);
+}
+.google-scope-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:11px;
+}
+.google-scope-list span,
+.google-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  border:1px solid color-mix(in srgb,#4285F4 20%,var(--line));
+  background:color-mix(in srgb,#4285F4 7%,var(--card));
+  color:#2F6EDB!important;
+}
+.google-scope-list span{
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:850;
+}
+.calendar-event.google-event{
+  background:color-mix(in srgb,#4285F4 12%,var(--card));
+  color:color-mix(in srgb,#4285F4 86%,var(--text));
+  border-left:2px solid #4285F4;
+}
+.calendar-event.google-event:hover{
+  background:color-mix(in srgb,#4285F4 18%,var(--card));
+}
+.calendar-event.google-event .event-dot{background:#4285F4}
+.event-source{
+  margin-left:auto;
+  width:16px;
+  height:16px;
+  display:grid;
+  place-items:center;
+  border-radius:5px;
+  background:#fff;
+  color:#4285F4;
+  border:1px solid color-mix(in srgb,#4285F4 22%,var(--line));
+  font-size:7px;
+  font-weight:950;
+  flex:0 0 auto;
+}

@@ -630,3 +630,5 @@ body.focus-zen-active{overflow:hidden}
 @media(prefers-reduced-motion:reduce){
   .zen-main,.zen-secondary,.focus-dock{transition:none}
 }
+
+.focus-zen-active .toast-wrap{z-index:1200}

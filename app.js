@@ -59,7 +59,22 @@ const catMin=(c,days=7)=>S.activities.filter(x=>x.category===c&&x.date>=add(toda
 function weeks(off=0){let d=new Date(today()+'T12:00:00'),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+off*7);return Array.from({length:7},(_,i)=>{let x=new Date(d);x.setDate(d.getDate()+i);return iso(x)})}const weekMin=off=>weeks(off).reduce((a,d)=>a+stats(d).productive,0);
 function toast(t){let e=document.createElement('div');e.className='toast';e.textContent=t;$('#toastWrap').append(e);setTimeout(()=>e.remove(),2400)}
 function side(){const l=level();$('#sideLevel').textContent=l.level;$('#sideXP').textContent=num(xp())+' XP';$('#sideXPBar').style.width=l.pct+'%'}
-function nav(){for(const g of ['CORE','GROWTH','LIFE','INSIGHTS','SYSTEM']){ }$('#sideNav').innerHTML=['CORE','GROWTH','LIFE','INSIGHTS','SYSTEM'].map(g=>'<div class="nav-group"><div class="nav-label">'+g+'</div>'+Object.entries(R).filter(([,v])=>v[2]===g).map(([k,v])=>'<button class="nav-item '+(route===k?'active':'')+'" data-route="'+k+'"><span class="nav-icon">'+v[1]+'</span><span>'+v[0]+'</span></button>').join('')+'</div>').join('');$('#bottomNav').innerHTML=[['today','◉','Today'],['life','◫','Life Log'],['tasks','✓','Tasks'],['progress','▤','Progress'],['analytics','•••','More']].map(x=>'<button class="bottom-item '+(route===x[0]?'active':'')+'" data-route="'+x[0]+'"><span>'+x[1]+'</span><span>'+x[2]+'</span></button>').join('');$('#crumb').textContent=R[route][0]}
+function taskBadgeCount(routeKey){
+  const open=S.tasks.filter(t=>t.status!=='done');
+  const categoryRoute={study:'study',research:'research',project:'projects',health:'health',finance:'finance'};
+  if(routeKey==='inbox')return open.filter(t=>t.inbox).length;
+  if(routeKey==='tasks')return open.filter(t=>!t.inbox).length;
+  if(routeKey==='today')return open.filter(t=>!t.inbox&&t.date===today()).length;
+  if(routeKey==='calendar')return open.filter(t=>!t.inbox&&t.date===today()).length;
+  const category=Object.keys(categoryRoute).find(k=>categoryRoute[k]===routeKey);
+  return category?open.filter(t=>!t.inbox&&t.category===category).length:0
+}
+function badgeHtml(n,cls=''){return n>0?'<span class="nav-badge '+cls+'" aria-label="'+n+' task belum selesai">'+(n>99?'99+':n)+'</span>':''}
+function nav(){
+  $('#sideNav').innerHTML=['CORE','GROWTH','LIFE','INSIGHTS','SYSTEM'].map(g=>'<div class="nav-group"><div class="nav-label">'+g+'</div>'+Object.entries(R).filter(([,v])=>v[2]===g).map(([k,v])=>{const n=taskBadgeCount(k);return'<button class="nav-item '+(route===k?'active':'')+'" data-route="'+k+'"><span class="nav-icon">'+v[1]+'</span><span class="nav-text">'+v[0]+'</span>'+badgeHtml(n)+'</button>'}).join('')+'</div>').join('');
+  $('#bottomNav').innerHTML=[['today','◉','Today'],['life','◫','Life Log'],['tasks','✓','Tasks'],['progress','▤','Progress'],['analytics','•••','More']].map(x=>{const n=taskBadgeCount(x[0]);return'<button class="bottom-item '+(route===x[0]?'active':'')+'" data-route="'+x[0]+'"><span class="bottom-icon-wrap">'+x[1]+badgeHtml(n,'bottom-badge')+'</span><span>'+x[2]+'</span></button>'}).join('');
+  $('#crumb').textContent=R[route][0]
+}
 const head=(t,d,a='')=>'<div class="page-head"><div><div class="eyebrow">Desca OS</div><h1>'+esc(t)+'</h1><p>'+esc(d)+'</p></div><div class="page-actions">'+a+'</div></div>',prog=p=>'<div class="progress-track"><span style="width:'+clamp(+p||0,0,100)+'%"></span></div>',metric=(l,v,m,i)=>'<div class="metric-card"><div class="metric-icon">'+i+'</div><div class="metric-label">'+l+'</div><div class="metric-value">'+v+'</div><div class="metric-meta">'+m+'</div></div>';
 function task(x){return'<div class="task-item"><button class="check '+(x.status==='done'?'done':'')+'" data-act="toggle" data-id="'+x.id+'">'+(x.status==='done'?'✓':'')+'</button><div class="item-main"><div class="item-title '+(x.status==='done'?'done':'')+'">'+esc(x.title)+'</div><div class="item-meta"><span>'+cat(x.category)+'</span><span>• '+mins(x.estimate)+'</span>'+(x.goalId?'<span>• '+esc(goal(x.goalId))+'</span>':'')+'<span class="pill '+(x.priority==='high'?'red':x.priority==='medium'?'orange':'')+'">'+x.priority+'</span><span class="xp-pop">+'+taskXP(x)+' XP</span></div></div><button class="mini-btn" data-act="editTask" data-id="'+x.id+'">Edit</button></div>'}
 function goalCard(g){return'<div class="goal-card"><div class="goal-top"><div><div class="goal-title">'+esc(g.title)+'</div><div class="goal-sub">'+esc(g.area)+' • '+fmt(g.deadline,{day:'numeric',month:'short',year:'numeric'})+'</div></div><span class="pill blue">'+g.status+'</span></div><div class="goal-progress">'+prog(g.progress)+'<b>'+g.progress+'%</b></div></div>'}

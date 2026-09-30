@@ -1330,3 +1330,11 @@ body.focus-zen-active{overflow:hidden}
   .day-time-grid{padding:0 10px 16px}.day-hour-row{grid-template-columns:48px minmax(0,1fr)}.day-unscheduled{margin-left:48px}
   .button-row .btn{flex:1}
 }
+
+.task-subtasks{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.subtask-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:5px 7px;border:1px solid var(--line);border-radius:999px;background:var(--soft);color:var(--text);font:inherit;font-size:8px;cursor:pointer}
+.subtask-chip span{color:var(--blue);font-weight:900}
+.subtask-chip.done{opacity:.58}
+.subtask-chip.done{ text-decoration:line-through }
+.task-blocked{border-color:color-mix(in srgb,var(--error) 18%,var(--line));background:color-mix(in srgb,var(--error) 2.5%,var(--card))}
+.task-actions .mini-btn:disabled{opacity:.42;cursor:not-allowed}

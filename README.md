@@ -218,3 +218,23 @@ DMath Learning sekarang memiliki workflow konten end-to-end:
 Setiap konten menyimpan platform, format, status, jadwal publish, tanggal publish, URL, dan catatan. Konten terjadwal otomatis muncul di Calendar Desca OS.
 
 Setiap platform juga dapat memiliki target jumlah konten bulanan. Dashboard menghitung jumlah konten yang sudah published pada bulan berjalan dan membandingkannya dengan target tersebut.
+
+
+## Hafalan Al-Qur’an
+
+Desca OS memiliki modul khusus untuk mencatat hafalan dan murajaah.
+
+Fitur:
+- Surah + rentang ayat + juz opsional.
+- Status: Baru, Sedang Dihafal, Murajaah, Mutqin.
+- Mastery 0–100%.
+- Target tanggal selesai.
+- Last review + next review.
+- Murajaah due list dan badge perhatian di sidebar.
+- Session log untuk hafalan baru atau murajaah.
+- Kualitas sesi 1–5 menentukan jarak review berikutnya.
+- Session otomatis menghasilkan Activity kategori Hafalan Al-Qur’an dan XP.
+- Review berikutnya muncul di Calendar Desca OS.
+- Browser notification dapat mengingatkan murajaah yang jatuh tempo.
+- Task dan Universal Timer mendukung kategori `quran`.
+- Global Search dapat menemukan rentang hafalan.

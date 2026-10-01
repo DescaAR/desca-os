@@ -203,3 +203,18 @@ Dashboard mencakup:
 - Activity time, XP, dan grafik kerja 14 hari khusus DMath Learning.
 
 Kategori `dmath` juga tersedia di Task, Activity Log, Universal Timer, Progress, Analytics, dan pencarian global.
+
+
+## DMath Content OS
+
+DMath Learning sekarang memiliki workflow konten end-to-end:
+
+- Idea
+- Draft
+- Production
+- Scheduled
+- Published
+
+Setiap konten menyimpan platform, format, status, jadwal publish, tanggal publish, URL, dan catatan. Konten terjadwal otomatis muncul di Calendar Desca OS.
+
+Setiap platform juga dapat memiliki target jumlah konten bulanan. Dashboard menghitung jumlah konten yang sudah published pada bulan berjalan dan membandingkannya dengan target tersebut.

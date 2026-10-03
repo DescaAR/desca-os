@@ -2169,3 +2169,22 @@ body.focus-zen-active{overflow:hidden}
 .compact-achievements{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:900px){.compact-achievements{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.compact-achievements{grid-template-columns:1fr}}
+
+
+/* Growth workspaces v17 */
+.growth-list{display:grid;gap:10px}
+.growth-row,.paper-row,.research-note-row{display:flex;align-items:flex-start;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}
+.growth-main{min-width:0;flex:1}
+.growth-main .progress-track{margin-top:8px}
+.growth-row>strong{font-size:18px;white-space:nowrap}
+.paper-row .pill,.research-note-row .pill{white-space:nowrap}
+.tag-line{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.tag-line span{font-size:9px;font-weight:800;color:var(--blue);background:color-mix(in srgb,var(--blue) 8%,transparent);padding:4px 7px;border-radius:999px}
+.research-note-row small{display:block;margin-top:7px;line-height:1.55;color:var(--muted)}
+.project-workspaces{align-items:start}
+.project-workspace .task-item{margin-top:7px}
+.project-linked-tasks{margin-top:4px}
+@media(max-width:620px){
+  .growth-row,.paper-row,.research-note-row{flex-wrap:wrap}
+  .growth-row .mini-btn,.paper-row .mini-btn,.research-note-row .mini-btn{margin-left:auto}
+}

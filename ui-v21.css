@@ -1094,3 +1094,41 @@ html[data-theme=dark] .heat-cell.l4{background:#6b9cff!important}
   }
   .topbar .btn-primary:after{content:"+";font-size:18px}
 }
+
+
+/* Navigation icon normalization */
+.nav-icon svg{
+  width:18px;
+  height:18px;
+  display:block;
+  vector-effect:non-scaling-stroke;
+}
+.collapsed .nav-icon svg{
+  width:20px;
+  height:20px;
+}
+.bottom-icon-wrap{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+  margin:0 auto 2px;
+}
+.bottom-icon-wrap svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+.bottom-badge{
+  position:absolute!important;
+  top:-5px!important;
+  right:-8px!important;
+  min-width:16px!important;
+  height:16px!important;
+  padding:0 4px!important;
+  font-size:7px!important;
+  background:var(--app-red)!important;
+  color:#fff!important;
+  border:2px solid var(--app-surface)!important;
+}

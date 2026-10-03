@@ -1262,3 +1262,77 @@ html[data-theme=dark] .dmath-platform.facebook .dmath-platform-icon{background:v
   width:calc(100% - 20px)!important;
   background:var(--app-surface)!important;
 }
+
+
+.field-auto{
+  margin-left:6px;
+  color:var(--app-muted);
+  font-size:8.5px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.dmath-platform-head{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+}
+.dmath-platform-head>div{
+  min-width:0;
+  flex:1;
+}
+.dmath-platform-head h2{
+  margin:0!important;
+  font-size:13px!important;
+  font-weight:760!important;
+}
+.dmath-platform-head p{
+  margin:3px 0 0!important;
+  color:var(--app-muted)!important;
+  font-size:9.5px!important;
+}
+.dmath-platform-value{
+  display:flex!important;
+  align-items:baseline!important;
+  gap:5px!important;
+  margin:18px 0 10px!important;
+}
+.dmath-platform-value b{
+  font-size:29px!important;
+  line-height:1!important;
+  letter-spacing:-.045em!important;
+  font-weight:790!important;
+}
+.dmath-platform-value span{
+  color:var(--app-muted)!important;
+  font-size:11px!important;
+}
+.dmath-platform-foot,.dmath-monthly-output{
+  color:var(--app-muted)!important;
+  font-size:9.5px!important;
+}
+.dmath-platform-foot{
+  display:flex!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  margin-top:8px!important;
+}
+.dmath-monthly-output{
+  margin-top:14px!important;
+  padding-top:12px!important;
+  border-top:1px solid var(--app-border)!important;
+}
+.dmath-monthly-output>span{
+  display:block!important;
+  margin-bottom:4px!important;
+}
+.dmath-monthly-output>b{
+  color:var(--app-text)!important;
+  font-size:12px!important;
+}
+@media(max-width:540px){
+  .field-auto{
+    display:block;
+    margin:2px 0 0;
+    white-space:normal;
+  }
+}

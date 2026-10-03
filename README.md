@@ -371,3 +371,45 @@ Perubahan utama:
 - Weekly Review memakai Active Days alih-alih presensi.
 - Health menjadi ringkasan kesehatan umum; detail lari tetap berada di Running.
 - Automatic XP card di Settings dihapus dan diganti penjelasan singkat di Data & Privacy.
+
+
+## Growth Workspaces v17
+
+Study, Research, dan Projects diperdalam tanpa menambah menu baru.
+
+### Study
+- Topic Mastery per materi
+- progress question bank
+- target tanggal dan last studied
+- Mock Test / Assessment tracker
+- weak-topic ordering
+- Study Topic dapat ditautkan ke task dan activity
+
+### Research
+- Paper Library dengan status To Read, Reading, Read, dan Key Paper
+- DOI, URL, tags, notes, dan project relation
+- Research Log untuk Idea, Hypothesis, Derivation, Result, dan Decision
+
+### Projects
+- status, start date, deadline, next action, notes
+- milestone-based progress
+- linked tasks
+- tracked work time
+- linked papers dan research notes
+
+State lama tetap kompatibel. Project legacy otomatis dinormalisasi ke model baru melalui `modules/growth-utils.js`.
+
+## Modern Workspace v18
+
+UI Desca OS diperbarui menjadi workspace yang lebih modern tanpa mengubah struktur navigasi utama.
+
+- floating sidebar dengan radius dan depth yang lebih halus
+- glass topbar
+- softer card hierarchy dan lebih banyak whitespace
+- metric cards dengan interaction state yang lebih ringan
+- form controls dan modal yang lebih modern
+- floating mobile bottom dock
+- mobile modal tampil seperti bottom sheet
+- visual hierarchy Growth workspace diseragamkan
+- dark mode ikut menggunakan sistem visual baru
+- PWA cache diperbarui ke v18

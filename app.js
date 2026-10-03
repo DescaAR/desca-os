@@ -225,10 +225,36 @@ function taskBadgeCount(routeKey){
   const category=Object.keys(categoryRoute).find(k=>categoryRoute[k]===routeKey);
   return category?open.filter(t=>!t.inbox&&t.category===category).length:0
 }
+function routeIconSvg(k){
+  const common='viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+  const p={
+    today:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/>',
+    inbox:'<path d="M4 5h16v12H4z"/><path d="M4 13h4l2 2h4l2-2h4"/>',
+    tasks:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 2.2 2.2L16 8.5"/>',
+    calendar:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 9h17"/>',
+    goals:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>',
+    study:'<path d="M4 5.5c3.2-1.2 5.7-.8 8 1.1v12c-2.3-1.9-4.8-2.3-8-1.1z"/><path d="M20 5.5c-3.2-1.2-5.7-.8-8 1.1v12c2.3-1.9 4.8-2.3 8-1.1z"/>',
+    research:'<circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 4.5 4.5"/><path d="M8 10.5h5M10.5 8v5"/>',
+    projects:'<path d="M3.5 7.5h6l1.5-2h9.5v13h-17z"/><path d="M3.5 10h17"/>',
+    dmath:'<rect x="4" y="4" width="16" height="16" rx="5"/><path d="M9 8h3.2c2.6 0 4.3 1.6 4.3 4s-1.7 4-4.3 4H9z"/>',
+    life:'<path d="M4 12h3l1.5-4 3 8 2-5 1.5 3H20"/>',
+    quran:'<path d="M5 5.5c2.8-1 5.1-.6 7 1.2v12c-1.9-1.8-4.2-2.2-7-1.2z"/><path d="M19 5.5c-2.8-1-5.1-.6-7 1.2v12c1.9-1.8 4.2-2.2 7-1.2z"/><path d="M12 6.7v12"/>',
+    running:'<path d="M13.5 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/><path d="m10 9 3-2 2 3 3 1"/><path d="m12 10-2 4-4 2"/><path d="m13 13 3 2 1 4"/>',
+    health:'<path d="M20 8.5c0 5-8 10-8 10s-8-5-8-10a4.5 4.5 0 0 1 8-2.8 4.5 4.5 0 0 1 8 2.8z"/>',
+    finance:'<rect x="3.5" y="6" width="17" height="12" rx="3"/><path d="M16 10.5h4.5v3H16a1.5 1.5 0 0 1 0-3zM7 6V4h10v2"/>',
+    journal:'<path d="M6 4h10.5A1.5 1.5 0 0 1 18 5.5V20H6z"/><path d="M9 4v16M11.5 9H15M11.5 12H15"/>',
+    progress:'<path d="M4 18V9M10 18V5M16 18v-7M22 18H2"/>',
+    analytics:'<path d="M4 19V11M10 19V5M16 19v-9M22 19v-4"/>',
+    reviews:'<path d="M20 11a8 8 0 1 1-2.3-5.7"/><path d="M20 4v7h-7"/><path d="m9 12 2 2 4-4"/>',
+    recovery:'<path d="M4 7v5h5"/><path d="M5.5 16.5a8 8 0 1 0 .2-9.2L4 9"/>',
+    settings:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5L9 6.1a7 7 0 0 0-1.7 1l-2.4-1-2 3.4L5 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 3.1h5l.4-3.1a7 7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.5a7 7 0 0 0 .1-1z"/>'
+  };
+  return '<svg '+common+'>'+ (p[k]||p.today) +'</svg>'
+}
 function badgeHtml(n,cls=''){return n>0?'<span class="nav-badge '+cls+'" aria-label="'+n+' item perlu perhatian">'+(n>99?'99+':n)+'</span>':''}
 function nav(){
-  $('#sideNav').innerHTML=['CORE','GROWTH','LIFE','INSIGHTS','SYSTEM'].map(g=>'<div class="nav-group"><div class="nav-label">'+g+'</div>'+Object.entries(R).filter(([,v])=>v[2]===g).map(([k,v])=>{const n=taskBadgeCount(k);return'<button class="nav-item '+(route===k?'active':'')+'" data-route="'+k+'" title="'+esc(v[0])+'" aria-label="'+esc(v[0])+'"><span class="nav-icon">'+v[1]+'</span><span class="nav-text">'+v[0]+'</span>'+badgeHtml(n)+'</button>'}).join('')+'</div>').join('');
-  $('#bottomNav').innerHTML=[['today','◉','Today'],['life','◫','Life Log'],['tasks','✓','Tasks'],['progress','▤','Progress'],['analytics','•••','More']].map(x=>{const n=taskBadgeCount(x[0]);return'<button class="bottom-item '+(route===x[0]?'active':'')+'" data-route="'+x[0]+'"><span class="bottom-icon-wrap">'+x[1]+badgeHtml(n,'bottom-badge')+'</span><span>'+x[2]+'</span></button>'}).join('');
+  $('#sideNav').innerHTML=['CORE','GROWTH','LIFE','INSIGHTS','SYSTEM'].map(g=>'<div class="nav-group"><div class="nav-label">'+g+'</div>'+Object.entries(R).filter(([,v])=>v[2]===g).map(([k,v])=>{const n=taskBadgeCount(k);return'<button class="nav-item '+(route===k?'active':'')+'" data-route="'+k+'" title="'+esc(v[0])+'" aria-label="'+esc(v[0])+'"><span class="nav-icon">'+routeIconSvg(k)+'</span><span class="nav-text">'+v[0]+'</span>'+badgeHtml(n)+'</button>'}).join('')+'</div>').join('');
+  $('#bottomNav').innerHTML=[['today','◉','Today'],['life','◫','Life Log'],['tasks','✓','Tasks'],['progress','▤','Progress'],['analytics','•••','More']].map(x=>{const n=taskBadgeCount(x[0]);return'<button class="bottom-item '+(route===x[0]?'active':'')+'" data-route="'+x[0]+'"><span class="bottom-icon-wrap">'+routeIconSvg(x[0])+badgeHtml(n,'bottom-badge')+'</span><span>'+x[2]+'</span></button>'}).join('');
   $('#crumb').textContent=R[route][0]
 }
 const head=(t,d,a='')=>'<div class="page-head"><div><div class="eyebrow">Desca OS</div><h1>'+esc(t)+'</h1><p>'+esc(d)+'</p></div><div class="page-actions">'+a+'</div></div>',prog=p=>'<div class="progress-track"><span style="width:'+clamp(+p||0,0,100)+'%"></span></div>',metric=(l,v,m,i)=>'<div class="metric-card"><div class="metric-icon">'+i+'</div><div class="metric-label">'+l+'</div><div class="metric-value">'+v+'</div><div class="metric-meta">'+m+'</div></div>';

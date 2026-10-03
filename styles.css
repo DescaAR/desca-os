@@ -1781,3 +1781,99 @@ body.focus-zen-active{overflow:hidden}
   .quran-hero{padding:18px}
   .quran-hero h1{font-size:21px}
 }
+
+
+/* =========================================================
+   Reliability v14 — Recovery, Dashboard, Timeline
+   ========================================================= */
+.btn-danger-soft{
+  background:color-mix(in srgb,var(--error) 7%,var(--card));
+  border:1px solid color-mix(in srgb,var(--error) 24%,var(--line));
+  color:var(--error);
+}
+.btn-danger-soft:hover{background:color-mix(in srgb,var(--error) 12%,var(--card))}
+.dashboard-customize{align-self:flex-start;justify-self:end}
+.dashboard-widget-list{display:flex;flex-direction:column;gap:8px}
+.dashboard-widget-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--soft);
+}
+.dashboard-widget-row>div:nth-child(2){display:flex;flex-direction:column;gap:2px}
+.dashboard-widget-row b{font-size:10px}
+.dashboard-widget-row small{font-size:8px;color:var(--muted)}
+.dashboard-order-actions{display:flex;gap:5px}
+.dashboard-order-actions .mini-btn:disabled{opacity:.35}
+.daily-timeline-card{overflow:hidden}
+.daily-timeline-head,
+.daily-timeline-row{
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+  align-items:start;
+}
+.daily-timeline-head{
+  padding:7px 10px;
+  border-bottom:1px solid var(--line);
+  color:var(--muted);
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  font-weight:900;
+}
+.daily-timeline-body{display:flex;flex-direction:column}
+.daily-timeline-row{
+  padding:9px 10px;
+  border-bottom:1px solid var(--line);
+}
+.daily-timeline-row:last-child{border-bottom:0}
+.daily-timeline-row>time{
+  font-size:9px;
+  font-weight:900;
+  color:var(--blue);
+  font-variant-numeric:tabular-nums;
+}
+.daily-timeline-plan,
+.daily-timeline-actual{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-width:0;
+}
+.daily-timeline-plan>span,
+.daily-timeline-actual>span{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:7px 8px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:var(--soft);
+}
+.daily-timeline-plan>span.done{opacity:.55}
+.daily-timeline-plan b,
+.daily-timeline-actual b{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.daily-timeline-plan small,
+.daily-timeline-actual small{font-size:7px;color:var(--muted)}
+.timeline-none{border-style:dashed!important;color:var(--muted);align-items:center}
+.button-row.compact{margin:0;align-items:center}
+.recovery-conflict{
+  margin-bottom:16px;
+  border-color:color-mix(in srgb,var(--error) 28%,var(--line));
+  background:color-mix(in srgb,var(--error) 4%,var(--card));
+}
+#versionHistoryList{max-height:520px;overflow:auto;padding-right:3px}
+.nav-item[data-route="recovery"] .nav-icon{color:var(--warning)}
+@media(max-width:700px){
+  .daily-timeline-head,
+  .daily-timeline-row{grid-template-columns:50px minmax(0,1fr)}
+  .daily-timeline-head b:last-child{grid-column:2}
+  .daily-timeline-actual{grid-column:2}
+  .daily-timeline-plan{grid-column:2}
+  .dashboard-customize{width:100%;justify-self:stretch}
+}

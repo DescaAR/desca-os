@@ -464,5 +464,5 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('dragstart',e=>{const el=e.target.closest('[data-drag-task]');if(el&&e.dataTransfer){e.dataTransfer.setData('text/desca-task',el.dataset.dragTask);e.dataTransfer.effectAllowed='move'}});
 document.addEventListener('dragover',e=>{if(e.target.closest('[data-drop-date]'))e.preventDefault()});
 document.addEventListener('drop',e=>{const zone=e.target.closest('[data-drop-date]');if(!zone||!e.dataTransfer)return;e.preventDefault();const id=e.dataTransfer.getData('text/desca-task'),t=S.tasks.find(x=>x.id===id);if(t){t.date=zone.dataset.dropDate;t.inbox=false;save();if(googleReady()&&t.googleCalendarSync)syncTaskGoogle(t);toast('Task dipindah ke '+fmt(t.date,{day:'numeric',month:'short'}));render()}});
-window.onhashchange=()=>{let r=location.hash.slice(1);if(R[r]){route=r;render()}};if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{});render();
+window.onhashchange=()=>{let r=location.hash.slice(1);if(R[r]){route=r;render()}};if('serviceWorker'in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').then(()=>syncBackgroundReminders()).catch(()=>{});if(cloudSession?.user?.id)cloudAutoReconcile();render();
 })();

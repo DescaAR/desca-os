@@ -238,3 +238,69 @@ Fitur:
 - Browser notification dapat mengingatkan murajaah yang jatuh tempo.
 - Task dan Universal Timer mendukung kategori `quran`.
 - Global Search dapat menemukan rentang hafalan.
+
+
+## Reliability v14
+
+### Automatic Cloud Sync
+
+Jika Supabase sudah dikonfigurasi dan pengguna login, perubahan lokal dijadwalkan untuk sync otomatis setelah perubahan berhenti beberapa saat.
+
+Setiap state memiliki:
+- `revision`
+- `modifiedAt`
+- `lastCloudSync`
+- `lastCloudRevision`
+
+Jika local dan cloud sama-sama berubah sejak sync terakhir, Desca OS tidak menimpa data secara otomatis. **Recovery → Cloud Conflict** meminta pengguna memilih:
+- gunakan Local
+- gunakan Cloud
+
+Auto-sync tetap optional dan dapat dimatikan dari Settings.
+
+### Recovery Center
+
+Menu **Recovery** mencakup:
+- Undo perubahan terbaru
+- Trash hingga 30 hari
+- Restore item dari Trash
+- Version History hingga 20 checkpoint lokal
+- Restore checkpoint
+- Penyelesaian cloud conflict
+
+Version History disimpan di IndexedDB agar tidak membengkakkan state utama di `localStorage`.
+
+### Customizable Today Dashboard
+
+Kartu Today dapat:
+- ditampilkan/disembunyikan
+- dipindah urutannya
+- dikembalikan ke default
+
+Widget yang dapat dikustomisasi meliputi Smart Planner, Daily Timeline, priorities, task, Life Plan, Universal Timer, presensi, Pomodoro, rekomendasi belajar, weekly target, goals, dan quick note.
+
+### Daily Timeline + Auto Replanning
+
+Daily Timeline membandingkan **Planned** dan **Actual** berdasarkan jam.
+
+Tombol **Replan Sisa Hari**:
+- mengambil task belum selesai hari ini
+- mempertimbangkan jam sekarang
+- menghindari routine/event fixed yang memiliki jam
+- mempertimbangkan dependency
+- menyusun ulang task ke slot berikutnya
+- memindahkan overflow ke besok jika melewati batas planner
+
+Auto Replanning dapat diaktifkan dari Settings. Dalam mode otomatis, replanning dijalankan saat jadwal sudah tertinggal, maksimal per blok 30 menit agar tidak terus-menerus mengubah jadwal.
+
+### Background Reminder Foundation
+
+Reminder 7 hari ke depan dikirim ke Service Worker dan disimpan dalam IndexedDB worker.
+
+Desca OS menggunakan kemampuan browser bila tersedia:
+- Service Worker notifications
+- Background Sync
+- Periodic Background Sync
+- Web Push event handler
+
+Dukungan browser berbeda-beda. Tanpa push server, reminder presisi saat browser benar-benar ditutup **tidak dapat dijamin**. Pada browser/PWA yang mendukung Periodic Background Sync, worker dapat memeriksa reminder tanpa halaman aktif. Handler Web Push sudah disiapkan untuk integrasi push server berikutnya.

@@ -304,3 +304,54 @@ Desca OS menggunakan kemampuan browser bila tersedia:
 - Web Push event handler
 
 Dukungan browser berbeda-beda. Tanpa push server, reminder presisi saat browser benar-benar ditutup **tidak dapat dijamin**. Pada browser/PWA yang mendukung Periodic Background Sync, worker dapat memeriksa reminder tanpa halaman aktif. Handler Web Push sudah disiapkan untuk integrasi push server berikutnya.
+
+
+## Running Dashboard v15
+
+Desca OS memiliki modul khusus **Running** di area Life.
+
+Setiap sesi lari dapat menyimpan:
+- tanggal dan jam
+- tipe latihan: Easy, Recovery, Long, Tempo, Interval, Race, Trail, Treadmill, Other
+- distance
+- duration
+- pace otomatis
+- speed otomatis
+- average heart rate
+- max heart rate
+- cadence
+- stride length
+- elevation gain/loss
+- running power
+- calories
+- RPE
+- surface
+- sepatu
+- suhu/cuaca opsional
+- splits/laps
+- notes
+
+Format split:
+`lap | pace | HR | cadence | elevation`
+
+Contoh:
+`1 | 05:45 | 148 | 168 | 4`
+
+Dashboard menghitung:
+- weekly mileage + target mingguan
+- running time
+- active-week streak
+- sRPE training load (durasi × RPE)
+- 8-week mileage trend
+- recent pace trend
+- HR zone distribution berbasis Heart Rate Reserve
+- average cadence 28 hari
+- elevation gain 28 hari
+- fastest recorded average pace
+- longest run
+- most elevation
+- highest recorded average HR
+
+Running Settings menyimpan Max HR, Resting HR, dan weekly distance goal.
+
+Setiap Run otomatis membuat atau memperbarui **Health Activity** yang terhubung ke sesi tersebut dan menghasilkan XP. Run juga terintegrasi dengan Search, Health summary, Trash, Undo, Version History, dan cloud state.

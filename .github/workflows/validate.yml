@@ -14,10 +14,14 @@ jobs:
         with:
           node-version: 22
       - name: Check JavaScript syntax
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node --check modules/growth-utils.js
       - name: Validate required files
         run: |
           test -f index.html
           test -f styles.css
           test -f manifest.webmanifest
           test -f sw.js
+          test -f modules/growth-utils.js
+          grep -q 'modules/growth-utils.js' index.html

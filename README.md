@@ -14,10 +14,9 @@ Desca OS adalah personal productivity operating system yang menghubungkan tujuan
 - Focus session menyimpan jam mulai untuk analisis waktu belajar
 - Goals + milestones + automatic progress dari milestone dan linked task
 - GitHub-style activity heatmap
-- XP otomatis dari durasi aktivitas, kategori, prioritas task, goal, Pomodoro, dan presensi
-- Level, streak, achievements
+- XP otomatis dari durasi aktivitas, kategori, prioritas task, goal, dan Pomodoro
+- Level, streak, heatmap, skill progress, dan milestones
 - Study tracker dengan evaluasi 90 hari dan rekomendasi jam belajar berdasarkan histori
-- Presensi harian satu tombol + attendance streak
 - Research dan Projects tracker
 - Health dashboard: sleep, steps, weight, water, energy, mood, running, workout, dan historical association
 - Life Log untuk routine, kegiatan wajib, planned vs actual, dan aktivitas spontan
@@ -87,7 +86,6 @@ Karena seluruh aplikasi bersifat static dan dependency-free, setiap commit immut
 ## Automation v2
 
 - Tidak ada input XP manual.
-- Presensi memberi +15 XP dan tercatat sekali per hari.
 - Pomodoro focus yang selesai otomatis menjadi activity lengkap dengan waktu mulai.
 - Study Intelligence memakai sesi bertimestamp 90 hari terakhir untuk memeringkat blok waktu 2-jam berdasarkan durasi rata-rata, completion, dan jumlah bukti sesi.
 - Rekomendasi baru muncul setelah minimal 3 sesi bertimestamp agar tidak mengarang pola dari data terlalu sedikit.
@@ -277,7 +275,7 @@ Kartu Today dapat:
 - dipindah urutannya
 - dikembalikan ke default
 
-Widget yang dapat dikustomisasi meliputi Smart Planner, Daily Timeline, priorities, task, Life Plan, Universal Timer, presensi, Pomodoro, rekomendasi belajar, weekly target, goals, dan quick note.
+Widget yang dapat dikustomisasi meliputi Smart Planner, Daily Timeline, priorities, Life Plan, Universal Timer, Pomodoro, rekomendasi belajar, weekly target, goals, dan quick note opsional.
 
 ### Daily Timeline + Auto Replanning
 
@@ -355,3 +353,21 @@ Dashboard menghitung:
 Running Settings menyimpan Max HR, Resting HR, dan weekly distance goal.
 
 Setiap Run otomatis membuat atau memperbarui **Health Activity** yang terhubung ke sesi tersebut dan menghasilkan XP. Run juga terintegrasi dengan Search, Health summary, Trash, Undo, Version History, dan cloud state.
+
+
+## Streamlined UI v16
+
+Desca OS dirapikan untuk mengurangi feature bloat tanpa menghapus data historis.
+
+Perubahan utama:
+- Presensi Harian dihapus dari UI, XP, Daily Score, Analytics, dan Weekly Review. Data presensi lama tetap dipertahankan untuk backward compatibility.
+- Daily Score sekarang memakai task completion + productive time. Jika tidak ada task pada hari tersebut, score memakai productive-time progress.
+- Achievements tidak lagi menjadi halaman tersendiri; milestone digabung ke Progress.
+- Progress dipindahkan ke Insights, sedangkan Life Log dipindahkan ke Life.
+- Today tidak lagi menampilkan daftar Today Tasks lengkap karena sudah ada Top Priorities dan halaman Tasks.
+- Quick Note disembunyikan dari default Today tetapi masih dapat diaktifkan melalui Customize.
+- Life Log tidak lagi menduplikasi Actual Timeline; Planned vs Actual tetap berada di Today → Daily Timeline.
+- Analytics menghapus Weekly Productive Time dan 30-Day Distribution yang tumpang tindih dengan grafik utama.
+- Weekly Review memakai Active Days alih-alih presensi.
+- Health menjadi ringkasan kesehatan umum; detail lari tetap berada di Running.
+- Automatic XP card di Settings dihapus dan diganti penjelasan singkat di Data & Privacy.

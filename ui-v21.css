@@ -1132,3 +1132,133 @@ html[data-theme=dark] .heat-cell.l4{background:#6b9cff!important}
   color:#fff!important;
   border:2px solid var(--app-surface)!important;
 }
+
+
+/* v23 — low-friction visual affordances */
+.category-label{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+.category-label i{
+  width:28px;
+  height:28px;
+  flex:0 0 28px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:var(--app-blue-soft);
+  color:var(--app-blue);
+  font-style:normal;
+}
+.category-label i svg{
+  width:16px;
+  height:16px;
+  display:block;
+}
+.category-label>span{
+  color:var(--app-text);
+  font-size:11px;
+  font-weight:680;
+}
+.goal-card .goal-top>.category-label+ b{
+  font-size:12px;
+  color:var(--app-text);
+}
+.dmath-platform-icon{
+  display:grid!important;
+  place-items:center!important;
+  width:34px!important;
+  height:34px!important;
+  flex:0 0 34px!important;
+  border-radius:10px!important;
+  background:var(--app-surface-2)!important;
+  color:var(--app-text-2)!important;
+  border:1px solid var(--app-border)!important;
+  font-size:0!important;
+}
+.dmath-platform-icon svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+.dmath-platform-icon.large{
+  width:42px!important;
+  height:42px!important;
+  flex-basis:42px!important;
+  border-radius:12px!important;
+}
+.dmath-platform-icon.large svg{
+  width:21px;
+  height:21px;
+}
+.dmath-platform.instagram .dmath-platform-icon{color:#c13584!important;background:#fff5fb!important}
+.dmath-platform.youtube .dmath-platform-icon{color:#ff0033!important;background:#fff4f5!important}
+.dmath-platform.facebook .dmath-platform-icon{color:#1877f2!important;background:#f2f7ff!important}
+.dmath-platform.website .dmath-platform-icon{color:var(--app-blue)!important;background:var(--app-blue-soft)!important}
+html[data-theme=dark] .dmath-platform.instagram .dmath-platform-icon,
+html[data-theme=dark] .dmath-platform.youtube .dmath-platform-icon,
+html[data-theme=dark] .dmath-platform.facebook .dmath-platform-icon{background:var(--app-surface-2)!important}
+
+.smart-form-summary{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+  padding:12px;
+  border:1px solid var(--app-border);
+  border-radius:12px;
+  background:var(--app-surface-2);
+}
+.smart-form-summary>div{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.smart-form-summary b{
+  color:var(--app-text);
+  font-size:13px;
+  font-weight:760;
+}
+.smart-form-summary small{
+  margin-top:3px;
+  color:var(--app-muted);
+  font-size:10px;
+}
+.smart-optional{
+  border:1px dashed var(--app-border-strong);
+  border-radius:10px;
+  background:var(--app-surface-2);
+}
+.smart-optional summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 11px;
+  cursor:pointer;
+  color:var(--app-text-2);
+  font-size:10px;
+  font-weight:700;
+  list-style:none;
+}
+.smart-optional summary::-webkit-details-marker{display:none}
+.smart-optional summary:after{
+  content:"+";
+  color:var(--app-muted);
+  font-size:14px;
+  font-weight:500;
+}
+.smart-optional[open] summary:after{content:"−"}
+.smart-optional summary span{
+  margin-left:auto;
+  color:var(--app-muted);
+  font-size:9px;
+  font-weight:600;
+}
+.smart-optional textarea{
+  margin:0 10px 10px;
+  width:calc(100% - 20px)!important;
+  background:var(--app-surface)!important;
+}

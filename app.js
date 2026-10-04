@@ -421,33 +421,72 @@ function netWorthValue(x){if(!x)return 0;const portfolio=S.investments.reduce((n
 
 
 // ===== Google Workspace integration =====
-const GOOGLE_SCOPES=[
+const GOOGLE_CORE_SCOPES=[
   'https://www.googleapis.com/auth/calendar.events',
-  'https://www.googleapis.com/auth/tasks',
-  'https://www.googleapis.com/auth/drive.appdata'
+  'https://www.googleapis.com/auth/tasks'
 ].join(' ');
-let G={token:null,expiresAt:0,taskLists:[],busy:false,error:null,autoTried:false};
+const GOOGLE_DRIVE_SCOPE='https://www.googleapis.com/auth/drive.appdata';
+let G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:false};
 function googleReady(){return !!G.token&&Date.now()<G.expiresAt-60000}
-function loadGoogleIdentity(){return new Promise((resolve,reject)=>{if(window.google?.accounts?.oauth2)return resolve();const old=document.querySelector('script[data-desca-google-gis]');if(old){old.addEventListener('load',resolve,{once:true});old.addEventListener('error',()=>reject(new Error('Google Identity Services gagal dimuat')),{once:true});return}const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.defer=true;s.dataset.descaGoogleGis='1';s.onload=resolve;s.onerror=()=>reject(new Error('Google Identity Services gagal dimuat'));document.head.appendChild(s)})}
-async function connectGoogle(){const input=$('#googleClientId'),clientId=(input?.value.trim()||S.settings.googleClientId||'').trim();if(!clientId||!clientId.endsWith('.apps.googleusercontent.com')){route='settings';location.hash='settings';render();toast('Isi Google OAuth Client ID sekali, lalu hubungkan Google');return}S.settings.googleClientId=clientId;save();try{await loadGoogleIdentity();const token=await new Promise((resolve,reject)=>{const tc=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_SCOPES,include_granted_scopes:true,callback:r=>r.error?reject(new Error(r.error_description||r.error)):resolve(r)});tc.requestAccessToken({prompt:''})});G.token=token.access_token;G.expiresAt=Date.now()+(+token.expires_in||3600)*1000;G.error=null;toast('Google terhubung');await googleSyncAll()}catch(e){G.error=e.message;toast('Google connect gagal: '+e.message);render()}}
+function loadGoogleIdentity(){return new Promise((resolve,reject)=>{if(window.google?.accounts?.oauth2)return resolve();const old=document.querySelector('script[data-desca-google-gis]');if(old){if(window.google?.accounts?.oauth2)return resolve();old.addEventListener('load',resolve,{once:true});old.addEventListener('error',()=>reject(new Error('Google Identity Services gagal dimuat')),{once:true});return}const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.defer=true;s.dataset.descaGoogleGis='1';s.onload=resolve;s.onerror=()=>reject(new Error('Google Identity Services gagal dimuat'));document.head.appendChild(s)})}
+function googleFriendlyError(err){
+  const raw=String(err?.message||err?.type||err||'Unknown Google error'),m=raw.toLowerCase(),origin=location.origin;
+  if(m.includes('origin_mismatch')||m.includes('not a valid origin')||m.includes('valid origin'))return'Google OAuth menolak origin situs. Tambahkan '+origin+' ke Authorized JavaScript origins pada OAuth Web Client.';
+  if(m.includes('popup_failed_to_open'))return'Popup Google diblokir browser. Izinkan pop-up untuk '+origin+' lalu coba lagi.';
+  if(m.includes('popup_closed'))return'Popup Google ditutup sebelum proses selesai.';
+  if(m.includes('access_denied'))return'Akses Google ditolak. Jika OAuth masih mode Testing, pastikan akun ini terdaftar sebagai Test user.';
+  if(m.includes('invalid_client')||m.includes('invalid client'))return'Google OAuth Client ID tidak valid atau bukan tipe Web application.';
+  if(m.includes('localstorage')||m.includes('third-party')||m.includes('third party'))return'Browser memblokir storage/cookie yang dibutuhkan Google. Izinkan cookie/storage untuk accounts.google.com.';
+  if(m.includes('insufficient authentication scopes')||m.includes('insufficient permission'))return'Izin Google belum lengkap. Hubungkan ulang dan setujui permission yang diminta.';
+  if(m.includes('has not been used in project')||m.includes('is disabled'))return'Google API terkait belum diaktifkan pada Google Cloud project.';
+  return raw
+}
+function applyGoogleToken(token){
+  if(!token?.access_token)throw new Error('Google tidak mengembalikan access token');
+  G.token=token.access_token;
+  G.expiresAt=Date.now()+(+token.expires_in||3600)*1000;
+  G.scopes=token.scope||G.scopes||'';
+  G.error=null
+}
+async function requestGoogleToken({clientId=S.settings.googleClientId,scopes=GOOGLE_CORE_SCOPES,interactive=false}={}){
+  await loadGoogleIdentity();
+  return new Promise((resolve,reject)=>{
+    let settled=false;
+    const fail=e=>{if(settled)return;settled=true;reject(new Error(googleFriendlyError(e)))};
+    const tc=google.accounts.oauth2.initTokenClient({
+      client_id:clientId,
+      scope:scopes,
+      include_granted_scopes:true,
+      callback:r=>{if(settled)return;if(r?.error)return fail(r.error_description||r.error);settled=true;resolve(r)},
+      error_callback:e=>fail(e?.type||e)
+    });
+    try{tc.requestAccessToken({prompt:interactive?'consent':''})}catch(e){fail(e)}
+  })
+}
+async function connectGoogle(){
+  const input=$('#googleClientId'),clientId=(input?.value.trim()||S.settings.googleClientId||'').trim();
+  if(!clientId||!clientId.endsWith('.apps.googleusercontent.com')){
+    route='settings';location.hash='settings';render();toast('Isi Google OAuth Client ID tipe Web application terlebih dahulu');return
+  }
+  S.settings.googleClientId=clientId;save();
+  try{
+    const token=await requestGoogleToken({clientId,scopes:GOOGLE_CORE_SCOPES,interactive:true});
+    applyGoogleToken(token);
+    toast('Google berhasil terhubung');
+    render();
+    await googleSyncAll()
+  }catch(e){
+    G.error=googleFriendlyError(e);
+    toast('Google connect gagal: '+G.error);
+    render()
+  }
+}
 async function autoReconnectGoogle(){
   if(G.autoTried||googleReady()||!S.settings.googleClientId)return false;
   G.autoTried=true;
   try{
-    await loadGoogleIdentity();
-    const token=await new Promise((resolve,reject)=>{
-      const tc=google.accounts.oauth2.initTokenClient({
-        client_id:S.settings.googleClientId,
-        scope:GOOGLE_SCOPES,
-        include_granted_scopes:true,
-        callback:r=>r.error?reject(new Error(r.error_description||r.error)):resolve(r)
-      });
-      tc.requestAccessToken({prompt:''})
-    });
-    if(!token?.access_token)return false;
-    G.token=token.access_token;
-    G.expiresAt=Date.now()+(+token.expires_in||3600)*1000;
-    G.error=null;
+    const token=await requestGoogleToken({clientId:S.settings.googleClientId,scopes:GOOGLE_CORE_SCOPES,interactive:false});
+    applyGoogleToken(token);
     googleFetchTaskLists().catch(()=>{});
     const last=S.settings.googleLastSync?Date.parse(S.settings.googleLastSync):0;
     if(!last||Date.now()-last>5*60*1000)setTimeout(()=>googleSyncAll({silent:true}),0);
@@ -457,7 +496,14 @@ async function autoReconnectGoogle(){
     return false
   }
 }
-function disconnectGoogle(){if(G.token&&window.google?.accounts?.oauth2)try{google.accounts.oauth2.revoke(G.token,()=>{})}catch{}G={token:null,expiresAt:0,taskLists:[],busy:false,error:null,autoTried:true};toast('Google diputus dari sesi ini');render()}
+function googleTokenHasScope(scope){return String(G.scopes||'').split(/\s+/).includes(scope)}
+async function ensureGoogleDriveAccess(){
+  if(googleReady()&&googleTokenHasScope(GOOGLE_DRIVE_SCOPE))return true;
+  const token=await requestGoogleToken({clientId:S.settings.googleClientId,scopes:GOOGLE_CORE_SCOPES+' '+GOOGLE_DRIVE_SCOPE,interactive:true});
+  applyGoogleToken(token);
+  return true
+}
+function disconnectGoogle(){if(G.token&&window.google?.accounts?.oauth2)try{google.accounts.oauth2.revoke(G.token,()=>{})}catch{}G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:true};toast('Google diputus dari sesi ini');render()}
 async function googleFetch(url,opts={}){if(!googleReady())throw new Error('Google session belum aktif');const headers={Authorization:'Bearer '+G.token,...(opts.headers||{})};const r=await fetch(url,{...opts,headers});let body=null;const ct=r.headers.get('content-type')||'';if(ct.includes('application/json')){try{body=await r.json()}catch{}}else{try{body=await r.text()}catch{}}if(!r.ok){const msg=body?.error?.message||body?.error_description||('Google API '+r.status);throw new Error(msg)}return body}
 function googleEventLocal(e){const allDay=!!e.start?.date,startRaw=e.start?.dateTime||e.start?.date||'',endRaw=e.end?.dateTime||e.end?.date||'',startTs=e.start?.dateTime?Date.parse(e.start.dateTime):null,endTs=e.end?.dateTime?Date.parse(e.end.dateTime):null,date=allDay?(e.start?.date||''):(startTs?dateFromTs(startTs):''),time=allDay?'':(startTs?timeFromTs(startTs):''),duration=startTs&&endTs?Math.max(1,Math.round((endTs-startTs)/60000)):0;return{id:e.id,title:e.summary||'(Tanpa judul)',description:e.description||'',date,time,duration,allDay,status:e.status||'confirmed',htmlLink:e.htmlLink||'',updated:e.updated||'',descaTaskId:e.extendedProperties?.private?.descaTaskId||''}}
 async function pullGoogleCalendar(){let url='https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=2500&timeMin='+encodeURIComponent(new Date(Date.now()-30*86400000).toISOString())+'&timeMax='+encodeURIComponent(new Date(Date.now()+180*86400000).toISOString())+'&fields='+encodeURIComponent('items(id,summary,description,start,end,status,htmlLink,updated,extendedProperties),nextPageToken'),items=[];while(url){const data=await googleFetch(url);items.push(...(data.items||[]));url=data.nextPageToken?'https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=2500&timeMin='+encodeURIComponent(new Date(Date.now()-30*86400000).toISOString())+'&timeMax='+encodeURIComponent(new Date(Date.now()+180*86400000).toISOString())+'&pageToken='+encodeURIComponent(data.nextPageToken)+'&fields='+encodeURIComponent('items(id,summary,description,start,end,status,htmlLink,updated,extendedProperties),nextPageToken'):null}S.googleEvents=items.filter(e=>e.status!=='cancelled').map(googleEventLocal)}
@@ -469,7 +515,29 @@ function calendarEventBody(t){const desc=(t.notes||'')+'\n\nSynced from Desca OS
 async function upsertGoogleCalendarTask(t){if(!googleReady()||!t.googleCalendarSync||!t.date)return;const base='https://www.googleapis.com/calendar/v3/calendars/primary/events';if(t.googleCalendarEventId){await googleFetch(base+'/'+encodeURIComponent(t.googleCalendarEventId),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(calendarEventBody(t))})}else{const r=await googleFetch(base,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(calendarEventBody(t))});t.googleCalendarEventId=r.id}}
 async function pushGoogleLinkedTasks(){for(const t of S.tasks){if(t.googleTaskSync)await upsertGoogleTask(t);if(t.googleCalendarSync)await upsertGoogleCalendarTask(t)}}async function syncTaskGoogle(t){if(!googleReady()||!t)return;try{if(t.googleTaskSync)await upsertGoogleTask(t);if(t.googleCalendarSync)await upsertGoogleCalendarTask(t);save()}catch(e){G.error=e.message;toast('Google task sync gagal: '+e.message)}}
 
-async function googleSyncAll({silent=false}={}){if(!googleReady()){if(!silent)toast('Hubungkan Google dulu');return}if(G.busy)return;G.busy=true;G.error=null;render();try{await pullGoogleCalendar();await pullGoogleTasks();await pushGoogleLinkedTasks();await pullGoogleCalendar();S.settings.googleLastSync=new Date().toISOString();save('Google sync');if(route==='today'&&S.settings.automationAutoPlan){reconcileAutoScheduledWithGoogle(today());maybeAutoPlanToday()}if(!silent)toast('Google sync selesai')}catch(e){G.error=e.message;if(!silent)toast('Google sync gagal: '+e.message)}finally{G.busy=false;render()}}
+async function googleSyncAll({silent=false}={}){
+  if(!googleReady()){if(!silent)toast('Hubungkan Google dulu');return}
+  if(G.busy)return;
+  G.busy=true;G.error=null;render();
+  const errors=[];let calendarOk=false,tasksOk=false;
+  try{
+    try{await pullGoogleCalendar();calendarOk=true}catch(e){errors.push('Calendar: '+googleFriendlyError(e))}
+    try{await pullGoogleTasks();tasksOk=true}catch(e){errors.push('Tasks: '+googleFriendlyError(e))}
+    try{await pushGoogleLinkedTasks()}catch(e){errors.push('Push: '+googleFriendlyError(e))}
+    if(calendarOk){try{await pullGoogleCalendar()}catch(e){errors.push('Calendar refresh: '+googleFriendlyError(e))}}
+    if(calendarOk||tasksOk){
+      S.settings.googleLastSync=new Date().toISOString();
+      save('Google sync');
+      if(route==='today'&&S.settings.automationAutoPlan){reconcileAutoScheduledWithGoogle(today());maybeAutoPlanToday()}
+    }
+    if(errors.length){
+      G.error=errors.join(' • ');
+      if(!silent)toast((calendarOk?'Google terhubung, sebagian sync gagal: ':'Google sync gagal: ')+errors[0])
+    }else if(!silent)toast('Google Calendar & Tasks tersinkron')
+  }finally{
+    G.busy=false;render()
+  }
+}
 function googleStatusLabel(){return googleReady()?(G.busy?'SYNCING':'CONNECTED'):'NOT CONNECTED'}
 function googleTaskListOptions(){return G.taskLists.length?G.taskLists.map(x=>'<option value="'+esc(x.id)+'" '+(S.settings.googleTaskListId===x.id?'selected':'')+'>'+esc(x.title||'Untitled')+'</option>').join(''):'<option value="'+esc(S.settings.googleTaskListId||'')+'">'+esc(S.settings.googleTaskListTitle||'Connect Google first')+'</option>'}
 function googleCalendarAction(){return googleReady()?'<button class="btn btn-secondary" data-act="googleSync">↻ Sync Google Calendar</button>':'<button class="btn btn-secondary" data-act="googleConnect">Hubungkan Google Calendar</button>'}
@@ -478,8 +546,8 @@ function queueGoogleCalendarRefresh(){if(!googleReady()||G.busy)return;const las
 function importCalendarSnapshotData(pack){const rows=Array.isArray(pack)?pack:Array.isArray(pack?.events)?pack.events:null;if(!rows)throw new Error('Format snapshot tidak valid');S.googleEvents=rows.map(e=>({id:String(e.id||uid('gcal')),title:String(e.title||e.summary||'(Tanpa judul)'),description:String(e.description||''),date:String(e.date||''),time:String(e.time||''),duration:Math.max(0,+e.duration||0),allDay:!!e.allDay,status:e.status||'confirmed',htmlLink:String(e.htmlLink||e.url||''),updated:e.updated||'',descaTaskId:e.descaTaskId||''})).filter(e=>e.date);S.settings.googleLastSync=new Date().toISOString();save('Import Google Calendar snapshot');toast(S.googleEvents.length+' event Google Calendar diimpor');render()}
 function importGoogleEvent(id){const e=S.googleEvents.find(x=>x.id===id);if(!e)return;if(S.tasks.some(t=>t.googleCalendarEventId===e.id)){toast('Event ini sudah terhubung ke task');return}const t={id:uid('t'),title:e.title,date:e.date||today(),deadline:e.date||'',status:'planned',priority:'medium',category:'personal',goalId:null,estimate:e.duration||60,startTime:e.time||'',notes:e.description||'',inbox:false,subtasks:[],tags:['google-calendar'],recurrence:'none',dependsOn:null,googleCalendarSync:true,googleCalendarEventId:e.id};S.tasks.push(t);save();close();toast('Google Calendar event diimpor sebagai task');render()}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-async function backupToGoogleDrive(){if(!googleReady()){toast('Hubungkan Google dulu');return}try{const existing=await googleDriveBackupFile(),payload=JSON.stringify({app:'Desca OS',version:1,exportedAt:new Date().toISOString(),state:S});if(existing){await googleFetch('https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(existing.id)+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:payload})}else{const fd=new FormData();fd.append('metadata',new Blob([JSON.stringify({name:'desca-os-backup.json',parents:['appDataFolder']})],{type:'application/json'}));fd.append('file',new Blob([payload],{type:'application/json'}));await googleFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',body:fd})}toast('Backup tersimpan di Google Drive app data')}catch(e){toast('Drive backup gagal: '+e.message)}}
-async function restoreFromGoogleDrive(){if(!googleReady()){toast('Hubungkan Google dulu');return}if(!confirm('Ganti data lokal dengan backup Google Drive?'))return;try{const existing=await googleDriveBackupFile();if(!existing){toast('Belum ada backup Google Drive');return}const raw=await googleFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(existing.id)+'?alt=media'),pack=typeof raw==='string'?JSON.parse(raw):raw;if(!pack?.state||!Array.isArray(pack.state.tasks))throw new Error('Format backup tidak valid');localStorage.setItem(K,JSON.stringify(pack.state));toast('Backup dipulihkan. Memuat ulang...');location.reload()}catch(e){toast('Restore gagal: '+e.message)}}
+async function backupToGoogleDrive(){if(!googleReady()){toast('Hubungkan Google dulu');return}try{await ensureGoogleDriveAccess();const existing=await googleDriveBackupFile(),payload=JSON.stringify({app:'Desca OS',version:1,exportedAt:new Date().toISOString(),state:S});if(existing){await googleFetch('https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(existing.id)+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:payload})}else{const fd=new FormData();fd.append('metadata',new Blob([JSON.stringify({name:'desca-os-backup.json',parents:['appDataFolder']})],{type:'application/json'}));fd.append('file',new Blob([payload],{type:'application/json'}));await googleFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',body:fd})}toast('Backup tersimpan di Google Drive app data')}catch(e){toast('Drive backup gagal: '+e.message)}}
+async function restoreFromGoogleDrive(){if(!googleReady()){toast('Hubungkan Google dulu');return}if(!confirm('Ganti data lokal dengan backup Google Drive?'))return;try{await ensureGoogleDriveAccess();const existing=await googleDriveBackupFile();if(!existing){toast('Belum ada backup Google Drive');return}const raw=await googleFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(existing.id)+'?alt=media'),pack=typeof raw==='string'?JSON.parse(raw):raw;if(!pack?.state||!Array.isArray(pack.state.tasks))throw new Error('Format backup tidak valid');localStorage.setItem(K,JSON.stringify(pack.state));toast('Backup dipulihkan. Memuat ulang...');location.reload()}catch(e){toast('Restore gagal: '+e.message)}}
 function cloudConfigured(){return /^https:\/\//.test(S.settings.supabaseUrl||'')&&!!S.settings.supabaseAnonKey}
 async function cloudRequest(path,opts={}){const url=(S.settings.supabaseUrl||'').replace(/\/$/,'')+path,headers={'apikey':S.settings.supabaseAnonKey,'Content-Type':'application/json',...(opts.headers||{})};if(cloudSession?.access_token)headers.Authorization='Bearer '+cloudSession.access_token;const r=await fetch(url,{...opts,headers});let body=null;try{body=await r.json()}catch{}if(!r.ok)throw new Error(body?.msg||body?.message||body?.error_description||('Cloud '+r.status));return body}
 async function cloudLogin(email,password,signup=false){if(!cloudConfigured()){toast('Isi Supabase URL dan anon key dulu');return}try{const path=signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password',body=await cloudRequest(path,{method:'POST',body:JSON.stringify({email,password})});if(body.access_token){cloudSession=body;sessionStorage.setItem(CLOUD_SESSION_KEY,JSON.stringify(body));toast('Cloud login berhasil');await cloudAutoReconcile();render()}else toast(signup?'Akun dibuat. Cek email jika konfirmasi diaktifkan.':'Login belum berhasil')}catch(e){toast(e.message)}}

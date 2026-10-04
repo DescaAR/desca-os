@@ -3,6 +3,9 @@ const K='desca-os-state-v1',$=(q,r=document)=>r.querySelector(q),$$=(q,r=documen
 const jakartaDate=()=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+'-'+o.month+'-'+o.day},today=()=>jakartaDate();
 const iso=d=>{const x=new Date(d.getTime()-d.getTimezoneOffset()*60000);return x.toISOString().slice(0,10)},add=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return iso(x)},fmt=(d,o={weekday:'long',day:'numeric',month:'long',year:'numeric'})=>new Intl.DateTimeFormat('id-ID',o).format(new Date(d+'T12:00:00')),mins=n=>{n=Math.max(0,Math.round(+n||0));return n<60?n+'m':Math.floor(n/60)+'j'+(n%60?' '+n%60+'m':'')},esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),num=n=>new Intl.NumberFormat('id-ID').format(Math.round(+n||0)),money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(+n||0);
 const C={study:['Study','▣'],research:['Research','⌘'],project:['Projects','◇'],dmath:['DMath Learning','D'],quran:['Hafalan Al-Qur’an','Q'],health:['Health','♥'],english:['English','A'],personal:['Personal','○'],finance:['Finance','¤']};
+const DAY_NAMES=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const OBLIGATION_LABEL={mandatory:'Wajib',important:'Penting',optional:'Opsional'};
+const RHYTHM_LABEL={routine:'Rutin',nonroutine:'Non-rutin'};
 const DMATH_PRESETS={
   instagram:{metric:'Followers',contentLabel:'Posts / Reels',defaultFormat:'Carousel'},
   youtube:{metric:'Subscribers',contentLabel:'Videos / Shorts',defaultFormat:'Video'},

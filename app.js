@@ -340,7 +340,7 @@ function scheduleAutoManagedOnDay(t,d,busy,earliest){
   busy.push({s:start,e:start+dur,title:t.title,kind:'auto-task'});return start
 }
 function replanRemainingDay(silent=false){
-  const d=today(),analysis=dayLoadAnalysis(d),start=analysis.start,tasks=analysis.movable.slice().sort((a,b)=>(a.deadline||'9999-99-99').localeCompare(b.deadline||'9999-99-99')||priorityRank(b.priority)-priorityRank(a.priority)||(+a.estimate||60)-(+b.estimate||60)),busy=[...analysis.fixed],wasAuto=new Map(tasks.map(t=>[t.id,!!t.autoScheduled]));let scheduled=0,carried=0,unscheduled=0;
+  const d=today(),analysis=dayLoadAnalysis(d),start=analysis.start,tasks=analysis.movable.slice().sort((a,b)=>(a.deadline||'9999-99-99').localeCompare(b.deadline||'9999-99-99')||priorityRank(b.priority)-priorityRank(a.priority)||(+a.estimate||60)-(+b.estimate||60)),busy=[...analysis.fixed],futureBusy=new Map();let scheduled=0,carried=0,unscheduled=0;
   for(const t of tasks)if(t.autoScheduled){t.startTime='';t.autoScheduled=false}
   for(const t of tasks){
     const placed=scheduleAutoManagedOnDay(t,d,busy,start);
@@ -350,7 +350,11 @@ function replanRemainingDay(silent=false){
       let moved=false;
       for(let offset=1;offset<=3&&!moved;offset++){
         const nd=add(d,offset);if(t.deadline&&nd>t.deadline)break;
-        const nb=fixedBlocksForReplan(nd),ns=minutesFromHHMM(S.settings.plannerStart)||480;
+        if(!futureBusy.has(nd)){
+          const existing=calendarItems(nd,{includeRoutines:true}).filter(x=>x.time&&x.status!=='done').map(x=>({s:minutesFromHHMM(x.time),e:(minutesFromHHMM(x.time)||0)+Math.max(15,+x.duration||30),title:x.title,kind:x.kind})).filter(x=>x.s!==null);
+          futureBusy.set(nd,mergeBusyBlocks(existing))
+        }
+        const nb=futureBusy.get(nd),ns=minutesFromHHMM(S.settings.plannerStart)||480;
         if(scheduleAutoManagedOnDay(t,nd,nb,ns)!==null){t.autoDateManaged=true;carried++;moved=true}
       }
       if(moved)continue
@@ -433,7 +437,7 @@ function commandParse(raw){
     return{type:'task',title,date,time,estimate,category,priority}
   }
   if(/^(aku mau|saya mau|mau\s|besok ada|ingatkan|remind me|jadwalkan|schedule|kerjakan|perlu\s)/i.test(q)){
-    let cleaned=q.replace(/^(aku mau|saya mau|mau|ingatkan(?: aku)?|remind me(?: to)?|jadwalkan|schedule|kerjakan|perlu)\s+/i,'').trim(),parsed=parseSmartCapture(cleaned),category=inferCategory(parsed.title,'personal');
+    let cleaned=q.replace(/^(aku mau|saya mau|mau|ingatkan(?: aku)?|remind me(?: to)?|jadwalkan|schedule|kerjakan|perlu)\s+/i,'').replace(/^(besok|tomorrow)\s+ada\s+/i,'$1 ').trim(),parsed=parseSmartCapture(cleaned),category=inferCategory(parsed.title,'personal');
     if(/\bbimbingan\b/i.test(cleaned))category='research';
     return{type:'task',title:parsed.title,date:parsed.date||today(),time:parsed.time||'',estimate:parsed.duration||inferEstimate(parsed.title,category),category,priority:parsed.priority||inferPriority(parsed.title)}
   }

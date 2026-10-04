@@ -3899,3 +3899,272 @@ input,select,textarea{
     flex-direction:column;
   }
 }
+
+
+/* v44 — Research Intelligence and OS expansion */
+
+/* Research Library v2 */
+.reading-queue-card{min-width:0}
+.reading-queue-list{display:grid;gap:7px}
+.reading-queue-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 0;
+  border-top:1px solid var(--app-border);
+}
+.reading-queue-row:first-child{border-top:0}
+.reading-queue-row>strong{
+  width:28px;height:28px;display:grid;place-items:center;
+  border-radius:9px;background:var(--app-blue-soft);color:var(--app-blue);
+  font-size:10px;font-weight:850;
+}
+.reading-queue-row>div:nth-child(2){min-width:0}
+.reading-queue-row b{display:block;font-size:var(--type-small);line-height:1.35}
+.reading-queue-row small{display:block;margin:3px 0 6px;color:var(--app-muted);font-size:var(--type-micro)}
+.reading-queue-row .progress-track{height:5px}
+.paper-read-strip{margin-top:8px}
+.paper-read-strip>span{display:block;margin-bottom:5px;color:var(--app-muted);font-size:var(--type-micro);font-weight:650}
+.paper-read-strip .progress-track{height:5px}
+.paper-reader-head{align-items:center}
+.paper-reader-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 310px;
+  gap:14px;
+  min-height:min(76vh,850px);
+}
+.paper-reader-frame{
+  width:100%;height:76vh;min-height:580px;
+  border:1px solid var(--app-border);border-radius:14px;background:#fff;
+}
+.paper-reader-side{
+  display:flex;flex-direction:column;gap:12px;
+  padding:14px;border:1px solid var(--app-border);border-radius:14px;background:var(--app-surface-2);
+}
+.paper-reader-progress{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.paper-reader-progress input{padding:0!important}
+.paper-reader-progress b{font-size:var(--type-small);color:var(--app-blue)}
+.citation-stack{display:grid;gap:12px}
+.citation-box{
+  padding:13px;border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface-2);
+}
+.citation-box>div{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.citation-box>div>b{font-size:var(--type-small)}
+.citation-box pre{
+  margin:10px 0 0;padding:11px;overflow:auto;white-space:pre-wrap;word-break:break-word;
+  border-radius:9px;background:var(--app-surface);color:var(--app-text-2);
+  font:500 11px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+
+/* Knowledge graph */
+.knowledge-graph-card{margin-top:16px;overflow:hidden}
+.knowledge-graph{
+  width:100%;min-height:280px;
+  border:1px solid var(--app-border);border-radius:14px;background:var(--app-surface-2);
+}
+.kg-edges line{stroke:var(--app-border-strong);stroke-width:1.3}
+.kg-node circle{stroke-width:2}
+.kg-project circle{fill:color-mix(in srgb,var(--app-blue) 10%,var(--app-surface));stroke:var(--app-blue)}
+.kg-paper circle{fill:color-mix(in srgb,var(--app-green) 9%,var(--app-surface));stroke:var(--app-green)}
+.kg-note circle{fill:color-mix(in srgb,var(--app-amber) 10%,var(--app-surface));stroke:var(--app-amber)}
+.kg-node text{fill:var(--app-text-2);font-size:9px;font-family:Inter,"Segoe UI",sans-serif}
+.kg-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px}
+.kg-legend span{display:inline-flex;align-items:center;gap:6px;color:var(--app-muted);font-size:var(--type-micro)}
+.kg-legend span:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--app-blue)}
+.kg-legend .paper:before{background:var(--app-green)}
+.kg-legend .note:before{background:var(--app-amber)}
+
+/* Project health + goal forecasting */
+.project-health-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px;
+}
+.project-health-strip>div{
+  padding:8px 9px;border:1px solid var(--app-border);border-radius:9px;background:var(--app-surface-2);
+}
+.project-health-strip span{display:block;color:var(--app-muted);font-size:9px}
+.project-health-strip b{display:block;margin-top:2px;font-size:11px;color:var(--app-text)}
+.goal-forecast,
+.goal-forecast-detail{margin-top:8px;color:var(--app-muted);font-size:var(--type-micro);line-height:1.45}
+.goal-forecast-detail{
+  display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:8px;align-items:center;
+  padding:9px 10px;border:1px solid var(--app-border);border-radius:10px;background:var(--app-surface-2);
+}
+.goal-forecast-detail>span{font-size:8px;font-weight:850;letter-spacing:.12em;color:var(--app-muted)}
+.goal-forecast-detail>b{font-size:10px}
+.goal-forecast-detail>small{font-size:10px;color:var(--app-muted)}
+.goal-forecast-detail.good{border-color:color-mix(in srgb,var(--app-green) 20%,var(--app-border))}
+.goal-forecast-detail.good>b{color:var(--app-green)}
+.goal-forecast-detail.risk{border-color:color-mix(in srgb,var(--app-red) 22%,var(--app-border))}
+.goal-forecast-detail.risk>b{color:var(--app-red)}
+
+/* Hall of Fame + Season History */
+.hall-of-fame-card{
+  margin-top:16px;overflow:hidden;
+  background:
+    radial-gradient(circle at 0 0,color-mix(in srgb,var(--app-blue) 9%,transparent),transparent 20rem),
+    var(--app-surface)!important;
+}
+.hall-grid{display:grid;grid-template-columns:1.35fr repeat(5,minmax(0,1fr));gap:8px}
+.hall-grid>div{
+  min-width:0;padding:12px;border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface-2);
+}
+.hall-grid span,.hall-grid small{display:block;color:var(--app-muted);font-size:9px}
+.hall-grid b{display:block;margin:4px 0;color:var(--app-text);font-size:13px;line-height:1.25}
+.hall-main{
+  position:relative;
+  background:linear-gradient(135deg,var(--app-blue-soft),var(--app-surface-2))!important;
+}
+.hall-crest{
+  width:38px;height:38px;display:grid;place-items:center;margin-bottom:8px;
+  border-radius:12px;background:var(--app-blue);color:#fff;font-size:18px;
+}
+.season-history-grid{display:grid;gap:7px}
+.season-history-item{
+  --rank-accent:var(--app-blue);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;
+  padding:9px 10px;border:1px solid var(--app-border);border-radius:10px;background:var(--app-surface-2);
+}
+.season-history-item>div span{display:block;color:var(--app-muted);font-size:9px}
+.season-history-item>div b{display:block;margin-top:1px;color:var(--rank-accent);font-size:11px}
+.season-history-item>strong{font-size:16px;color:var(--rank-accent)}
+.season-history-item>small{font-size:9px;color:var(--app-muted)}
+.season-history-item .progress-track{grid-column:1/-1;height:4px}
+.season-history-item .progress-track span{background:var(--rank-accent)!important}
+
+/* Universal timeline */
+.timeline-filter-bar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.timeline-filter-bar .mini-btn.active{background:var(--app-blue-soft)!important;color:var(--app-blue)!important;border-color:transparent!important}
+.universal-timeline-card{padding-top:4px!important}
+.universal-day{
+  display:grid;grid-template-columns:145px minmax(0,1fr);gap:14px;padding:14px 0;border-top:1px solid var(--app-border);
+}
+.universal-day:first-child{border-top:0}
+.universal-date{padding-top:4px}
+.universal-date b{display:block;font-size:var(--type-caption)}
+.universal-date span{display:block;margin-top:3px;color:var(--app-muted);font-size:9px}
+.universal-events{display:grid;gap:7px}
+.universal-event{
+  width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;
+  padding:10px 11px;border:1px solid var(--app-border);border-radius:11px;background:var(--app-surface-2);
+  text-align:left;color:inherit;cursor:pointer;
+}
+.universal-event:hover{border-color:var(--app-border-strong)}
+.universal-event-icon{
+  width:31px;height:31px;display:grid;place-items:center;border-radius:9px;background:var(--app-surface);color:var(--app-blue);
+  font-size:9px;font-weight:850;
+}
+.universal-event-icon svg{width:15px;height:15px}
+.universal-event b{display:block;font-size:var(--type-caption)}
+.universal-event small{display:block;margin-top:2px;color:var(--app-muted);font-size:9.5px}
+
+/* Recovery guard + morning command */
+.recovery-guard-card{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-bottom:16px;padding:13px 15px;border:1px solid color-mix(in srgb,var(--app-amber) 28%,var(--app-border));
+  border-radius:14px;background:color-mix(in srgb,var(--app-amber) 6%,var(--app-surface));
+}
+.recovery-guard-card.protected{border-color:color-mix(in srgb,var(--app-green) 24%,var(--app-border));background:color-mix(in srgb,var(--app-green) 5%,var(--app-surface))}
+.recovery-guard-card span{display:block;color:var(--app-amber);font-size:8px;font-weight:850;letter-spacing:.12em}
+.recovery-guard-card.protected span{color:var(--app-green)}
+.recovery-guard-card b{display:block;margin-top:2px;font-size:12px}
+.recovery-guard-card p{margin:3px 0 0;color:var(--app-muted);font-size:10px;line-height:1.45}
+.morning-command-overlay{
+  position:fixed;inset:0;z-index:9998;display:grid;place-items:center;padding:20px;
+  background:rgba(5,10,20,.66);backdrop-filter:blur(8px);
+}
+.morning-command-panel{
+  --rank-accent:var(--app-blue);
+  width:min(680px,100%);padding:28px;border:1px solid color-mix(in srgb,var(--rank-accent) 30%,var(--app-border));
+  border-radius:24px;background:
+    radial-gradient(circle at 90% 0%,color-mix(in srgb,var(--rank-accent) 15%,transparent),transparent 18rem),
+    var(--app-surface);
+  box-shadow:0 28px 90px rgba(0,0,0,.28);
+}
+.morning-command-panel h1{margin:5px 0 16px;font-size:28px;letter-spacing:-.04em}
+.morning-rank{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.morning-rank>span{
+  width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:color-mix(in srgb,var(--rank-accent) 12%,var(--app-surface));
+  color:var(--rank-accent);font-size:20px
+}
+.morning-rank small,.morning-rank b,.morning-rank em{display:block}
+.morning-rank small{font-size:9px;color:var(--app-muted)}
+.morning-rank b{font-size:14px;color:var(--rank-accent)}
+.morning-rank em{font-size:9px;color:var(--app-muted);font-style:normal}
+.morning-command-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.morning-command-grid>div{padding:11px;border:1px solid var(--app-border);border-radius:11px;background:var(--app-surface-2)}
+.morning-command-grid span,.morning-command-grid small{display:block;color:var(--app-muted);font-size:9px}
+.morning-command-grid b{display:block;margin:3px 0;font-size:11px;line-height:1.3}
+.morning-recovery-note{
+  margin-bottom:14px;padding:10px 11px;border-radius:10px;background:color-mix(in srgb,var(--app-amber) 7%,var(--app-surface-2));
+  color:var(--app-text-2);font-size:10px;
+}
+
+/* Document Vault */
+.vault-info{margin-bottom:14px}
+.vault-info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.vault-info-grid span{
+  display:grid;place-items:center;min-height:44px;padding:9px;border:1px solid var(--app-border);border-radius:10px;
+  background:var(--app-surface-2);color:var(--app-text-2);font-size:10px;font-weight:700;text-align:center;
+}
+.vault-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.vault-card{
+  display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;
+  padding:13px;border:1px solid var(--app-border);border-radius:14px;background:var(--app-surface);
+  box-shadow:var(--app-shadow-sm);
+}
+.vault-file-mark{
+  width:46px;height:50px;display:grid;place-items:center;border-radius:11px;background:var(--app-blue-soft);
+  color:var(--app-blue);font-size:18px;font-weight:850;
+}
+.vault-main{min-width:0}
+.vault-title-row{display:flex;align-items:center;gap:8px}
+.vault-title-row h3{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.vault-main p{margin:4px 0;color:var(--app-muted);font-size:9.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vault-meta{display:flex;gap:6px;flex-wrap:wrap}
+.vault-meta span{
+  padding:3px 6px;border-radius:999px;background:var(--app-surface-2);color:var(--app-muted);font-size:8.5px;font-weight:700;
+}
+.vault-meta span.green{background:color-mix(in srgb,var(--app-green) 8%,var(--app-surface));color:var(--app-green)}
+.vault-meta span.warning{background:color-mix(in srgb,var(--app-amber) 9%,var(--app-surface));color:var(--app-amber)}
+.vault-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+
+/* Google file sync indicators */
+.paper-row .paper-row-actions{min-width:94px}
+
+/* Search becomes true workspace search */
+.search-results{max-height:min(62vh,620px);overflow:auto}
+
+/* Responsive */
+@media(max-width:1100px){
+  .hall-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hall-main{grid-column:span 2}
+  .vault-grid{grid-template-columns:1fr}
+}
+@media(max-width:860px){
+  .paper-reader-layout{grid-template-columns:1fr}
+  .paper-reader-frame{height:60vh;min-height:460px}
+  .morning-command-grid{grid-template-columns:repeat(2,1fr)}
+  .vault-info-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:620px){
+  .reading-queue-row{grid-template-columns:auto minmax(0,1fr)}
+  .reading-queue-row>.button-row{grid-column:2}
+  .project-health-strip{grid-template-columns:1fr 1fr 1fr}
+  .goal-forecast-detail{grid-template-columns:1fr}
+  .hall-grid{grid-template-columns:1fr 1fr}
+  .hall-main{grid-column:1/-1}
+  .universal-day{grid-template-columns:1fr}
+  .recovery-guard-card{align-items:flex-start;flex-direction:column}
+  .recovery-guard-card .btn{width:100%}
+  .morning-command-panel{padding:20px}
+  .morning-command-panel h1{font-size:24px}
+  .morning-command-grid{grid-template-columns:1fr 1fr}
+  .vault-card{grid-template-columns:auto minmax(0,1fr)}
+  .vault-actions{grid-column:1/-1;flex-direction:row;align-items:center;flex-wrap:wrap}
+}
+@media(max-width:430px){
+  .hall-grid{grid-template-columns:1fr}
+  .morning-command-grid{grid-template-columns:1fr}
+  .vault-info-grid{grid-template-columns:1fr 1fr}
+}

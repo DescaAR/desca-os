@@ -1919,7 +1919,7 @@ function parseSmartCapture(raw){
   const take=(match,nextDate)=>{if(!match||date)return false;date=nextDate||'';if(date)title=title.replace(match[0],' ').trim();return!!date};
 
   // Explicit Indonesian calendar dates: 12/10/2026, 12-10, 12 Oktober 2026.
-  let m=title.match(/\b(?:tanggal|tgl\.?)?\s*(0?[1-9]|[12]\d|3[01])[\/\-](0?[1-9]|1[0-2])(?:[\/\-](\d{4}))\b/i);
+  let m=title.match(/\b(?:tanggal|tgl\.?)?\s*(0?[1-9]|[12]\d|3[01])[\/\-](0?[1-9]|1[0-2])(?:[\/\-](\d{4}))?\b/i);
   if(m){const now=smartDateParts(),y=m[3]?+m[3]:now.y;let out=smartDateISO(y,+m[2],+m[1]);if(!m[3]&&out&&out<today())out=smartDateISO(y+1,+m[2],+m[1]);take(m,out)}
 
   if(!date){
@@ -1952,8 +1952,8 @@ function parseSmartCapture(raw){
   if(!date&&(m=title.match(/\b(besok|tomorrow)\b/i)))take(m,add(today(),1));
   if(!date&&(m=title.match(/\b(hari ini|today)\b/i)))take(m,today());
   if(!date&&(m=title.match(/\b(minggu depan|pekan depan)\b/i)))take(m,add(today(),7));
-  if(!date&&(m=title.match(/\b(bulan depan)\b/i)))take(m,smartAddMonths(today(),1));
   if(!date&&(m=title.match(/\b(awal bulan depan)\b/i))){const p=smartDateParts(smartAddMonths(today(),1));take(m,smartDateISO(p.y,p.m,1))}
+  if(!date&&(m=title.match(/\b(bulan depan)\b/i)))take(m,smartAddMonths(today(),1));
   if(!date&&(m=title.match(/\b(akhir bulan(?: ini)?)\b/i))){const p=smartDateParts();take(m,smartDateISO(p.y,p.m,new Date(p.y,p.m,0).getDate()))}
 
   // Weekday names: "Senin", "Senin depan".

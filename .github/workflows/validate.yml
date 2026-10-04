@@ -52,6 +52,24 @@ jobs:
           grep -q 'function dailyQuestData' app.js
           grep -q 'Aggregate diligence rank' ui-v21.css
           grep -q 'Research Intelligence and OS expansion' ui-v21.css
+          grep -q 'notificationBell' index.html
+          grep -q 'Personal OS intelligence layer' ui-v21.css
+          grep -q 'function projectAutopilot' app.js
+          grep -q 'function decomposeGoal' app.js
+          grep -q 'function relationInspector' app.js
+          grep -q 'function paperMarksHtml' app.js
+          grep -q 'function universalCaptureSubmit' app.js
+          grep -q 'function focusCockpitMarkup' app.js
+          grep -q 'function weeklyPlanningModal' app.js
+          grep -q 'function openCopilot' app.js
+          grep -q 'function dataQualityIssues' app.js
+          grep -q 'function systemDiagnostics' app.js
+          grep -q 'function encryptBackupObject' app.js
+          grep -q 'function collectFullBackupBundle' app.js
+          grep -q 'function notificationsPage' app.js
+          grep -q 'function deadlineCenterPage' app.js
+          grep -q 'function academicPage' app.js
+          grep -q 'const BUILD_NUMBER=45' app.js
           grep -q 'function syncVaultToDrive' app.js
           grep -q 'function syncPaperPDFToDrive' app.js
           grep -q 'function vaultPage' app.js

@@ -17,6 +17,8 @@ jobs:
         run: |
           node --check app.js
           node --check modules/growth-utils.js
+      - name: Runtime route smoke test
+        run: node tests/runtime-smoke.js
       - name: Validate required files
         run: |
           test -f index.html

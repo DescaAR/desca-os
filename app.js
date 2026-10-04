@@ -830,6 +830,94 @@ function diligenceMainBadgeCard(){
   const d=diligenceRankData(),nextText=d.next?'Next: '+d.next.name+' · '+Math.max(0,d.next.min-d.score)+' points left':'Highest rank achieved';
   return'<article class="diligence-main-card rank-'+d.rank.key+'"><div class="diligence-crest"><div class="diligence-crest-ring"><span>✦</span><small>'+d.rank.mark+'</small></div><em>MAIN</em></div><div class="diligence-main-copy"><div class="eyebrow">MAIN BADGE · DILIGENCE RANK</div><div class="diligence-title-row"><h2>'+esc(d.rank.name)+'</h2><span class="diligence-score">'+d.score+'/100</span></div><p>Combined result of all consistency badges. '+d.tierPoints+' tiers unlocked • '+d.activeDomains+'/'+d.totalDomains+' active domains • '+d.overall.current+'-day productive streak.</p><div class="diligence-progress-row"><div>'+prog(d.progress)+'</div><span>'+esc(nextText)+'</span></div></div><button class="btn btn-secondary" data-route="progress">View All Badges</button></article>'
 }
+function gameDomainSet(d=today()){
+  const set=new Set(S.activities.filter(a=>a.date===d&&a.completed!==false).map(a=>a.category));
+  for(const t of S.tasks.filter(t=>t.date===d&&t.status==='done'))set.add(t.category||'personal');
+  return set
+}
+function questPct(current,target){return clamp(Math.round((+current||0)/Math.max(1,+target||1)*100),0,100)}
+function dailyQuestData(d=today()){
+  const st=stats(d),tasks=S.tasks.filter(t=>!t.inbox&&t.date===d),priorityTasks=tasks.filter(t=>t.priority==='high'||t.deadline===d),priorityDone=priorityTasks.filter(t=>t.status==='done').length,due=dueRoutines(d),routineDone=due.filter(r=>routineActivity(r,d)).length,domains=gameDomainSet(d),focusTarget=Math.max(45,Math.min(120,Math.round(S.profile.dailyFocusTarget*.35)));
+  const quests=[
+    {key:'focus',title:'Deep Focus',desc:'Build meaningful focus time',current:st.productive,target:focusTarget,unit:'min',xp:60},
+    {key:'priority',title:'First Strike',desc:priorityTasks.length?'Clear a priority objective':'Complete one planned task',current:priorityTasks.length?priorityDone:tasks.filter(t=>t.status==='done').length,target:1,unit:'task',xp:45},
+    {key:'routine',title:'Routine Keeper',desc:'Protect your daily rhythm',current:routineDone,target:Math.max(1,Math.min(2,due.length||1)),unit:'routine',xp:50},
+    {key:'balance',title:'Multi-Class',desc:'Be active across different life domains',current:domains.size,target:3,unit:'domains',xp:75}
+  ];
+  return quests.map(q=>({...q,done:q.current>=q.target,pct:questPct(q.current,q.target)}))
+}
+function weeklyMissionData(){
+  const ds=weeks(),acts=S.activities.filter(a=>ds.includes(a.date)&&a.completed!==false),minutes=c=>acts.filter(a=>a.category===c).reduce((n,a)=>n+(+a.duration||0),0),focus=acts.reduce((n,a)=>n+(+a.duration||0),0),fitnessSessions=new Set(acts.filter(a=>a.category==='health').map(a=>a.date)).size,quranSessions=new Set(acts.filter(a=>a.category==='quran').map(a=>a.date)).size,activeDays=ds.filter(d=>stats(d).productive||stats(d).D.length).length,fitnessTarget=Math.max(2,Math.min(4,ds.filter(d=>dueRoutines(d).some(r=>r.category==='health')).length||3));
+  const rows=[
+    {key:'weekly-focus',title:'Endurance Protocol',desc:'Hit the weekly productive-time target',current:focus,target:S.profile.weeklyTarget,unit:'min',xp:220},
+    {key:'study',title:'Knowledge Campaign',desc:'Sustain deep study across the week',current:minutes('study'),target:Math.max(180,Math.round(S.profile.weeklyTarget*.2)),unit:'min',xp:160},
+    {key:'research',title:'Theory Expedition',desc:'Keep research moving',current:minutes('research'),target:180,unit:'min',xp:180},
+    {key:'fitness',title:'Iron Week',desc:'Complete scheduled fitness sessions',current:fitnessSessions,target:fitnessTarget,unit:'sessions',xp:160},
+    {key:'active-days',title:'Seven-Day Front',desc:'Stay active on most days',current:activeDays,target:5,unit:'days',xp:180}
+  ];
+  if(quranSessions)rows[4]={key:'quran',title:'Faithkeeper Week',desc:'Maintain Quran sessions',current:quranSessions,target:5,unit:'sessions',xp:180};
+  return rows.map(q=>({...q,done:q.current>=q.target,pct:questPct(q.current,q.target)}))
+}
+function comboData(d=today()){
+  const domains=gameDomainSet(d),tasks=S.tasks.filter(t=>!t.inbox&&t.date===d),due=dueRoutines(d),allTasks=tasks.length>0&&tasks.every(t=>t.status==='done'),allRoutines=due.length>0&&due.every(r=>!!routineActivity(r,d)||!!routineSkip(r,d));
+  return[
+    {name:'Deep Work Combo',mark:'DW',unlocked:domains.has('study')&&domains.has('research'),desc:'Study + Research'},
+    {name:'Balanced Day',mark:'BD',unlocked:domains.has('study')&&domains.has('quran')&&domains.has('health'),desc:'Study + Quran + Fitness'},
+    {name:'Builder Chain',mark:'BC',unlocked:domains.has('project')&&domains.has('dmath'),desc:'Project + DMath'},
+    {name:'Perfect Day',mark:'PD',unlocked:allTasks&&allRoutines,desc:'All planned objectives cleared'},
+    {name:'Grand Slam',mark:'GS',unlocked:domains.size>=5,desc:'5+ active domains'}
+  ]
+}
+function questRow(q){
+  return'<div class="game-quest-row '+(q.done?'done':'')+'"><div class="game-quest-check">'+(q.done?'✓':'○')+'</div><div class="game-quest-main"><div><b>'+esc(q.title)+'</b><span>+'+q.xp+' XP</span></div><small>'+esc(q.desc)+'</small>'+prog(q.pct)+'</div><strong>'+Math.min(q.current,q.target)+' / '+q.target+' '+esc(q.unit)+'</strong></div>'
+}
+function questMissionCard(){
+  const dq=dailyQuestData(),wm=weeklyMissionData(),dailyDone=dq.filter(x=>x.done).length,weeklyDone=wm.filter(x=>x.done).length,combos=comboData().filter(x=>x.unlocked);
+  return'<article class="card game-mission-card" data-widget="quests"><div class="card-head"><div><div class="eyebrow">GAME LOOP</div><h2>Daily Quests & Weekly Missions</h2><p>Generated automatically from tasks, routines, and tracked activity.</p></div><span class="pill blue">'+dailyDone+'/'+dq.length+' daily</span></div><div class="game-mission-grid"><section><div class="game-section-title"><b>Daily Quests</b><span>'+dailyDone+'/'+dq.length+' cleared</span></div>'+dq.map(questRow).join('')+'</section><section><div class="game-section-title"><b>Weekly Missions</b><span>'+weeklyDone+'/'+wm.length+' cleared</span></div>'+wm.map(questRow).join('')+'</section></div><div class="combo-ribbon"><span>COMBOS</span>'+(combos.length?combos.map(c=>'<b title="'+esc(c.desc)+'">'+c.mark+' · '+esc(c.name)+'</b>').join(''):'<small>Complete cross-domain activities to unlock combos.</small>')+'</div></article>'
+}
+function monthLastDate(month){
+  const [y,m]=month.split('-').map(Number),d=new Date(y,m,0,12);return iso(d)
+}
+function seasonScoreForMonth(month=today().slice(0,7)){
+  const start=month+'-01',last=monthLastDate(month),end=month===today().slice(0,7)?today():last,daysElapsed=Math.max(1,Math.round((new Date(end+'T12:00:00')-new Date(start+'T12:00:00'))/86400000)+1),acts=S.activities.filter(a=>a.date>=start&&a.date<=end&&a.completed!==false),tasks=S.tasks.filter(t=>!t.inbox&&t.date>=start&&t.date<=end),done=tasks.filter(t=>t.status==='done'),productive=acts.reduce((n,a)=>n+(+a.duration||0),0),activeDays=new Set([...acts.map(a=>a.date),...done.map(t=>t.date)]).size,breadth=new Set(acts.map(a=>a.category).filter(c=>['study','research','project','dmath','quran','health','english'].includes(c))).size,target=Math.max(1,S.profile.weeklyTarget*daysElapsed/7),focusPart=Math.min(1,productive/target)*45,activePart=Math.min(1,activeDays/Math.max(1,Math.ceil(daysElapsed*.65)))*25,taskPart=(tasks.length?done.length/tasks.length:0)*15,breadthPart=(breadth/7)*15,score=clamp(Math.round(focusPart+activePart+taskPart+breadthPart),0,100),rank=[...DILIGENCE_RANKS].reverse().find(r=>score>=r.min)||DILIGENCE_RANKS[0];
+  return{month,start,end,daysElapsed,productive,activeDays,breadth,tasks:tasks.length,done:done.length,score,rank}
+}
+function seasonRankData(){
+  const current=seasonScoreForMonth(),months=[...new Set([...S.activities.map(a=>(a.date||'').slice(0,7)),...S.tasks.map(t=>(t.date||'').slice(0,7)),today().slice(0,7)].filter(x=>/^\d{4}-\d{2}$/.test(x)))],history=months.map(seasonScoreForMonth),best=history.sort((a,b)=>b.score-a.score)[0]||current,index=DILIGENCE_RANKS.findIndex(r=>r.name===current.rank.name),next=DILIGENCE_RANKS[index+1]||null;
+  return{...current,best,next,progress:next?clamp(Math.round((current.score-current.rank.min)/Math.max(1,next.min-current.rank.min)*100),0,100):100}
+}
+function totalUnlockedConsistencyBadges(){return Object.keys(CONSISTENCY_DOMAINS).reduce((n,k)=>n+CONSISTENCY_TIERS.filter(t=>consistencyStats(k).best>=t.days).length,0)}
+function playerCard(){
+  const main=diligenceRankData(),season=seasonRankData(),l=level(),highestIdx=Math.max(+S.meta.highestDiligenceRankIndex||0,DILIGENCE_RANKS.findIndex(r=>r.name===main.rank.name)),highest=DILIGENCE_RANKS[highestIdx]||main.rank;
+  return'<article class="player-card rank-'+main.rank.key+'"><div class="player-avatar"><span>'+esc((S.profile.name||'D').trim().charAt(0).toUpperCase())+'</span><i>LV '+l.level+'</i></div><div class="player-main"><div class="eyebrow">PLAYER PROFILE</div><div class="player-name-row"><h2>'+esc(S.profile.name||'Desca')+'</h2><span>'+esc(main.rank.name)+'</span></div><p>'+num(xp())+' XP • '+streak()+'-day productive streak • '+totalUnlockedConsistencyBadges()+' badges unlocked</p><div class="player-ranks"><div><small>Main Rank</small><b>'+esc(main.rank.name)+'</b><span>'+main.score+'/100</span></div><div><small>'+new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric'}).format(new Date(season.month+'-01T12:00:00'))+' Season</small><b>'+esc(season.rank.name)+'</b><span>'+season.score+'/100</span></div><div><small>Highest Rank</small><b>'+esc(highest.name)+'</b><span>Career best</span></div></div></div><button class="mini-btn" data-route="progress">Profile</button></article>'
+}
+function updateRankProgression(){
+  const d=diligenceRankData(),idx=DILIGENCE_RANKS.findIndex(r=>r.name===d.rank.name),prev=S.meta.lastDiligenceRankIndex;
+  if(prev===null||prev===undefined){S.meta.lastDiligenceRankIndex=idx;S.meta.highestDiligenceRankIndex=Math.max(+S.meta.highestDiligenceRankIndex||0,idx);save('Rank calibration');return null}
+  if(idx>prev){S.meta.pendingRankUp={from:DILIGENCE_RANKS[prev]?.name||'Warrior',to:d.rank.name,score:d.score,at:new Date().toISOString()};S.meta.highestDiligenceRankIndex=Math.max(+S.meta.highestDiligenceRankIndex||0,idx)}
+  if(idx!==prev){S.meta.lastDiligenceRankIndex=idx;save('Rank progression')}
+  return S.meta.pendingRankUp
+}
+function rankUpOverlayHtml(){
+  const p=updateRankProgression();if(!p)return'';
+  return'<div class="rank-up-overlay"><div class="rank-up-burst"></div><div class="rank-up-panel"><div class="eyebrow">RANK UP</div><div class="rank-up-medal">✦</div><small>'+esc(p.from)+'</small><h2>'+esc(p.to)+'</h2><b>'+p.score+'/100 Diligence Score</b><button class="btn btn-primary" data-act="dismissRankUp">Continue</button></div></div>'
+}
+function radarDomainData(days=7){
+  const targets={study:300,research:180,project:180,dmath:180,quran:100,health:120,english:120},labels={study:'Study',research:'Research',project:'Projects',dmath:'DMath',quran:'Quran',health:'Fitness',english:'English'};
+  return Object.keys(targets).map(k=>{const v=catMin(k,days),target=targets[k]*days/7;return{key:k,label:labels[k],minutes:v,value:clamp(Math.round(v/Math.max(1,target)*100),0,100)}})
+}
+function activityRadarSvg(days=7){
+  const rows=radarDomainData(days),cx=130,cy=125,r=88,n=rows.length,pt=(i,ratio)=>{const a=-Math.PI/2+i*2*Math.PI/n;return[cx+Math.cos(a)*r*ratio,cy+Math.sin(a)*r*ratio]},rings=[.25,.5,.75,1].map(q=>'<polygon points="'+rows.map((_,i)=>pt(i,q).join(',')).join(' ')+'" class="radar-ring"/>').join(''),axes=rows.map((x,i)=>{const p=pt(i,1),l=pt(i,1.2);return'<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" class="radar-axis"/><text x="'+l[0]+'" y="'+l[1]+'" class="radar-label" text-anchor="middle">'+x.label+'</text>'}).join(''),poly=rows.map((x,i)=>pt(i,x.value/100).join(',')).join(' ');
+  return'<svg class="activity-radar" viewBox="0 0 260 250" role="img" aria-label="Activity balance radar">'+rings+axes+'<polygon points="'+poly+'" class="radar-value"/><circle cx="'+cx+'" cy="'+cy+'" r="3" class="radar-center"/></svg>'
+}
+function activityRadarCard(days=7){
+  const rows=radarDomainData(days).sort((a,b)=>b.value-a.value),strong=rows[0],weak=rows.at(-1);
+  return'<article class="card radar-card"><div class="card-head"><div><h2>Activity Radar</h2><p>'+days+'-day balance across major domains.</p></div><span class="pill blue">'+(strong?.label||'—')+' strongest</span></div><div class="radar-layout">'+activityRadarSvg(days)+'<div class="radar-copy"><div><span>Strongest</span><b>'+esc(strong?.label||'—')+'</b><small>'+mins(strong?.minutes||0)+'</small></div><div><span>Needs attention</span><b>'+esc(weak?.label||'—')+'</b><small>'+mins(weak?.minutes||0)+'</small></div></div></div></article>'
+}
+function weeklyPerformanceCard(){
+  const cur=weeks(),prev=weeks(-1),sum=(ds,c)=>S.activities.filter(a=>ds.includes(a.date)&&(!c||a.category===c)).reduce((n,a)=>n+(+a.duration||0),0),cw=sum(cur),pw=sum(prev),delta=pw?Math.round((cw-pw)/pw*100):(cw?100:0),domains=['study','research','project','dmath','quran','health','english'].map(k=>{const a=sum(cur,k),b=sum(prev,k),change=b?Math.round((a-b)/b*100):(a?100:0);return{key:k,label:cat(k),minutes:a,change}}),strong=domains.slice().sort((a,b)=>b.minutes-a.minutes)[0],improve=domains.slice().sort((a,b)=>b.change-a.change)[0],weak=domains.filter(x=>x.minutes===0)[0]||domains.slice().sort((a,b)=>a.minutes-b.minutes)[0],missions=weeklyMissionData(),done=missions.filter(x=>x.done).length;
+  return'<article class="card weekly-performance-card"><div class="card-head"><div><div class="eyebrow">AUTO REPORT</div><h2>Weekly Performance Report</h2><p>Generated from actual activity and completed tasks.</p></div><span class="pill '+(delta>=0?'green':'orange')+'">'+(delta>=0?'+':'')+delta+'%</span></div><div class="performance-strip"><div><span>Productive Time</span><b>'+mins(cw)+'</b><small>vs '+mins(pw)+' last week</small></div><div><span>Strongest Area</span><b>'+esc(strong?.label||'—')+'</b><small>'+mins(strong?.minutes||0)+'</small></div><div><span>Best Momentum</span><b>'+esc(improve?.label||'—')+'</b><small>'+(improve?.change>=0?'+':'')+(improve?.change||0)+'%</small></div><div><span>Weekly Missions</span><b>'+done+'/'+missions.length+'</b><small>'+esc(weak?.label||'—')+' needs attention</small></div></div><div class="callout performance-recommendation">Next-week focus: <b>'+esc(weak?.label||'balance')+'</b>. Keep '+esc(strong?.label||'your strongest area')+' stable while adding one deliberate session to the weakest area.</div></article>'
+}
 function achievementData(){return[['🌱','The Beginning','Catat aktivitas pertama',S.activities.length>0],['📚','Scholar','50 sesi belajar',S.activities.filter(x=>x.category==='study').length>=50],['⏱','Pomodoro Habit','25 Pomodoro selesai',S.activities.filter(x=>x.source==='pomodoro'&&x.completed!==false).length>=25],['🧠','Deep Thinker','10.000 XP otomatis',xp()>=10000],['📑','Researcher','30 sesi riset',S.activities.filter(x=>x.category==='research').length>=30],['🏃','Runner','20 sesi lari',S.runs.length>=20],['✦','Level Up','Level 10',level().level>=10]]}
 function achievementSection(){const A=achievementData(),unlocked=A.filter(x=>x[3]).length;return'<article class="card progress-achievements"><div class="card-head"><div><h2>Milestones</h2><p>'+unlocked+' dari '+A.length+' pencapaian terbuka. Tidak lagi memakai halaman terpisah.</p></div><span class="pill blue">'+unlocked+'/'+A.length+'</span></div><div class="grid achievement-grid compact-achievements">'+A.map(x=>'<div class="achievement '+(x[3]?'':'locked')+'"><div class="achievement-icon">'+x[0]+'</div><h3>'+x[1]+'</h3><p>'+x[2]+'</p><span class="pill '+(x[3]?'green':'')+'">'+(x[3]?'Unlocked':'Locked')+'</span></div>').join('')+'</div></article>'}
 function calDate(y,m,d){return new Date(Date.UTC(y,m,d)).toISOString().slice(0,10)}

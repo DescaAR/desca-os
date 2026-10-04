@@ -112,6 +112,81 @@ setInterval(tickUniversalTimer,1000);
 
 function plannerItems(d=today()){const fixed=calendarItems(d,{includeRoutines:true}).filter(x=>x.time),floating=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done'&&!t.startTime).map(t=>({kind:'task',id:t.id,title:t.title,duration:+t.estimate||60,category:t.category,priority:t.priority,goalId:t.goalId}));return{fixed,floating}}
 function priorityRank(p){return p==='high'?3:p==='medium'?2:1}
+function automationKey(rule,target='',date=today()){return rule+'|'+target+'|'+date}
+function automationSeen(key){return S.automationLog.some(x=>x.key===key)}
+function recordAutomation(key,rule,summary,targetId=''){if(automationSeen(key))return;S.automationLog.push({id:uid('auto'),key,rule,summary,targetId,date:today(),at:new Date().toISOString()});S.automationLog=S.automationLog.slice(-250)}
+function automationTaskExists(key){return S.tasks.some(t=>(t.tags||[]).includes('automation:'+key))}
+function createAutomationTask({key,title,date=today(),deadline='',priority='medium',category='personal',estimate=60,notes='',goalId=null,projectId=null,studyTopicId=null}){
+  if(automationSeen(key)||automationTaskExists(key))return null;
+  const task={id:uid('t'),title,date,deadline,status:'planned',priority,category,goalId,projectId,studyTopicId,estimate,startTime:'',notes,inbox:false,subtasks:[],tags:['automation','automation:'+key],recurrence:'none',dependsOn:null,googleTaskSync:false,googleCalendarSync:false,googleTaskId:null,googleTaskListId:null,googleCalendarEventId:null,googleOrigin:false,recurringSpawned:false};
+  S.tasks.push(task);recordAutomation(key,'task',title,task.id);return task
+}
+function prepForCalendarEvent(e){
+  const t=smartText(e.title);
+  if(smartHas(t,['uts','uas','ujian','exam','final','kompetisi','competition','olimpiade','onmipa','on-mipa','tryout']))return{title:'Review materi · '+e.title,category:'study',estimate:90,priority:'high'};
+  if(smartHas(t,['bimbingan','skripsi','tesis','ta','riset','research','seminar','presentasi','proposal']))return{title:'Siapkan bahan · '+e.title,category:'research',estimate:60,priority:'high'};
+  if(smartHas(t,['mentoring','coaching','kelas','workshop']))return{title:'Siapkan materi · '+e.title,category:'study',estimate:45,priority:'medium'};
+  return null
+}
+function researchGapDays(){
+  const dates=S.activities.filter(x=>x.category==='research').map(x=>x.date).filter(Boolean).sort().reverse();
+  if(!dates.length)return 999;
+  return Math.max(0,Math.round((new Date(today()+'T12:00:00')-new Date(dates[0]+'T12:00:00'))/86400000))
+}
+function runAutomationEngine({silent=true}={}){
+  if(!S.settings.automationEnabled)return{created:0,updated:0,messages:[]};
+  let created=0,updated=0,messages=[],changed=false,d=today(),tom=add(d,1);
+  if(S.settings.automationDeadline){
+    for(const t of S.tasks.filter(x=>x.status!=='done'&&x.deadline&&x.deadline<=tom)){
+      if(t.priority!=='high'){t.priority='high';updated++;changed=true;messages.push('Priority ↑ '+t.title)}
+    }
+  }
+  if(S.settings.automationCalendarPrep){
+    for(const e of S.googleEvents.filter(x=>x.date===tom)){
+      const prep=prepForCalendarEvent(e);if(!prep)continue;
+      const key=automationKey('calendar-prep',e.id||e.title,tom);
+      const task=createAutomationTask({key,title:prep.title,date:d,deadline:tom,priority:prep.priority,category:prep.category,estimate:prep.estimate,notes:'Dibuat otomatis untuk agenda Google Calendar besok.'});
+      if(task){created++;changed=true;messages.push(task.title)}
+    }
+  }
+  if(S.settings.automationS2&&new Date(d+'T12:00:00').getDay()===6){
+    const item=s2NextItem();
+    if(item&&!s2LinkedDone(item)){
+      const existing=item.taskId?S.tasks.find(t=>t.id===item.taskId):null;
+      if(existing&&existing.status!=='done'){
+        if(existing.date!==d){existing.date=d;existing.priority='medium';updated++;changed=true}
+      }else{
+        const key=automationKey('s2-weekly',item.id,d);
+        const task=createAutomationTask({key,title:'S2 · '+item.title,date:d,deadline:item.due||'',priority:'medium',category:'study',estimate:60,notes:'Next step Persiapan S2 dipilih otomatis.'});
+        if(task){item.taskId=task.id;created++;changed=true;messages.push(task.title)}
+      }
+    }
+  }
+  if(S.settings.automationResearchNudge&&researchGapDays()>=3){
+    const activeResearch=S.projects.find(p=>p.status==='active'&&smartHas(smartText(p.area+' '+p.title),['research','riset','skripsi','paper']));
+    const already=S.tasks.some(t=>t.date===d&&t.status!=='done'&&t.category==='research');
+    const bucket=Math.floor(Date.parse(d+'T12:00:00')/86400000/3);
+    if(!already){
+      const key=automationKey('research-nudge',String(bucket),'');
+      const task=createAutomationTask({key,title:activeResearch?'Lanjutkan · '+activeResearch.title:'Lanjutkan riset utama',date:d,priority:'medium',category:'research',estimate:60,projectId:activeResearch?.id||null,notes:'Dibuat otomatis karena belum ada aktivitas riset beberapa hari.'});
+      if(task){created++;changed=true;messages.push(task.title)}
+    }
+  }
+  if(changed){refreshGoalProgress();save('Automation engine')}
+  if(!silent&&messages.length)toast(created+' task dibuat • '+updated+' diperbarui');
+  return{created,updated,messages}
+}
+function busyIntervalsForDay(d=today()){
+  return calendarItems(d,{includeRoutines:true}).filter(x=>x.time&&x.status!=='done').map(x=>({s:minutesFromHHMM(x.time),e:(minutesFromHHMM(x.time)||0)+Math.max(15,+x.duration||30),title:x.title,kind:x.kind})).filter(x=>x.s!==null).sort((a,b)=>a.s-b.s)
+}
+function freeSlotsForDay(d=today(),minMinutes=30){
+  const startBase=minutesFromHHMM(S.settings.plannerStart)||480,end=minutesFromHHMM(S.settings.plannerEnd)||1320,now=d===today()?roundQuarter(minutesFromHHMM(localTime())||0):startBase,start=Math.max(startBase,now),busy=busyIntervalsForDay(d);let cursor=start,out=[];
+  for(const b of busy){if(b.e<=cursor)continue;if(b.s>cursor&&b.s-cursor>=minMinutes)out.push({s:cursor,e:b.s,duration:b.s-cursor});cursor=Math.max(cursor,b.e)}
+  if(end>cursor&&end-cursor>=minMinutes)out.push({s:cursor,e:end,duration:end-cursor});
+  return out
+}
+function hhmmRange(slot){return hhmmFromMinutes(slot.s)+'–'+hhmmFromMinutes(slot.e)}
+
 function autoPlanToday(){const d=today(),{fixed,floating}=plannerItems(d);if(!floating.length){toast('Semua task hari ini sudah punya jam');return}let cursor=minutesFromHHMM(S.settings.plannerStart)||480,end=minutesFromHHMM(S.settings.plannerEnd)||1320;const busy=fixed.map(x=>({s:minutesFromHHMM(x.time),e:(minutesFromHHMM(x.time)||0)+Math.max(15,+x.duration||30)})).filter(x=>x.s!==null).sort((a,b)=>a.s-b.s);const preferred=studyInsights().enough?studyInsights().best.start*60:null;const sorted=floating.slice().map(t=>({...t,deadline:S.tasks.find(x=>x.id===t.id)?.deadline||''})).sort((a,b)=>{const ad=a.deadline||'9999-99-99',bd=b.deadline||'9999-99-99';return ad.localeCompare(bd)||priorityRank(b.priority)-priorityRank(a.priority)});for(const t of sorted){const real=S.tasks.find(x=>x.id===t.id),dep=real?.dependsOn?S.tasks.find(x=>x.id===real.dependsOn):null;if(dep&&dep.status!=='done')continue;let dur=clamp(+t.duration||60,15,240);if(preferred!==null&&['study','research','english'].includes(t.category)&&preferred>=cursor&&preferred+dur<=end)cursor=preferred;for(const b of busy){if(cursor<b.e&&cursor+dur>b.s)cursor=b.e}if(cursor+dur>end)break;if(real)real.startTime=hhmmFromMinutes(cursor);busy.push({s:cursor,e:cursor+dur});busy.sort((a,b)=>a.s-b.s);cursor+=dur+15}save();toast('Smart plan diterapkan berdasarkan deadline, prioritas, dan slot kosong');render()}
 function smartPlannerCard(){const d=today(),items=calendarItems(d,{includeRoutines:true}).filter(x=>x.status!=='done'),unscheduled=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done'&&!t.startTime).length;return'<article class="card smart-planner-card" data-widget="planner"><div class="card-head"><div><h2>Smart Daily Planner</h2><p>Routine, deadline, prioritas, dan histori waktu belajar.</p></div><span class="pill blue">'+items.length+' agenda</span></div><div class="planner-preview">'+(items.length?items.slice(0,7).map(x=>'<div class="planner-row"><time>'+esc(x.time||'—')+'</time><span>'+esc(x.title)+'</span><b>'+cat(x.category)+'</b></div>').join(''):'<div class="empty empty-compact">Belum ada agenda hari ini.</div>')+'</div>'+(unscheduled?'<button class="btn btn-primary" style="margin-top:12px" data-act="autoPlanToday">Auto-plan '+unscheduled+' task tanpa jam</button>':'<div class="callout" style="margin-top:12px">Semua task hari ini sudah memiliki slot waktu.</div>')+'</article>'}
 

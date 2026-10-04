@@ -69,7 +69,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=61' app.js
+          grep -q 'const BUILD_NUMBER=62' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -94,6 +94,11 @@ jobs:
           grep -q 'function processLaunchIntent' app.js
           grep -q 'const SMART_MONTHS' app.js
           grep -q 'function parseSmartCapture' app.js
+          grep -q 'const PAGE_GUIDES' app.js
+          grep -q 'function openPageGuide' app.js
+          grep -q 'function showGuideStep' app.js
+          grep -q 'v62 — Guided UX + modern input system' ui-v21.css
+          grep -q 'id="pageGuideDrawer"' index.html
           grep -q 'v60 — Autonomy Suite' ui-v21.css
           grep -q '"share_target"' manifest.webmanifest
           grep -q 'v50 — Intelligence Suite' ui-v21.css

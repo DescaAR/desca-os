@@ -69,7 +69,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=50' app.js
+          grep -q 'const BUILD_NUMBER=60' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -80,6 +80,20 @@ jobs:
           grep -q 'function monthlyYearReviewCard' app.js
           grep -q 'function academicCourseForecast' app.js
           grep -q 'function semesterControlCenterCard' app.js
+          grep -q 'function masteryTreeCard' app.js
+          grep -q 'function deadlineRiskRows' app.js
+          grep -q 'function weeklyCapacityData' app.js
+          grep -q 'function smartInboxCard' app.js
+          grep -q 'function dayClosureCard' app.js
+          grep -q 'function openProjectWorkspace' app.js
+          grep -q 'function finishFocusSession' app.js
+          grep -q 'function lifeMilestoneCard' app.js
+          grep -q 'function seasonCommandCard' app.js
+          grep -q 'function openScenarioSimulator' app.js
+          grep -q 'function dataConfidenceCard' app.js
+          grep -q 'function processLaunchIntent' app.js
+          grep -q 'v60 — Autonomy Suite' ui-v21.css
+          grep -q '"share_target"' manifest.webmanifest
           grep -q 'v50 — Intelligence Suite' ui-v21.css
           grep -q 'function syncVaultToDrive' app.js
           grep -q 'function syncPaperPDFToDrive' app.js

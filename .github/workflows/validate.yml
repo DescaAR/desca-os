@@ -51,3 +51,18 @@ jobs:
           grep -q 'function seasonRankData' app.js
           grep -q 'function dailyQuestData' app.js
           grep -q 'Aggregate diligence rank' ui-v21.css
+          grep -q 'Research Intelligence and OS expansion' ui-v21.css
+          grep -q 'function syncVaultToDrive' app.js
+          grep -q 'function syncPaperPDFToDrive' app.js
+          grep -q 'function vaultPage' app.js
+          grep -q 'function morningCommandScreen' app.js
+          grep -q 'function recoveryGuardData' app.js
+          grep -q 'function timelinePage' app.js
+          grep -q 'function seasonHistoryCard' app.js
+          grep -q 'function achievementShowcaseCard' app.js
+          grep -q 'function goalForecast' app.js
+          grep -q 'function projectHealth' app.js
+          grep -q 'function readingQueueCard' app.js
+          grep -q 'function researchKnowledgeGraph' app.js
+          grep -q 'function openCitationManager' app.js
+          grep -q 'function openPaperReader' app.js

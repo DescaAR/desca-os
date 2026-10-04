@@ -1730,3 +1730,114 @@ html[data-theme=dark] .dmath-platform.facebook .dmath-platform-icon{background:v
 @media(max-width:540px){
   .local-first-grid{grid-template-columns:1fr}
 }
+
+
+/* v30 — Smart minimal input system */
+.smart-minimal-form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.smart-minimal-form>.field>label,
+.smart-core-grid .field>label{
+  font-size:11px!important;
+  font-weight:740!important;
+}
+.smart-minimal-form>.field>input,
+.smart-core-grid input{
+  min-height:46px!important;
+  font-size:14px!important;
+}
+.smart-core-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.smart-auto-strip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:48px;
+  padding:10px 12px;
+  border:1px solid color-mix(in srgb,var(--app-blue) 13%,var(--app-border));
+  border-radius:11px;
+  background:linear-gradient(135deg,var(--app-blue-soft),color-mix(in srgb,var(--app-blue) 2%,var(--app-surface)));
+}
+.smart-auto-spark{
+  width:29px;
+  height:29px;
+  flex:0 0 29px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:var(--app-surface);
+  color:var(--app-blue);
+  font-size:12px;
+  box-shadow:var(--app-shadow-sm);
+}
+.smart-auto-strip>div{
+  min-width:0;
+  flex:1;
+}
+.smart-auto-strip b{
+  display:block;
+  color:var(--app-blue);
+  font-size:10px;
+  font-weight:780;
+}
+.smart-auto-strip small{
+  display:block;
+  margin-top:3px;
+  color:var(--app-text-2);
+  font-size:9.5px;
+  line-height:1.45;
+}
+.smart-auto-details{
+  margin:0!important;
+  border-style:solid!important;
+  background:var(--app-surface-2)!important;
+}
+.smart-auto-details>summary{
+  min-height:42px;
+  font-size:10.5px!important;
+}
+.smart-auto-inner{
+  padding:2px 10px 12px;
+}
+.smart-auto-inner>.form-grid{
+  margin-top:4px;
+}
+.smart-submit{
+  width:100%;
+  min-height:44px!important;
+  margin-top:0!important;
+  font-size:13px!important;
+}
+.smart-delete{
+  width:100%;
+  margin-top:-4px!important;
+}
+.smart-minimal-form .field-auto{
+  color:var(--app-blue);
+  font-size:8.5px;
+}
+.smart-minimal-form input::placeholder,
+.smart-minimal-form textarea::placeholder{
+  color:color-mix(in srgb,var(--app-muted) 72%,transparent);
+}
+.smart-minimal-form details[open]{
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--app-blue) 3%,transparent);
+}
+.smart-minimal-form details[open]>summary{
+  color:var(--app-blue);
+}
+.smart-minimal-form details[open]>summary:after{
+  color:var(--app-blue);
+}
+@media(max-width:540px){
+  .smart-core-grid{
+    grid-template-columns:1fr!important;
+  }
+  .smart-auto-strip{
+    align-items:flex-start;
+  }
+}

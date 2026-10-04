@@ -1849,3 +1849,199 @@ html[data-theme=dark] .dmath-platform.facebook .dmath-platform-icon{background:v
   font-size:9.5px;
   line-height:1.45;
 }
+
+
+/* v31 — Smart Daily Brief + Automation Engine */
+.smart-brief-card{
+  position:relative;
+  overflow:hidden;
+  border-color:color-mix(in srgb,var(--app-blue) 15%,var(--app-border))!important;
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--app-blue) 7%,transparent),transparent 18rem),
+    var(--app-surface)!important;
+}
+.brief-section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:9px;
+}
+.brief-section-title b{
+  color:var(--app-text);
+  font-size:11px;
+  font-weight:760;
+}
+.brief-section-title span{
+  color:var(--app-muted);
+  font-size:8.5px;
+}
+.brief-focus{
+  margin-top:14px;
+  padding:13px;
+  border:1px solid var(--app-border);
+  border-radius:12px;
+  background:var(--app-surface-2);
+}
+.brief-focus-row{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:9px 0;
+  border-top:1px solid color-mix(in srgb,var(--app-border) 80%,transparent);
+}
+.brief-focus-row:first-of-type{border-top:0}
+.brief-focus-row>strong{
+  width:27px;
+  flex:0 0 27px;
+  color:var(--app-blue);
+  font-size:10px;
+  letter-spacing:.06em;
+}
+.brief-focus-row>div{min-width:0;flex:1}
+.brief-focus-row b{
+  display:block;
+  color:var(--app-text);
+  font-size:11px;
+  line-height:1.4;
+}
+.brief-focus-row small{
+  display:block;
+  margin-top:3px;
+  color:var(--app-muted);
+  font-size:9px;
+}
+.brief-signal-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:12px;
+}
+.brief-signal{
+  min-height:88px;
+  padding:11px;
+  border:1px solid var(--app-border);
+  border-radius:11px;
+  background:var(--app-surface);
+  color:var(--app-text);
+  text-align:left;
+}
+button.brief-signal{cursor:pointer}
+button.brief-signal:hover{
+  border-color:color-mix(in srgb,var(--app-blue) 20%,var(--app-border));
+  background:var(--app-blue-soft);
+}
+.brief-signal span{
+  display:block;
+  color:var(--app-muted);
+  font-size:8px;
+  font-weight:780;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.brief-signal b{
+  display:block;
+  margin-top:5px;
+  font-size:11px;
+  line-height:1.35;
+}
+.brief-signal small{
+  display:block;
+  margin-top:5px;
+  color:var(--app-muted);
+  font-size:8.5px;
+  line-height:1.4;
+}
+.brief-actions{
+  display:flex;
+  gap:8px;
+  margin-top:14px;
+}
+.brief-footer{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  margin-top:12px;
+  padding-top:11px;
+  border-top:1px solid var(--app-border);
+}
+.brief-footer span{
+  color:var(--app-muted);
+  font-size:9px;
+  font-weight:650;
+}
+.automation-settings-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.automation-setting-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  border:1px solid var(--app-border);
+  border-radius:11px;
+  background:var(--app-surface-2);
+}
+.automation-setting-row>div{
+  min-width:0;
+  flex:1;
+}
+.automation-setting-row b{
+  display:block;
+  color:var(--app-text);
+  font-size:10.5px;
+}
+.automation-setting-row small{
+  display:block;
+  margin-top:3px;
+  color:var(--app-muted);
+  font-size:8.5px;
+  line-height:1.4;
+}
+.automation-setting-row select{
+  width:94px!important;
+  min-width:94px!important;
+}
+.automation-log{
+  margin-top:14px;
+  padding-top:13px;
+  border-top:1px solid var(--app-border);
+}
+.automation-log-row{
+  display:grid;
+  grid-template-columns:76px 1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:7px 0;
+  border-top:1px solid color-mix(in srgb,var(--app-border) 72%,transparent);
+}
+.automation-log-row:first-of-type{border-top:0}
+.automation-log-row span{
+  color:var(--app-blue);
+  font-size:8px;
+  font-weight:760;
+  text-transform:uppercase;
+}
+.automation-log-row b{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:9.5px;
+}
+.automation-log-row small{
+  color:var(--app-muted);
+  font-size:8px;
+}
+@media(max-width:900px){
+  .brief-signal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:540px){
+  .brief-signal-grid{grid-template-columns:1fr}
+  .brief-actions{flex-direction:column}
+  .brief-actions .btn{width:100%}
+  .automation-setting-row{align-items:flex-start}
+  .automation-setting-row select{width:84px!important;min-width:84px!important}
+}

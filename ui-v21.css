@@ -4451,3 +4451,104 @@ input,select,textarea{
   .records-grid{grid-template-columns:1fr}
   .planning-summary-grid,.weekly-plan-preview{grid-template-columns:1fr}
 }
+
+
+/* v50 — Intelligence Suite */
+.priority-score{
+  display:inline-grid;place-items:center;min-width:34px;height:23px;padding:0 7px;border-radius:999px;
+  border:1px solid var(--app-border);background:var(--app-surface-2);font-size:10px;font-weight:850;letter-spacing:.03em
+}
+.priority-score.hot{color:var(--app-red);background:color-mix(in srgb,var(--app-red) 9%,var(--app-surface))}
+.priority-score.warm{color:var(--app-amber);background:color-mix(in srgb,var(--app-amber) 10%,var(--app-surface))}
+.priority-score.calm{color:var(--app-blue);background:color-mix(in srgb,var(--app-blue) 8%,var(--app-surface))}
+
+.home-command-center{
+  display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:18px;
+  margin:0 0 16px;padding:22px 24px;border:1px solid color-mix(in srgb,var(--app-blue) 24%,var(--app-border));
+  border-radius:var(--app-radius-lg);background:linear-gradient(135deg,color-mix(in srgb,var(--app-blue) 8%,var(--app-surface)),var(--app-surface));
+  box-shadow:var(--app-shadow)
+}
+.home-command-center h2{margin:4px 0 5px;font-size:24px;line-height:1.15}.home-command-center p{margin:0;color:var(--app-text-2)}
+.home-command-center.clear{border-color:var(--app-border)}.command-center-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.command-priority{min-width:76px;text-align:center;padding:10px 12px;border-left:1px solid var(--app-border)}
+.command-priority span,.command-priority small{display:block;color:var(--app-muted);font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.command-priority b{display:block;font-size:26px;line-height:1;color:var(--app-blue);margin:4px 0}
+
+.desca-score-card{
+  margin-bottom:16px;padding:22px;border:1px solid var(--app-border);border-radius:var(--app-radius-lg);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--app-blue) 7%,var(--app-surface)),var(--app-surface));box-shadow:var(--app-shadow)
+}
+.desca-score-main{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center}
+.desca-score-main h2{font-size:28px;margin:2px 0 4px}.desca-score-main p{margin:0;color:var(--app-text-2)}
+.desca-score-main>strong{font-size:38px;line-height:1;color:var(--app-text)}.desca-score-main>strong small{font-size:12px;color:var(--app-muted);font-weight:700}
+.desca-score-crest{
+  width:62px;height:62px;border-radius:20px;display:grid;place-items:center;position:relative;
+  background:color-mix(in srgb,var(--app-blue) 12%,var(--app-surface));border:1px solid color-mix(in srgb,var(--app-blue) 25%,var(--app-border))
+}
+.desca-score-crest span{font-size:24px;color:var(--app-blue)}.desca-score-crest b{position:absolute;right:7px;bottom:5px;font-size:9px}
+.desca-dimensions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:18px}
+.desca-dimensions>div{padding:11px;border:1px solid var(--app-border);border-radius:13px;background:color-mix(in srgb,var(--app-surface-2) 80%,transparent)}
+.desca-dimensions span{display:block;font-size:10px;color:var(--app-muted);text-transform:uppercase;letter-spacing:.06em}
+.desca-dimensions b{display:block;font-size:17px;margin:3px 0 7px}.desca-dimensions .progress{height:5px}
+.desca-score-footer{display:flex;justify-content:space-between;gap:12px;margin-top:12px;color:var(--app-muted);font-size:11px}
+
+.conflict-center-card{margin-bottom:16px;border-color:color-mix(in srgb,var(--app-red) 25%,var(--app-border))}
+.conflict-center-card.clean{padding:15px 18px;border-color:color-mix(in srgb,var(--app-green) 24%,var(--app-border));background:color-mix(in srgb,var(--app-green) 4%,var(--app-surface))}
+.conflict-center-card.clean>div{display:flex;align-items:center;gap:12px}.conflict-center-card.clean b,.conflict-center-card.clean small{display:block}
+.conflict-center-card.clean small{margin-top:2px;color:var(--app-muted)}.conflict-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:12px;background:color-mix(in srgb,var(--app-green) 12%,var(--app-surface));color:var(--app-green);font-weight:900}
+
+.energy-planner-card{margin-bottom:16px}.energy-score{min-width:70px;text-align:center;padding:10px;border-radius:16px;background:var(--app-surface-2);border:1px solid var(--app-border)}
+.energy-score b{font-size:24px}.energy-score span{font-size:10px;color:var(--app-muted)}.energy-score.high b{color:var(--app-green)}.energy-score.low b{color:var(--app-amber)}
+.energy-context{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.energy-context span{padding:7px 10px;border-radius:10px;background:var(--app-surface-2);font-size:11px;color:var(--app-muted)}
+.energy-context b{color:var(--app-text)}.energy-note{display:block;margin-top:8px;color:var(--app-muted);font-size:10px}
+
+.priority-intelligence-card{margin-bottom:16px}.priority-intelligence-list{display:grid;gap:7px}
+.priority-intelligence-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--app-border)}
+.priority-intelligence-row:first-child{border-top:0}.priority-intelligence-row>strong{font-size:12px;color:var(--app-muted)}
+.priority-intelligence-row b,.priority-intelligence-row small{display:block}.priority-intelligence-row small{margin-top:3px;color:var(--app-muted);font-size:11px}
+
+.global-heatmap-card,.life-balance-card,.weekly-intelligence-card,.period-review-card,.semester-control-card,.academic-forecast-panel{margin-top:16px}
+.global-heatmap{display:grid;grid-template-rows:repeat(7,11px);grid-auto-flow:column;grid-auto-columns:11px;gap:4px;overflow-x:auto;padding:4px 1px 10px}
+.global-heatmap .heat-cell{width:11px;height:11px;min-width:11px;border:0;padding:0;border-radius:3px;cursor:pointer}
+.heat-day-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.heat-day-summary>div{padding:12px;border-radius:12px;background:var(--app-surface-2)}
+.heat-day-summary span,.heat-day-summary b{display:block}.heat-day-summary span{font-size:10px;color:var(--app-muted);text-transform:uppercase}.heat-day-summary b{font-size:18px;margin-top:3px}
+
+.life-balance-layout{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(260px,1.1fr);gap:24px;align-items:center}
+.life-balance-radar{width:min(100%,360px);margin:auto}.life-balance-copy{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.life-balance-copy>div:not(.callout){display:flex;justify-content:space-between;gap:12px;padding:9px 11px;border-radius:10px;background:var(--app-surface-2)}
+.life-balance-copy span{font-size:11px;color:var(--app-muted)}.life-balance-copy .callout{grid-column:1/-1}
+
+.intelligence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.intelligence-grid section{padding:14px;border-radius:14px;border:1px solid var(--app-border);background:var(--app-surface-2)}
+.intelligence-grid span,.intelligence-grid b,.intelligence-grid small{display:block}.intelligence-grid span{font-size:10px;color:var(--app-muted);text-transform:uppercase;letter-spacing:.06em}
+.intelligence-grid b{font-size:17px;margin:5px 0}.intelligence-grid small{color:var(--app-muted);line-height:1.4}
+
+.period-review-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.period-review-grid section{padding:18px;border:1px solid var(--app-border);border-radius:16px;background:var(--app-surface-2)}
+.period-review-grid section>span{font-size:10px;letter-spacing:.08em;color:var(--app-muted)}.period-review-main{margin:9px 0 12px}.period-review-main b{display:block;font-size:26px}
+.period-review-main small,.period-best{color:var(--app-muted);font-size:11px}.period-review-stats{display:flex;gap:6px;flex-wrap:wrap}.period-review-stats em{font-style:normal;font-size:10px;padding:5px 7px;border-radius:8px;background:var(--app-surface)}
+.period-best{margin-top:10px}
+
+.semester-control-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.semester-control-grid>div{padding:14px;border-radius:14px;background:var(--app-surface-2);border:1px solid var(--app-border)}
+.semester-control-grid span,.semester-control-grid b,.semester-control-grid small{display:block}.semester-control-grid span{font-size:10px;color:var(--app-muted);text-transform:uppercase}.semester-control-grid b{font-size:18px;margin:4px 0}.semester-control-grid small{color:var(--app-muted);font-size:10px}
+.academic-forecast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.academic-forecast-grid>section{padding:14px;border:1px solid var(--app-border);border-radius:14px;background:var(--app-surface-2)}
+.academic-forecast-grid>section.risk{border-color:color-mix(in srgb,var(--app-red) 35%,var(--app-border))}.academic-forecast-grid>section>div:first-child{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.forecast-numbers{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.forecast-numbers span{font-size:10px;color:var(--app-muted)}.forecast-numbers b{display:block;color:var(--app-text);font-size:14px;margin-top:2px}
+
+.capture-hint[data-capture-preview]{min-height:18px;font-weight:650;color:var(--app-blue)}
+
+@media(max-width:980px){
+  .desca-dimensions{grid-template-columns:repeat(3,1fr)}
+  .intelligence-grid,.semester-control-grid{grid-template-columns:repeat(2,1fr)}
+  .life-balance-layout{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .home-command-center{grid-template-columns:1fr}.command-priority{border-left:0;border-top:1px solid var(--app-border);text-align:left}.command-center-actions{justify-content:flex-start}
+  .desca-score-main{grid-template-columns:auto 1fr}.desca-score-main>strong{grid-column:1/-1}.desca-dimensions{grid-template-columns:1fr 1fr}.desca-score-footer{flex-direction:column}
+  .priority-intelligence-row{grid-template-columns:28px minmax(0,1fr) auto}.priority-intelligence-row .mini-btn{grid-column:2/-1;justify-self:start}
+  .period-review-grid,.academic-forecast-grid{grid-template-columns:1fr}.forecast-numbers{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .desca-dimensions,.intelligence-grid,.semester-control-grid,.heat-day-summary,.life-balance-copy{grid-template-columns:1fr}
+  .life-balance-copy .callout{grid-column:auto}
+}

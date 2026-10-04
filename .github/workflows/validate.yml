@@ -17,6 +17,7 @@ jobs:
         run: |
           node --check app.js
           node --check modules/growth-utils.js
+          node --check tests/runtime-smoke.js
       - name: Runtime route smoke test
         run: node tests/runtime-smoke.js
       - name: Validate required files
@@ -108,6 +109,12 @@ jobs:
           grep -q 'function openSmartCopilot' app.js
           grep -q 'function relationshipSuggestionData' app.js
           grep -q 'function auditTrailCard' app.js
+          grep -q 'function readingTrendCard' app.js
+          grep -q 'function readingHighlightsCard' app.js
+          grep -q 'function experienceSettingsCard' app.js
+          grep -q 'function copilotRemoteActions' app.js
+          grep -q 'function parseGPX' app.js
+          grep -q 'function parseICSDateTime' app.js
           grep -q 'v70 — Books OS + Control Layer' ui-v21.css
           grep -q 'id="mobileFab"' index.html
           grep -q '"short_name":"Books"' manifest.webmanifest

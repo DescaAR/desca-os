@@ -34,3 +34,6 @@ jobs:
           grep -q 'const CONSISTENCY_TIERS' app.js
           grep -q 'function consistencyBadgeSection' app.js
           grep -q 'Consistency badge system' ui-v21.css
+          grep -q 'const DILIGENCE_RANKS' app.js
+          grep -q 'function diligenceMainBadgeCard' app.js
+          grep -q 'Aggregate diligence rank' ui-v21.css

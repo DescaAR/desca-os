@@ -762,24 +762,43 @@ function consistencyDates(domain){
   }
   return [...new Set(dates.filter(Boolean).filter(d=>d<=today()))].sort()
 }
+function consistencyRoutineCategory(domain){return domain==='fitness'?'health':domain}
+function scheduledConsistencyStats(domain){
+  const category=consistencyRoutineCategory(domain),routines=S.routines.filter(r=>r.active!==false&&r.category===category),days=[...new Set(routines.flatMap(r=>r.days||[]).map(Number))];
+  if(!routines.length||days.length>=7)return null;
+  const success=new Set(consistencyDates(domain)),expected=[];
+  for(let i=729;i>=0;i--){const d=add(today(),-i);if(routines.some(r=>routineDue(r,d)))expected.push(d)}
+  if(expected.at(-1)===today()&&!success.has(today())){
+    const dueNow=routines.filter(r=>routineDue(r,today())).some(r=>!r.time||r.time<=localTime());
+    if(!dueNow)expected.pop()
+  }
+  let best=0,run=0;
+  for(const d of expected){if(success.has(d)){run++;best=Math.max(best,run)}else run=0}
+  let current=0;
+  for(let i=expected.length-1;i>=0;i--){if(success.has(expected[i]))current++;else break}
+  const tier=[...CONSISTENCY_TIERS].reverse().find(x=>best>=x.days)||null,next=CONSISTENCY_TIERS.find(x=>best<x.days)||null;
+  return{domain,dates:[...success].sort(),current,best,activeDays:success.size,tier,next,mode:'schedule',unit:'check-ins',scheduledCount:expected.length}
+}
 function consistencyStats(domain){
+  const protectedStats=scheduledConsistencyStats(domain);
+  if(protectedStats)return protectedStats;
   const dates=consistencyDates(domain),set=new Set(dates);let best=0,run=0,prev=null;
   for(const d of dates){if(prev&&add(prev,1)===d)run++;else run=1;if(run>best)best=run;prev=d}
   let cursor=set.has(today())?today():set.has(add(today(),-1))?add(today(),-1):null,current=0;
   while(cursor&&set.has(cursor)){current++;cursor=add(cursor,-1)}
   const tier=[...CONSISTENCY_TIERS].reverse().find(x=>best>=x.days)||null,next=CONSISTENCY_TIERS.find(x=>best<x.days)||null;
-  return{domain,dates,current,best,activeDays:dates.length,tier,next}
+  return{domain,dates,current,best,activeDays:dates.length,tier,next,mode:'daily',unit:'days'}
 }
 function consistencyTierClass(tier){return tier?'tier-'+tier.name.toLowerCase():'tier-rookie'}
 function consistencyProgress(st){if(!st.next)return 100;const prev=st.tier?.days||0,span=Math.max(1,st.next.days-prev);return clamp(Math.round((st.best-prev)/span*100),0,100)}
 function consistencyBadgeName(domain,tier){const d=CONSISTENCY_DOMAINS[domain]||CONSISTENCY_DOMAINS.overall;return tier?d.badge+' · '+tier.name:d.badge+' · Unranked'}
 function consistencyCompact(domain){
-  const d=CONSISTENCY_DOMAINS[domain]||CONSISTENCY_DOMAINS.overall,st=consistencyStats(domain),tier=st.tier,next=st.next,pct=consistencyProgress(st);
-  return'<article class="consistency-compact '+consistencyTierClass(tier)+'"><div class="consistency-medal"><span>'+esc(d.icon)+'</span><small>'+(tier?tier.mark:'—')+'</small></div><div class="consistency-compact-main"><div class="consistency-compact-top"><div><span class="eyebrow">CONSISTENCY BADGE</span><h3>'+esc(consistencyBadgeName(domain,tier))+'</h3></div><span class="consistency-streak">🔥 '+st.current+' days</span></div><p>Best streak <b>'+st.best+' days</b> • '+st.activeDays+' active days'+(next?' • next <b>'+next.name+' at '+next.days+' days</b>':' • <b>Highest tier achieved</b>')+'</p>'+prog(pct)+'</div><button class="mini-btn" data-route="progress">View Badges</button></article>'
+  const d=CONSISTENCY_DOMAINS[domain]||CONSISTENCY_DOMAINS.overall,st=consistencyStats(domain),tier=st.tier,next=st.next,pct=consistencyProgress(st),unit=st.unit||'days';
+  return'<article class="consistency-compact '+consistencyTierClass(tier)+'"><div class="consistency-medal"><span>'+esc(d.icon)+'</span><small>'+(tier?tier.mark:'—')+'</small></div><div class="consistency-compact-main"><div class="consistency-compact-top"><div><span class="eyebrow">CONSISTENCY BADGE</span><h3>'+esc(consistencyBadgeName(domain,tier))+'</h3></div><span class="consistency-streak">🔥 '+st.current+' '+unit+'</span></div><p>Best streak <b>'+st.best+' '+unit+'</b> • '+st.activeDays+' active days'+(next?' • next <b>'+next.name+' at '+next.days+' '+unit+'</b>':' • <b>Highest tier achieved</b>')+'</p>'+prog(pct)+'</div><button class="mini-btn" data-route="progress">View Badges</button></article>'
 }
 function consistencyDomainCard(domain){
-  const d=CONSISTENCY_DOMAINS[domain],st=consistencyStats(domain),tier=st.tier,next=st.next,pct=consistencyProgress(st),unlocked=CONSISTENCY_TIERS.filter(t=>st.best>=t.days).length;
-  return'<article class="consistency-domain-card '+consistencyTierClass(tier)+'"><div class="consistency-domain-head"><div class="consistency-medal large"><span>'+esc(d.icon)+'</span><small>'+(tier?tier.mark:'—')+'</small></div><div><span class="eyebrow">'+esc(d.label)+'</span><h3>'+esc(consistencyBadgeName(domain,tier))+'</h3><p>Current '+st.current+' days • Best '+st.best+' days</p></div><strong>'+unlocked+'/'+CONSISTENCY_TIERS.length+'</strong></div><div class="consistency-tier-track">'+CONSISTENCY_TIERS.map(t=>'<div class="consistency-tier '+(st.best>=t.days?'unlocked ':'')+'tier-'+t.name.toLowerCase()+'" title="'+esc(d.badge+' '+t.name+' · '+t.days+' days')+'"><span>'+t.mark+'</span><b>'+t.days+'</b><small>'+t.name+'</small></div>').join('')+'</div><div class="consistency-next"><div><span>'+(next?'Next: '+next.name:'Achievement')+'</span><b>'+(next?(Math.max(0,next.days-st.best)+' days left'):'Immortal achieved')+'</b></div>'+prog(pct)+'</div></article>'
+  const d=CONSISTENCY_DOMAINS[domain],st=consistencyStats(domain),tier=st.tier,next=st.next,pct=consistencyProgress(st),unlocked=CONSISTENCY_TIERS.filter(t=>st.best>=t.days).length,unit=st.unit||'days';
+  return'<article class="consistency-domain-card '+consistencyTierClass(tier)+'"><div class="consistency-domain-head"><div class="consistency-medal large"><span>'+esc(d.icon)+'</span><small>'+(tier?tier.mark:'—')+'</small></div><div><span class="eyebrow">'+esc(d.label)+'</span><h3>'+esc(consistencyBadgeName(domain,tier))+'</h3><p>Current '+st.current+' '+unit+' • Best '+st.best+' '+unit+'</p></div><strong>'+unlocked+'/'+CONSISTENCY_TIERS.length+'</strong></div><div class="consistency-tier-track">'+CONSISTENCY_TIERS.map(t=>'<div class="consistency-tier '+(st.best>=t.days?'unlocked ':'')+'tier-'+t.name.toLowerCase()+'" title="'+esc(d.badge+' '+t.name+' · '+t.days+' '+unit)+'"><span>'+t.mark+'</span><b>'+t.days+'</b><small>'+t.name+'</small></div>').join('')+'</div><div class="consistency-next"><div><span>'+(next?'Next: '+next.name:'Achievement')+'</span><b>'+(next?(Math.max(0,next.days-st.best)+' '+unit+' left'):'Immortal achieved')+'</b></div>'+prog(pct)+'</div></article>'
 }
 function consistencyBadgeSection(){
   const domains=Object.keys(CONSISTENCY_DOMAINS),stats=domains.map(consistencyStats),unlocked=stats.reduce((n,st)=>n+CONSISTENCY_TIERS.filter(t=>st.best>=t.days).length,0),total=domains.length*CONSISTENCY_TIERS.length,legend=stats.filter(st=>st.best>=365).length;

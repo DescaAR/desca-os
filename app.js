@@ -216,7 +216,7 @@ function recordAutomation(key,rule,summary,targetId=''){if(automationSeen(key))r
 function automationTaskExists(key){return S.tasks.some(t=>t.automationKey===key||(t.tags||[]).includes('automation:'+key))}
 function createAutomationTask({key,title,date=today(),deadline='',priority='medium',category='personal',estimate=60,notes='',goalId=null,projectId=null,studyTopicId=null}){
   if(automationSeen(key)||automationTaskExists(key))return null;
-  const task={id:uid('t'),title,date,deadline,status:'planned',priority,category,goalId,projectId,studyTopicId,estimate,startTime:'',notes,inbox:false,subtasks:[],tags:[],automationKey:key,recurrence:'none',dependsOn:null,googleTaskSync:false,googleCalendarSync:false,googleTaskId:null,googleTaskListId:null,googleCalendarEventId:null,googleOrigin:false,recurringSpawned:false};
+  const task={id:uid('t'),title,date,deadline,status:'planned',priority,category,goalId,projectId,studyTopicId,estimate,startTime:'',notes,inbox:false,subtasks:[],tags:[],automationKey:key,autoDateManaged:true,recurrence:'none',dependsOn:null,googleTaskSync:false,googleCalendarSync:false,googleTaskId:null,googleTaskListId:null,googleCalendarEventId:null,googleOrigin:false,recurringSpawned:false};
   S.tasks.push(task);recordAutomation(key,'task',title,task.id);return task
 }
 function prepForCalendarEvent(e){
@@ -314,11 +314,56 @@ function reconcileAutoScheduledWithGoogle(d=today()){
   return cleared
 }
 function maybeAutoPlanToday(){if(!S.settings.automationEnabled||!S.settings.automationAutoPlan||activeTimer())return 0;return autoPlanToday(true)}
-function smartPlannerCard(){const d=today(),items=calendarItems(d,{includeRoutines:true}).filter(x=>x.status!=='done'),unscheduled=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done'&&!t.startTime).length;return'<article class="card smart-planner-card" data-widget="planner"><div class="card-head"><div><h2>Smart Daily Planner</h2><p>Routine, deadline, prioritas, dan histori waktu belajar.</p></div><span class="pill blue">'+items.length+' agenda</span></div><div class="planner-preview">'+(items.length?items.slice(0,7).map(x=>'<div class="planner-row"><time>'+esc(x.time||'—')+'</time><span>'+esc(x.title)+'</span><b>'+cat(x.category)+'</b></div>').join(''):'<div class="empty empty-compact">Belum ada agenda hari ini.</div>')+'</div>'+(unscheduled?'<button class="btn btn-primary" style="margin-top:12px" data-act="autoPlanToday">Auto-plan '+unscheduled+' task tanpa jam</button>':'<div class="callout" style="margin-top:12px">Semua task hari ini sudah memiliki slot waktu.</div>')+'</article>'}
-
+function mergeBusyBlocks(rows=[]){
+  const a=rows.filter(x=>x.s!==null&&x.e>x.s).sort((x,y)=>x.s-y.s),out=[];
+  for(const b of a){const last=out.at(-1);if(last&&b.s<=last.e)last.e=Math.max(last.e,b.e);else out.push({...b})}
+  return out
+}
+function fixedBlocksForReplan(d=today()){
+  const external=calendarItems(d,{includeRoutines:true}).filter(x=>x.kind!=='task'&&x.time&&x.status!=='done').map(x=>({s:minutesFromHHMM(x.time),e:(minutesFromHHMM(x.time)||0)+Math.max(15,+x.duration||30),title:x.title,kind:x.kind})),
+        manual=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done'&&t.startTime&&!t.autoScheduled).map(t=>({s:minutesFromHHMM(t.startTime),e:(minutesFromHHMM(t.startTime)||0)+Math.max(15,+t.estimate||60),title:t.title,kind:'manual-task'}));
+  return mergeBusyBlocks([...external,...manual])
+}
+function dayLoadAnalysis(d=today()){
+  const startBase=minutesFromHHMM(S.settings.plannerStart)||480,end=minutesFromHHMM(S.settings.plannerEnd)||1320,start=d===today()?Math.max(startBase,roundQuarter(minutesFromHHMM(localTime())||0)):startBase,fixed=fixedBlocksForReplan(d),fixedMinutes=mergeBusyBlocks(fixed.map(b=>({s:Math.max(start,b.s),e:Math.min(end,b.e)}))).reduce((n,b)=>n+Math.max(0,b.e-b.s),0),capacity=Math.max(0,end-start-fixedMinutes),movable=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done'&&(t.autoScheduled||!t.startTime)).filter(t=>{const dep=t.dependsOn?S.tasks.find(x=>x.id===t.dependsOn):null;return!dep||dep.status==='done'}),workload=movable.reduce((n,t)=>n+clamp(+t.estimate||60,15,240),0),overload=Math.max(0,workload-capacity);
+  return{d,start,end,fixed,capacity,movable,workload,overload}
+}
+function nextFreeStart(busy,start,end,dur,deep=false){
+  const limit=deep?Math.min(end,1230):end;let cursor=start;
+  for(const b of mergeBusyBlocks(busy)){if(b.e<=cursor)continue;if(b.s>cursor&&cursor+dur<=Math.min(b.s,limit))return cursor;cursor=Math.max(cursor,b.e);if(cursor+dur>limit)return null}
+  return cursor+dur<=limit?cursor:null
+}
+function scheduleAutoManagedOnDay(t,d,busy,earliest){
+  const end=minutesFromHHMM(S.settings.plannerEnd)||1320,dur=clamp(+t.estimate||60,15,240),deep=['study','research','english'].includes(t.category)&&dur>=75,start=nextFreeStart(busy,earliest,end,dur,deep);
+  if(start===null)return null;
+  t.date=d;t.startTime=hhmmFromMinutes(start);t.autoScheduled=true;t.autoScheduledAt=new Date().toISOString();
+  busy.push({s:start,e:start+dur,title:t.title,kind:'auto-task'});return start
+}
+function replanRemainingDay(silent=false){
+  const d=today(),analysis=dayLoadAnalysis(d),start=analysis.start,tasks=analysis.movable.slice().sort((a,b)=>(a.deadline||'9999-99-99').localeCompare(b.deadline||'9999-99-99')||priorityRank(b.priority)-priorityRank(a.priority)||(+a.estimate||60)-(+b.estimate||60)),busy=[...analysis.fixed],wasAuto=new Map(tasks.map(t=>[t.id,!!t.autoScheduled]));let scheduled=0,carried=0,unscheduled=0;
+  for(const t of tasks)if(t.autoScheduled){t.startTime='';t.autoScheduled=false}
+  for(const t of tasks){
+    const placed=scheduleAutoManagedOnDay(t,d,busy,start);
+    if(placed!==null){scheduled++;continue}
+    const mayMoveDate=!!t.autoDateManaged||!!t.automationKey;
+    if(mayMoveDate){
+      let moved=false;
+      for(let offset=1;offset<=3&&!moved;offset++){
+        const nd=add(d,offset);if(t.deadline&&nd>t.deadline)break;
+        const nb=fixedBlocksForReplan(nd),ns=minutesFromHHMM(S.settings.plannerStart)||480;
+        if(scheduleAutoManagedOnDay(t,nd,nb,ns)!==null){t.autoDateManaged=true;carried++;moved=true}
+      }
+      if(moved)continue
+    }
+    t.startTime='';t.autoScheduled=false;unscheduled++
+  }
+  if(tasks.length)save('Smart reschedule v2');
+  if(!silent){toast('Rebalanced · '+scheduled+' scheduled'+(carried?' · '+carried+' carried forward':'')+(unscheduled?' · '+unscheduled+' need review':''));render()}
+  return{scheduled,carried,unscheduled,overload:analysis.overload}
+}
+function smartPlannerCard(){const d=today(),items=calendarItems(d,{includeRoutines:true}).filter(x=>x.status!=='done'),unscheduled=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done'&&!t.startTime).length,load=dayLoadAnalysis(d);return'<article class="card smart-planner-card" data-widget="planner"><div class="card-head"><div><h2>Smart Reschedule</h2><p>Manual times stay fixed. Autopilot tasks move only around real free space.</p></div><span class="pill '+(load.overload?'orange':'green')+'">'+(load.overload?'OVERLOAD '+mins(load.overload):'BALANCED')+'</span></div><div class="planner-capacity"><div><span>Movable workload</span><b>'+mins(load.workload)+'</b></div><div><span>Free capacity</span><b>'+mins(load.capacity)+'</b></div><div><span>Manual / fixed</span><b>'+load.fixed.length+' blocks</b></div></div><div class="planner-preview">'+(items.length?items.slice(0,6).map(x=>'<div class="planner-row"><time>'+esc(x.time||'—')+'</time><span>'+esc(x.title)+'</span><b>'+cat(x.category)+'</b></div>').join(''):'<div class="empty empty-compact">No agenda yet.</div>')+'</div><div class="button-row" style="margin-top:12px"><button class="btn btn-primary" data-act="replanDay">Rebalance Safely</button>'+(unscheduled?'<button class="btn btn-secondary" data-act="autoPlanToday">Place '+unscheduled+' unscheduled</button>':'')+'</div>'+(load.overload?'<div class="callout planner-overload-note">Today is overloaded by <b>'+mins(load.overload)+'</b>. Only automation-managed dates may be carried forward automatically.</div>':'')+'</article>'}
 function roundQuarter(v){return Math.ceil(v/15)*15}
-function replanRemainingDay(silent=false){const d=today(),now=roundQuarter(minutesFromHHMM(localTime())||0),end=minutesFromHHMM(S.settings.plannerEnd)||1320,start=Math.max(now,minutesFromHHMM(S.settings.plannerStart)||480),fixed=calendarItems(d,{includeRoutines:true}).filter(x=>x.kind!=='task'&&x.time).map(x=>({s:minutesFromHHMM(x.time),e:(minutesFromHHMM(x.time)||0)+Math.max(15,+x.duration||30)})).filter(x=>x.s!==null).sort((a,b)=>a.s-b.s),tasks=S.tasks.filter(t=>!t.inbox&&t.date===d&&t.status!=='done').filter(t=>{const dep=t.dependsOn?S.tasks.find(x=>x.id===t.dependsOn):null;return!dep||dep.status==='done'}).sort((a,b)=>(a.startTime||'99:99').localeCompare(b.startTime||'99:99')||priorityRank(b.priority)-priorityRank(a.priority));let cursor=start,moved=0,tomorrow=[];for(const t of tasks){const dur=clamp(+t.estimate||60,15,240);for(const b of fixed){if(cursor<b.e&&cursor+dur>b.s)cursor=b.e}if(cursor+dur>end){tomorrow.push(t);continue}if(!t.originalStartTime&&t.startTime)t.originalStartTime=t.startTime;t.startTime=hhmmFromMinutes(cursor);moved++;cursor+=dur+15}for(const t of tomorrow){if(!t.originalDate)t.originalDate=t.date;t.date=add(d,1);t.startTime=''}save('Auto replan');if(!silent){toast('Replan selesai: '+moved+' task hari ini'+(tomorrow.length?' • '+tomorrow.length+' dipindah besok':'') );render()}}
-function maybeAutoReplan(){if(!S.settings.autoReplan||activeTimer())return;const m=minutesFromHHMM(localTime())||0,key=today()+'-'+Math.floor(m/30),late=S.tasks.some(t=>t.date===today()&&t.status!=='done'&&t.startTime&&(minutesFromHHMM(t.startTime)||0)<m);if(late&&S.meta.lastAutoReplanKey!==key){S.meta.lastAutoReplanKey=key;replanRemainingDay(true)}}
+function maybeAutoReplan(){if(!S.settings.autoReplan||activeTimer())return;const m=minutesFromHHMM(localTime())||0,key=today()+'-'+Math.floor(m/30),load=dayLoadAnalysis(today()),late=S.tasks.some(t=>t.date===today()&&t.status!=='done'&&t.autoScheduled&&t.startTime&&(minutesFromHHMM(t.startTime)||0)<m);if((late||load.overload>0)&&S.meta.lastAutoReplanKey!==key){S.meta.lastAutoReplanKey=key;replanRemainingDay(true)}}
 function s2LinkedDone(x){const t=x?.taskId?S.tasks.find(v=>v.id===x.taskId):null;return!!x?.done||t?.status==='done'}
 function s2ItemDone(x){return s2LinkedDone(x)}
 function s2DocumentDone(x){return s2LinkedDone(x)}

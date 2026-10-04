@@ -1841,3 +1841,11 @@ html[data-theme=dark] .dmath-platform.facebook .dmath-platform-icon{background:v
     align-items:flex-start;
   }
 }
+
+
+.modal-subtitle{
+  margin:4px 0 0;
+  color:var(--app-muted);
+  font-size:9.5px;
+  line-height:1.45;
+}

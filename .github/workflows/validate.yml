@@ -27,3 +27,6 @@ jobs:
           grep -q 'modules/growth-utils.js' index.html
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
+          grep -q 'function nowNextCard' app.js
+          grep -q 'function nowNextPick' app.js
+          grep -q 'function startRoutineTimer' app.js

@@ -4552,3 +4552,114 @@ input,select,textarea{
   .desca-dimensions,.intelligence-grid,.semester-control-grid,.heat-day-summary,.life-balance-copy{grid-template-columns:1fr}
   .life-balance-copy .callout{grid-column:auto}
 }
+
+
+/* v60 — Autonomy Suite */
+.mastery-tree-card,.capacity-budget-card,.deadline-risk-engine,.smart-inbox-zero-card,.day-closure-card,
+.research-graph-intelligence,.season-command-card,.data-confidence-card,.critical-alerts-card,.home-quick-capture,.pwa-install-card{
+  margin-top:16px;
+}
+.mastery-tree{display:grid;gap:14px}
+.mastery-branch{padding:14px;border:1px solid var(--app-border);border-radius:16px;background:var(--app-surface-2)}
+.mastery-branch-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.mastery-branch-title b{font-size:14px}.mastery-branch-title span{font-size:11px;color:var(--app-muted)}
+.mastery-node-track{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:2px 2px 8px}
+.mastery-node{min-width:170px;text-align:left;padding:12px;border:1px solid var(--app-border);border-radius:14px;background:var(--app-surface);color:var(--app-text);cursor:pointer}
+.mastery-node small,.mastery-node b,.mastery-node strong,.mastery-node em{display:block}
+.mastery-node small{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--app-muted)}
+.mastery-node b{margin:5px 0 9px;font-size:12px}.mastery-node strong{font-size:20px}.mastery-node em{font-style:normal;font-size:10px;color:var(--app-muted);margin-top:4px}
+.mastery-node.learning{border-color:color-mix(in srgb,var(--app-amber) 28%,var(--app-border))}
+.mastery-node.practiced{border-color:color-mix(in srgb,var(--app-blue) 30%,var(--app-border))}
+.mastery-node.mastered{border-color:color-mix(in srgb,var(--app-green) 35%,var(--app-border));background:color-mix(in srgb,var(--app-green) 5%,var(--app-surface))}
+.mastery-link{color:var(--app-muted);font-weight:900;flex:none}
+
+.capacity-budget-grid,.inbox-zero-grid,.day-closure-grid,.research-graph-stats,.project-command-grid,.confidence-grid{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0
+}
+.capacity-budget-grid>div,.inbox-zero-grid>div,.day-closure-grid>div,.research-graph-stats>div,.project-command-grid>section,.confidence-grid>div{
+  padding:13px;border:1px solid var(--app-border);border-radius:13px;background:var(--app-surface-2)
+}
+.capacity-budget-grid span,.capacity-budget-grid b,.inbox-zero-grid span,.inbox-zero-grid b,.day-closure-grid span,.day-closure-grid b,
+.research-graph-stats span,.research-graph-stats b,.project-command-grid span,.project-command-grid b,.project-command-grid small,
+.confidence-grid span,.confidence-grid b{display:block}
+.capacity-budget-grid span,.inbox-zero-grid span,.day-closure-grid span,.research-graph-stats span,.project-command-grid span,.confidence-grid span{
+  font-size:9px;color:var(--app-muted);text-transform:uppercase;letter-spacing:.06em
+}
+.capacity-budget-grid b,.inbox-zero-grid b,.day-closure-grid b,.research-graph-stats b,.project-command-grid b,.confidence-grid b{font-size:18px;margin-top:4px}
+.project-command-grid small{font-size:10px;color:var(--app-muted);margin-top:3px}
+
+.deadline-risk-list{display:grid;gap:7px}
+.deadline-risk-row{
+  width:100%;display:grid;grid-template-columns:minmax(0,1fr) 62px 76px;align-items:center;gap:12px;
+  padding:12px 14px;border:1px solid var(--app-border);border-radius:13px;background:var(--app-surface);color:var(--app-text);text-align:left;cursor:pointer
+}
+.deadline-risk-row div>span,.deadline-risk-row div>b,.deadline-risk-row div>small{display:block}
+.deadline-risk-row div>span{font-size:9px;text-transform:uppercase;color:var(--app-muted)}
+.deadline-risk-row div>b{font-size:13px;margin:3px 0}.deadline-risk-row div>small{font-size:10px;color:var(--app-muted)}
+.deadline-risk-row>strong{font-size:20px;text-align:right}.deadline-risk-row>em{font-style:normal;font-size:9px;text-transform:uppercase;text-align:right}
+.deadline-risk-row.at-risk{border-color:color-mix(in srgb,var(--app-red) 35%,var(--app-border))}
+.deadline-risk-row.at-risk>strong,.deadline-risk-row.at-risk>em{color:var(--app-red)}
+.deadline-risk-row.tight>strong,.deadline-risk-row.tight>em{color:var(--app-amber)}
+.deadline-risk-row.on-track>strong,.deadline-risk-row.on-track>em{color:var(--app-green)}
+
+.day-closure-card{border-color:color-mix(in srgb,var(--app-blue) 20%,var(--app-border))}
+.primary-mini{background:color-mix(in srgb,var(--app-blue) 10%,var(--app-surface));color:var(--app-blue)!important;border-color:color-mix(in srgb,var(--app-blue) 25%,var(--app-border))!important}
+
+.project-workspace-modal-head{position:sticky;top:0;z-index:4;background:var(--app-surface);padding-bottom:10px}
+.project-workspace-modal-grid{margin-top:14px}.workspace-knowledge-list{display:grid;gap:7px}
+.workspace-knowledge-list button,.focus-linked-material button{
+  width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;align-items:center;padding:9px 10px;border:1px solid var(--app-border);
+  border-radius:10px;background:var(--app-surface-2);color:var(--app-text);text-align:left;cursor:pointer
+}
+.workspace-knowledge-list button b,.focus-linked-material button b{font-size:8px;letter-spacing:.08em;color:var(--app-blue)}
+.workspace-knowledge-list button span,.focus-linked-material button span{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.focus-linked-material{display:grid;gap:6px;margin:14px 0}.focus-linked-material .eyebrow{margin-bottom:2px}
+.focus-outcome-label{font-size:9px;letter-spacing:.1em;color:var(--app-muted);font-weight:800;margin-top:14px}
+.outcome-actions{flex-wrap:wrap}.outcome-actions .btn{min-width:110px}
+
+.life-milestone-list{display:grid;gap:5px}
+.life-milestone-list button{display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:center;padding:10px;border:0;border-bottom:1px solid var(--app-border);background:transparent;color:var(--app-text);text-align:left;cursor:pointer}
+.life-milestone-list button>span{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--app-surface-2);color:var(--app-blue);font-weight:800}
+.life-milestone-list b,.life-milestone-list small{display:block}.life-milestone-list small{font-size:10px;color:var(--app-muted);margin-top:2px}
+
+.season-mission-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.season-mission-grid section{padding:13px;border:1px solid var(--app-border);border-radius:13px;background:var(--app-surface-2)}
+.season-mission-grid section.done{border-color:color-mix(in srgb,var(--app-green) 30%,var(--app-border))}
+.season-mission-grid section>div:first-child{display:flex;justify-content:space-between;gap:8px}.season-mission-grid b{font-size:11px}.season-mission-grid span,.season-mission-grid small{font-size:10px;color:var(--app-muted)}
+.season-mission-grid .progress{margin:8px 0}
+
+.scenario-controls{margin-bottom:14px}.scenario-result{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
+.scenario-result>div{padding:12px;border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface-2)}
+.scenario-result span,.scenario-result b{display:block}.scenario-result span{font-size:9px;text-transform:uppercase;color:var(--app-muted)}.scenario-result b{font-size:17px;margin-top:4px}
+.scenario-result.risk>div:first-child{border-color:color-mix(in srgb,var(--app-red) 35%,var(--app-border))}.scenario-result.risk>div:first-child b{color:var(--app-red)}
+.scenario-result.feasible>div:first-child b{color:var(--app-green)}
+
+.confidence-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.critical-alert-list{display:grid;gap:7px}.critical-alert-list>button{
+  width:100%;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--app-border);border-radius:12px;background:var(--app-surface);color:var(--app-text);text-align:left;cursor:pointer
+}
+.critical-alert-list>button>span{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-weight:900}.critical-alert-list b,.critical-alert-list small{display:block}
+.critical-alert-list small{font-size:10px;color:var(--app-muted);margin-top:2px}
+.critical-alert-list .danger{border-color:color-mix(in srgb,var(--app-red) 30%,var(--app-border))}.critical-alert-list .danger>span{background:color-mix(in srgb,var(--app-red) 10%,var(--app-surface));color:var(--app-red)}
+.critical-alert-list .warning{border-color:color-mix(in srgb,var(--app-amber) 30%,var(--app-border))}.critical-alert-list .warning>span{background:color-mix(in srgb,var(--app-amber) 10%,var(--app-surface));color:var(--app-amber)}
+.critical-clear{display:flex;gap:10px;align-items:center;padding:13px;border-radius:13px;background:color-mix(in srgb,var(--app-green) 5%,var(--app-surface));border:1px solid color-mix(in srgb,var(--app-green) 22%,var(--app-border))}
+.critical-clear>span{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:color-mix(in srgb,var(--app-green) 10%,var(--app-surface));color:var(--app-green)}
+.critical-clear b,.critical-clear small{display:block}.critical-clear small{font-size:10px;color:var(--app-muted)}
+
+.home-quick-capture .universal-capture-box{margin-top:4px}.home-quick-capture .capture-hint{margin-top:6px}
+.pwa-shortcuts{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.pwa-shortcuts span{padding:7px 9px;border-radius:9px;background:var(--app-surface-2);border:1px solid var(--app-border);font-size:10px;font-weight:700}
+
+@media(max-width:980px){
+  .capacity-budget-grid,.day-closure-grid,.research-graph-stats,.project-command-grid{grid-template-columns:repeat(2,1fr)}
+  .confidence-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:700px){
+  .mastery-node{min-width:150px}
+  .deadline-risk-row{grid-template-columns:minmax(0,1fr) auto}.deadline-risk-row>em{grid-column:1/-1;text-align:left}
+  .scenario-result,.season-mission-grid{grid-template-columns:1fr 1fr}
+  .project-workspace-modal-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .capacity-budget-grid,.inbox-zero-grid,.day-closure-grid,.research-graph-stats,.project-command-grid,.confidence-grid,.scenario-result,.season-mission-grid{grid-template-columns:1fr}
+}

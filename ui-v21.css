@@ -3716,3 +3716,186 @@ input,select,textarea{
   .radar-copy{grid-template-columns:1fr}
   .today-more-inner{padding:12px}
 }
+
+
+/* v43 — Paper Library PDF attachments */
+.paper-row{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+.paper-file-icon{
+  width:42px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--app-border);
+  border-radius:10px;
+  background:var(--app-surface);
+  color:var(--app-muted);
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.05em;
+}
+.paper-file-icon.attached{
+  border-color:color-mix(in srgb,var(--app-red) 24%,var(--app-border));
+  background:color-mix(in srgb,var(--app-red) 6%,var(--app-surface));
+  color:var(--app-red);
+}
+.paper-row-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
+.paper-open-btn{
+  border-color:color-mix(in srgb,var(--app-blue) 22%,var(--app-border))!important;
+  background:var(--app-blue-soft)!important;
+  color:var(--app-blue)!important;
+}
+.paper-attachment-meta{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:5px 7px;
+  margin-top:7px;
+}
+.paper-attachment-meta span{
+  padding:3px 6px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--app-red) 7%,var(--app-surface));
+  color:var(--app-red);
+  font-size:var(--type-micro);
+  font-weight:800;
+}
+.paper-attachment-meta b,
+.paper-attachment-meta small{
+  color:var(--app-muted);
+  font-size:var(--type-micro);
+  font-weight:650;
+}
+.paper-attachment-meta.empty-file span{
+  background:var(--app-surface-3);
+  color:var(--app-muted);
+}
+.paper-upload-field{
+  margin-top:4px;
+}
+.paper-file-drop{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-height:68px;
+  margin-top:7px;
+  padding:12px 14px;
+  overflow:hidden;
+  border:1.5px dashed var(--app-border-strong);
+  border-radius:13px;
+  background:var(--app-surface-2);
+  cursor:pointer;
+  transition:border-color .18s ease,background .18s ease;
+}
+.paper-file-drop:hover,
+.paper-file-drop.selected{
+  border-color:var(--app-blue);
+  background:var(--app-blue-soft);
+}
+.paper-file-drop input{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
+}
+.paper-file-drop>span{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  display:grid;
+  place-items:center;
+  border-radius:10px;
+  background:var(--app-surface);
+  color:var(--app-blue);
+  font-size:16px;
+  font-weight:850;
+}
+.paper-file-drop>div{
+  min-width:0;
+}
+.paper-file-drop b{
+  display:block;
+  color:var(--app-text);
+  font-size:var(--type-small);
+}
+.paper-file-drop small{
+  display:block;
+  margin-top:3px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--app-muted);
+  font-size:var(--type-caption);
+}
+.paper-file-current{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:7px;
+  padding:10px 11px;
+  border:1px solid color-mix(in srgb,var(--app-green) 20%,var(--app-border));
+  border-radius:11px;
+  background:color-mix(in srgb,var(--app-green) 5%,var(--app-surface));
+}
+.paper-file-current>div:first-child{
+  min-width:0;
+}
+.paper-file-current span,
+.paper-file-current b,
+.paper-file-current small{
+  display:block;
+}
+.paper-file-current span{
+  color:var(--app-green);
+  font-size:var(--type-micro);
+  font-weight:800;
+}
+.paper-file-current b{
+  margin-top:2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--app-text);
+  font-size:var(--type-caption);
+}
+.paper-file-current small{
+  margin-top:2px;
+  color:var(--app-muted);
+  font-size:var(--type-micro);
+}
+.mini-btn.danger{
+  color:var(--app-red)!important;
+}
+@media(max-width:620px){
+  .paper-row{
+    grid-template-columns:auto minmax(0,1fr)!important;
+    align-items:start!important;
+  }
+  .paper-row-actions{
+    grid-column:1/-1;
+    width:100%;
+    flex-direction:row;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  .paper-row-actions .mini-btn{
+    margin-left:0!important;
+  }
+  .paper-file-current{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}

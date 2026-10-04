@@ -31,3 +31,6 @@ jobs:
           grep -q 'function nowNextPick' app.js
           grep -q 'function startRoutineTimer' app.js
           grep -q 'Unified typography system' ui-v21.css
+          grep -q 'const CONSISTENCY_TIERS' app.js
+          grep -q 'function consistencyBadgeSection' app.js
+          grep -q 'Consistency badge system' ui-v21.css

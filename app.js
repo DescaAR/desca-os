@@ -29,7 +29,7 @@ const DAILY_ROUTINE_PRESETS=[
 ];
 function cloneDailyPreset(r){return{...r,days:r.days.slice()}}
 function installDailyBaseline(force=false){let added=0;for(const p of DAILY_ROUTINE_PRESETS){const exists=S.routines.some(r=>r.presetKey===p.presetKey||r.id===p.id||r.title===p.title);if(exists&&!force)continue;if(exists&&force){const r=S.routines.find(r=>r.presetKey===p.presetKey||r.id===p.id||r.title===p.title);Object.assign(r,cloneDailyPreset(p));continue}S.routines.push(cloneDailyPreset(p));added++}return added}
-function seed(){return{profile:{name:'Desca',timezone:'Asia/Jakarta',dailyFocusTarget:240,weeklyTarget:1800},settings:{theme:'light',sidebarCollapsed:false,pomodoroPreset:'classic',pomodoroFocus:25,pomodoroShortBreak:5,pomodoroLongBreak:15,pomodoroCycles:4,notifications:false,reminderLead:30,calendarView:'month',plannerStart:'08:00',plannerEnd:'22:00',supabaseUrl:'',supabaseAnonKey:'',googleClientId:'',googleTaskListId:'',googleTaskListTitle:'',googleLastSync:'',autoCloudSync:false,autoReplan:false,automationEnabled:true,automationAutoPlan:true,automationCalendarPrep:true,automationDeadline:true,automationS2:true,automationResearchNudge:true,autoDayClosure:true,smartNotifications:true,runningMaxHR:190,runningRestingHR:60,runningWeeklyGoalKm:20,dashboardWidgets:['now','quests','timeline','summary','planner','priorities','life','timer','pomodoro','recommendation','weekly','goals'],vaultLockEnabled:false,vaultLockSalt:'',vaultLockVerifier:'',lastUpdateCheck:'',latestKnownBuild:60},tasks:[],activities:[],routines:DAILY_ROUTINE_PRESETS.map(cloneDailyPreset),routineSkips:[],attendance:[],goals:[],projects:[],studyTopics:[],studyTests:[],researchPapers:[],researchNotes:[],vault:[],rankHistory:[],archive:[],notificationsCenter:[],examModes:[],academic:{semesters:[],courses:[],assessments:[]},s2Prep:{focus:'Analisis / Kombinatorika',targetIntake:'',universities:[{id:'s2u_undip',name:'UNDIP',status:'shortlist'},{id:'s2u_ub',name:'UB',status:'shortlist'},{id:'s2u_uns',name:'UNS',status:'shortlist'}],scholarships:[{id:'s2s_lpdp',name:'LPDP',status:'research'},{id:'s2s_bu',name:'Beasiswa Unggulan',status:'research'},{id:'s2s_pmdsu',name:'PMDSU',status:'research'}],checklist:[{id:'s2c_focus',title:'Tetapkan fokus bidang utama S2',group:'Academic',done:false,due:''},{id:'s2c_program',title:'Bandingkan program, kurikulum, dan kelompok riset kampus target',group:'Academic',done:false,due:''},{id:'s2c_cv',title:'Siapkan CV akademik terbaru',group:'Documents',done:false,due:''},{id:'s2c_transcript',title:'Siapkan transkrip dan dokumen akademik',group:'Documents',done:false,due:''},{id:'s2c_sop',title:'Tulis draft statement of purpose',group:'Documents',done:false,due:''},{id:'s2c_research',title:'Siapkan arah atau proposal riset awal',group:'Research',done:false,due:''},{id:'s2c_english',title:'Rencanakan tes bahasa Inggris sesuai persyaratan tujuan',group:'Tests',done:false,due:''},{id:'s2c_scholarship',title:'Petakan beasiswa dan timeline pendaftaran',group:'Scholarship',done:false,due:''},{id:'s2c_recommendation',title:'Identifikasi calon pemberi surat rekomendasi',group:'Documents',done:false,due:''}],documents:[
+function seed(){return{profile:{name:'Desca',timezone:'Asia/Jakarta',dailyFocusTarget:240,weeklyTarget:1800},settings:{theme:'light',sidebarCollapsed:false,pomodoroPreset:'classic',pomodoroFocus:25,pomodoroShortBreak:5,pomodoroLongBreak:15,pomodoroCycles:4,notifications:false,reminderLead:30,calendarView:'month',plannerStart:'08:00',plannerEnd:'22:00',supabaseUrl:'',supabaseAnonKey:'',googleClientId:'',googleTaskListId:'',googleTaskListTitle:'',googleLastSync:'',autoCloudSync:false,autoReplan:false,automationEnabled:true,automationAutoPlan:true,automationCalendarPrep:true,automationDeadline:true,automationS2:true,automationResearchNudge:true,autoDayClosure:true,smartNotifications:true,runningMaxHR:190,runningRestingHR:60,runningWeeklyGoalKm:20,dashboardWidgets:['now','quests','timeline','summary','planner','priorities','life','timer','pomodoro','recommendation','weekly','goals'],vaultLockEnabled:false,vaultLockSalt:'',vaultLockVerifier:'',lastUpdateCheck:'',latestKnownBuild:61},tasks:[],activities:[],routines:DAILY_ROUTINE_PRESETS.map(cloneDailyPreset),routineSkips:[],attendance:[],goals:[],projects:[],studyTopics:[],studyTests:[],researchPapers:[],researchNotes:[],vault:[],rankHistory:[],archive:[],notificationsCenter:[],examModes:[],academic:{semesters:[],courses:[],assessments:[]},s2Prep:{focus:'Analisis / Kombinatorika',targetIntake:'',universities:[{id:'s2u_undip',name:'UNDIP',status:'shortlist'},{id:'s2u_ub',name:'UB',status:'shortlist'},{id:'s2u_uns',name:'UNS',status:'shortlist'}],scholarships:[{id:'s2s_lpdp',name:'LPDP',status:'research'},{id:'s2s_bu',name:'Beasiswa Unggulan',status:'research'},{id:'s2s_pmdsu',name:'PMDSU',status:'research'}],checklist:[{id:'s2c_focus',title:'Tetapkan fokus bidang utama S2',group:'Academic',done:false,due:''},{id:'s2c_program',title:'Bandingkan program, kurikulum, dan kelompok riset kampus target',group:'Academic',done:false,due:''},{id:'s2c_cv',title:'Siapkan CV akademik terbaru',group:'Documents',done:false,due:''},{id:'s2c_transcript',title:'Siapkan transkrip dan dokumen akademik',group:'Documents',done:false,due:''},{id:'s2c_sop',title:'Tulis draft statement of purpose',group:'Documents',done:false,due:''},{id:'s2c_research',title:'Siapkan arah atau proposal riset awal',group:'Research',done:false,due:''},{id:'s2c_english',title:'Rencanakan tes bahasa Inggris sesuai persyaratan tujuan',group:'Tests',done:false,due:''},{id:'s2c_scholarship',title:'Petakan beasiswa dan timeline pendaftaran',group:'Scholarship',done:false,due:''},{id:'s2c_recommendation',title:'Identifikasi calon pemberi surat rekomendasi',group:'Documents',done:false,due:''}],documents:[
 {id:'s2d_ktp',title:'KTP',group:'Identitas',done:false,due:'',taskId:null},
 {id:'s2d_kk',title:'Kartu Keluarga',group:'Identitas',done:false,due:'',taskId:null},
 {id:'s2d_photo',title:'Pas foto formal terbaru',group:'Identitas',done:false,due:'',taskId:null},
@@ -987,7 +987,7 @@ function queueGoogleCalendarRefresh(){if(!googleReady()||G.busy)return;const las
 function importCalendarSnapshotData(pack){const rows=Array.isArray(pack)?pack:Array.isArray(pack?.events)?pack.events:null;if(!rows)throw new Error('Format snapshot tidak valid');S.googleEvents=rows.map(e=>({id:String(e.id||uid('gcal')),title:String(e.title||e.summary||'(Tanpa judul)'),description:String(e.description||''),date:String(e.date||''),time:String(e.time||''),duration:Math.max(0,+e.duration||0),allDay:!!e.allDay,status:e.status||'confirmed',htmlLink:String(e.htmlLink||e.url||''),updated:e.updated||'',descaTaskId:e.descaTaskId||''})).filter(e=>e.date);S.settings.googleLastSync=new Date().toISOString();save('Import Google Calendar snapshot');toast(S.googleEvents.length+' event Google Calendar diimpor');render()}
 function importGoogleEvent(id){const e=S.googleEvents.find(x=>x.id===id);if(!e)return;if(S.tasks.some(t=>t.googleCalendarEventId===e.id)){toast('Event ini sudah terhubung ke task');return}const t={id:uid('t'),title:e.title,date:e.date||today(),deadline:e.date||'',status:'planned',priority:'medium',category:'personal',goalId:null,estimate:e.duration||60,startTime:e.time||'',notes:e.description||'',inbox:false,subtasks:[],tags:['google-calendar'],recurrence:'none',dependsOn:null,googleCalendarSync:true,googleCalendarEventId:e.id};S.tasks.push(t);save();close();toast('Google Calendar event diimpor sebagai task');render()}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-const BUILD_NUMBER=60;
+const BUILD_NUMBER=61;
 let vaultUnlockedSession=false;
 function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
 function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -1844,7 +1844,7 @@ function settingsPage(){
   const notif=notificationSupported()?Notification.permission:'unsupported';
   $('#page').innerHTML=head('Settings','Desca OS bekerja tanpa login. Koneksi eksternal hanya tambahan jika kamu membutuhkannya.')+localFirstStatusCard()+'<div class="grid two-col"><article class="card"><div class="card-head"><h2>Profile & Targets</h2></div><div class="form-grid"><div class="field"><label>Nama</label><input id="sn" value="'+esc(S.profile.name)+'"></div><div class="field"><label>Daily target (menit)</label><input id="sd" type="number" min="1" value="'+S.profile.dailyFocusTarget+'"></div><div class="field"><label>Weekly target (menit)</label><input id="sw" type="number" min="1" value="'+S.profile.weeklyTarget+'"></div><div class="field"><label>Planner mulai</label><input id="splanstart" type="time" value="'+S.settings.plannerStart+'"></div><div class="field"><label>Planner selesai</label><input id="splanend" type="time" value="'+S.settings.plannerEnd+'"></div><div class="field"><label>Auto Replanning</label><select id="sautoreplan"><option value="false" '+(!S.settings.autoReplan?'selected':'')+'>Manual</option><option value="true" '+(S.settings.autoReplan?'selected':'')+'>Otomatis saat jadwal tertinggal</option></select></div></div><button class="btn btn-primary" style="margin-top:12px" data-act="saveSettings">Simpan</button></article>'+pwaInstallCard()+dataConfidenceCard()+automationSettingsCard()+googleSettingsCard()+'<article class="card"><div class="card-head"><div><h2>Pomodoro Engine</h2><p>Preset dapat dipilih langsung dari Today.</p></div><span class="pill blue">'+S.settings.pomodoroPreset+'</span></div><div class="form-grid"><div class="field"><label>Focus (menit)</label><input id="spf" type="number" min="5" max="180" value="'+S.settings.pomodoroFocus+'"></div><div class="field"><label>Short break</label><input id="sps" type="number" min="1" max="60" value="'+S.settings.pomodoroShortBreak+'"></div><div class="field"><label>Long break</label><input id="spl" type="number" min="1" max="90" value="'+S.settings.pomodoroLongBreak+'"></div><div class="field"><label>Sesi sebelum long break</label><input id="spc" type="number" min="1" max="12" value="'+S.settings.pomodoroCycles+'"></div></div></article><article class="card"><div class="card-head"><div><h2>Notifications & Reminders</h2><p>Reminder lokal tanpa akun.</p></div><span class="pill '+(notif==='granted'?'green':'orange')+'">'+esc(notif)+'</span></div><div class="field"><label>Reminder lead (menit)</label><input id="slead" type="number" min="0" max="180" value="'+S.settings.reminderLead+'"></div><div class="callout" style="margin-top:10px">Background status: <b>'+backgroundNotificationStatus()+'</b>.</div><button class="btn btn-primary" style="margin-top:12px" data-act="requestNotifications">'+(notif==='granted'?'Notification Aktif':'Aktifkan Notification')+'</button></article><article class="card"><div class="card-head"><h2>Data & Privacy</h2></div><div class="callout">Default-nya data tetap di browser ini. Google dan cloud hanya bekerja kalau kamu memilih untuk menghubungkannya.</div><div class="simple-list" style="margin-top:12px"><button class="btn btn-secondary" data-act="theme">Toggle dark mode</button><button class="btn btn-secondary" data-act="export">Export JSON</button><button class="btn btn-secondary" data-route="recovery">Recovery Center</button><button class="btn btn-secondary" data-act="resetData">Reset semua data</button></div></article>'+cloudBackupCard()+advancedSystemSettingsCard()+'</div>'
 }
-function render(){nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,research:researchPage,projects:projectsPage,dmath:dmathPage,vault:vaultPage,quran:quranPage,running:runningPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v60'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v60.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
+function render(){nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,research:researchPage,projects:projectsPage,dmath:dmathPage,vault:vaultPage,quran:quranPage,running:runningPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v61'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v61.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
 function contextualCategory(r=route){return{study:'study',research:'research',projects:'project',dmath:'dmath',quran:'quran',running:'health',health:'health',finance:'finance'}[r]||'personal'}
 function applyAutoDefaults(root=$('#modal')){if(!root)return;root.querySelectorAll('input[type="date"]').forEach(el=>{if(!el.value&&['date','startDate'].includes(el.name))el.value=today()});root.querySelectorAll('input[type="month"]').forEach(el=>{if(!el.value)el.value=today().slice(0,7)});const form=root.querySelector('form');if(form&&['activityForm','runningForm','quranSessionForm'].includes(form.id)){const tm=form.querySelector('[name="startTime"]');if(tm&&!tm.value)tm.value=localTime()}const catSel=form?.querySelector('[name="category"]');if(catSel&&!catSel.value)catSel.value=contextualCategory()}
 function open(html){$('#modal').innerHTML=html;$('#modalBackdrop').hidden=false;document.body.classList.add('modal-open');requestAnimationFrame(()=>{applyAutoDefaults();$('#modal input:not([disabled]),#modal textarea,#modal select')?.focus()})}
@@ -1883,19 +1883,97 @@ const PROJECT_AREAS=['Academic','Research','DMath Learning','S2','Product','Pers
 const FINANCE_CATEGORIES=['Makanan','Transportasi','Pendidikan','Kesehatan','Internet & Subscription','Belanja','Hiburan','Honor Tutor','Gaji','Freelance','DMath Learning','Investasi','Tabungan','Lainnya'];
 function smartText(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function smartHas(t,words){return words.some(w=>t.includes(w))}
+
+const SMART_MONTHS={
+  januari:1,jan:1,februari:2,feb:2,maret:3,mar:3,april:4,apr:4,mei:5,juni:6,jun:6,juli:7,jul:7,
+  agustus:8,agu:8,agt:8,september:9,sep:9,oktober:10,okt:10,november:11,nov:11,desember:12,des:12
+};
+const SMART_WEEKDAYS={minggu:0,ahad:0,senin:1,selasa:2,rabu:3,kamis:4,jumat:5,"jumat":5,sabtu:6};
+function smartDateISO(y,m,d){
+  y=+y;m=+m;d=+d;if(!y||m<1||m>12||d<1)return'';
+  const max=new Date(y,m,0).getDate();if(d>max)return'';
+  return String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')
+}
+function smartDateParts(d=today()){const [y,m,day]=String(d).split('-').map(Number);return{y,m,d:day}}
+function smartAddMonths(d,n){
+  const p=smartDateParts(d),total=p.y*12+(p.m-1)+(+n||0),y=Math.floor(total/12),m=total%12+1,day=Math.min(p.d,new Date(y,m,0).getDate());
+  return smartDateISO(y,m,day)
+}
+function smartNamedDate(day,month,year=''){
+  const now=smartDateParts(),m=+month,y=year?+year:now.y;let out=smartDateISO(y,m,+day);
+  if(!year&&out&&out<today())out=smartDateISO(y+1,m,+day);
+  return out
+}
+function smartDayOfMonth(day,monthOffset=0){
+  const now=smartDateParts(),base=smartAddMonths(today(),monthOffset),p=smartDateParts(base),max=new Date(p.y,p.m,0).getDate(),d=Math.min(Math.max(1,+day||1),max);
+  let out=smartDateISO(p.y,p.m,d);
+  if(monthOffset===0&&out<today()){const next=smartDateParts(smartAddMonths(today(),1));out=smartDateISO(next.y,next.m,Math.min(d,new Date(next.y,next.m,0).getDate()))}
+  return out
+}
+function smartWeekdayDate(dayIndex,forceFuture=false){
+  const base=new Date(today()+'T12:00:00'),cur=base.getDay();let delta=(+dayIndex-cur+7)%7;if(forceFuture&&delta===0)delta=7;
+  return add(today(),delta)
+}
 function parseSmartCapture(raw){
   let title=String(raw||'').trim(),date='',time='',duration=0,priority='';
-  const lower=()=>smartText(title);
-  if(/\blusa\b/i.test(title)){date=add(today(),2);title=title.replace(/\blusa\b/ig,' ').trim()}
-  else if(/\b(besok|tomorrow)\b/i.test(title)){date=add(today(),1);title=title.replace(/\b(besok|tomorrow)\b/ig,' ').trim()}
-  else if(/\b(hari ini|today)\b/i.test(title)){date=today();title=title.replace(/\b(hari ini|today)\b/ig,' ').trim()}
+  const take=(match,nextDate)=>{if(!match||date)return false;date=nextDate||'';if(date)title=title.replace(match[0],' ').trim();return!!date};
+
+  // Explicit Indonesian calendar dates: 12/10/2026, 12-10, 12 Oktober 2026.
+  let m=title.match(/\b(?:tanggal|tgl\.?)?\s*(0?[1-9]|[12]\d|3[01])[\/\-](0?[1-9]|1[0-2])(?:[\/\-](\d{4}))\b/i);
+  if(m){const now=smartDateParts(),y=m[3]?+m[3]:now.y;let out=smartDateISO(y,+m[2],+m[1]);if(!m[3]&&out&&out<today())out=smartDateISO(y+1,+m[2],+m[1]);take(m,out)}
+
+  if(!date){
+    m=title.match(/\b(?:tanggal|tgl\.?)?\s*(0?[1-9]|[12]\d|3[01])\s+(januari|jan|februari|feb|maret|mar|april|apr|mei|juni|jun|juli|jul|agustus|agu|agt|september|sep|oktober|okt|november|nov|desember|des)(?:\s+(\d{4}))?\b/i);
+    if(m)take(m,smartNamedDate(+m[1],SMART_MONTHS[m[2].toLowerCase()],m[3]||''))
+  }
+
+  // "tanggal 5 bulan depan" and "tanggal 5" use the next sensible occurrence.
+  if(!date){
+    m=title.match(/\b(?:tanggal|tgl\.?)\s*(0?[1-9]|[12]\d|3[01])\s+bulan\s+depan\b/i);
+    if(m)take(m,smartDayOfMonth(+m[1],1))
+  }
+  if(!date){
+    m=title.match(/\b(?:tanggal|tgl\.?)\s*(0?[1-9]|[12]\d|3[01])\b/i);
+    if(m)take(m,smartDayOfMonth(+m[1],0))
+  }
+
+  // Relative dates: "3 hari lagi", "dalam 2 minggu", "1 bulan lagi", "1 tahun lagi".
+  if(!date){
+    m=title.match(/\b(?:dalam\s+)?(\d{1,3})\s*(hari|minggu|pekan|bulan|tahun)\s*(?:lagi|ke\s+depan)?\b/i);
+    if(m){
+      const n=Math.max(0,+m[1]),unit=m[2].toLowerCase();
+      const out=unit==='hari'?add(today(),n):(unit==='minggu'||unit==='pekan')?add(today(),n*7):unit==='bulan'?smartAddMonths(today(),n):smartDateISO(smartDateParts(today()).y+n,smartDateParts(today()).m,Math.min(smartDateParts(today()).d,new Date(smartDateParts(today()).y+n,smartDateParts(today()).m,0).getDate()));
+      take(m,out)
+    }
+  }
+
+  // Common relative phrases.
+  if(!date&&(m=title.match(/\b(lusa)\b/i)))take(m,add(today(),2));
+  if(!date&&(m=title.match(/\b(besok|tomorrow)\b/i)))take(m,add(today(),1));
+  if(!date&&(m=title.match(/\b(hari ini|today)\b/i)))take(m,today());
+  if(!date&&(m=title.match(/\b(minggu depan|pekan depan)\b/i)))take(m,add(today(),7));
+  if(!date&&(m=title.match(/\b(bulan depan)\b/i)))take(m,smartAddMonths(today(),1));
+  if(!date&&(m=title.match(/\b(awal bulan depan)\b/i))){const p=smartDateParts(smartAddMonths(today(),1));take(m,smartDateISO(p.y,p.m,1))}
+  if(!date&&(m=title.match(/\b(akhir bulan(?: ini)?)\b/i))){const p=smartDateParts();take(m,smartDateISO(p.y,p.m,new Date(p.y,p.m,0).getDate()))}
+
+  // Weekday names: "Senin", "Senin depan".
+  if(!date){
+    m=title.match(/\b(minggu|ahad|senin|selasa|rabu|kamis|jumat|jumat|sabtu)(?:\s+(depan|berikutnya))?\b/i);
+    if(m)take(m,smartWeekdayDate(SMART_WEEKDAYS[m[1].toLowerCase()],!!m[2]))
+  }
+
+  // Times: "jam 9", "pukul 09.30", or bare 14:30.
   let tm=title.match(/\b(?:jam|pukul)\s*([01]?\d|2[0-3])(?:[.:]([0-5]\d))?/i);
   if(tm){time=String(+tm[1]).padStart(2,'0')+':'+String(tm[2]||'00').padStart(2,'0');title=title.replace(tm[0],' ').trim()}
   else{tm=title.match(/\b([01]\d|2[0-3]):([0-5]\d)\b/);if(tm){time=tm[0];title=title.replace(tm[0],' ').trim()}}
+
+  // Duration: "90 menit", "1.5 jam".
   let dm=title.match(/\b(?:selama\s*)?(\d+(?:[.,]\d+)?)\s*(jam|menit|minute|min|m)\b/i);
   if(dm){const v=parseFloat(dm[1].replace(',','.'));duration=/jam/i.test(dm[2])?Math.round(v*60):Math.round(v);title=title.replace(dm[0],' ').trim()}
+
   if(/\b(urgent|mendesak|prioritas tinggi)\b/i.test(title)){priority='high';title=title.replace(/\b(urgent|mendesak|prioritas tinggi)\b/ig,' ').trim()}
   else if(/\b(prioritas rendah|low priority)\b/i.test(title)){priority='low';title=title.replace(/\b(prioritas rendah|low priority)\b/ig,' ').trim()}
+
   title=title.replace(/\s{2,}/g,' ').replace(/^[,;\-–—\s]+|[,;\-–—\s]+$/g,'').trim();
   return{title:title||String(raw||'').trim(),date,time,duration,priority}
 }

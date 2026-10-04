@@ -40,6 +40,10 @@ jobs:
           grep -q 'function googleFriendlyError' app.js
           grep -q 'Google OAuth diagnostics' ui-v21.css
           grep -q 'Productivity RPG system' ui-v21.css
+          grep -q 'Paper Library PDF attachments' ui-v21.css
+          grep -q 'function openPaperPDF' app.js
+          grep -q 'function saveResearchPaperForm' app.js
+          grep -q 'function paperFilesDB' app.js
           grep -q 'function syncGameRewards' app.js
           grep -q 'function replanRemainingDay' app.js
           grep -q 'function activityRadarSvg' app.js

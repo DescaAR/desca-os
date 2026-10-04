@@ -3201,3 +3201,69 @@ input,select,textarea{
 /* v40 — Game-inspired badge rank accents */
 .tier-mythic{--badge-accent:#7c3aed}
 .tier-immortal{--badge-accent:#c026d3}
+
+
+/* v41 — Google OAuth diagnostics */
+.google-error-box{
+  display:grid;
+  gap:5px;
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid color-mix(in srgb,var(--app-red) 24%,var(--app-border));
+  border-radius:11px;
+  background:color-mix(in srgb,var(--app-red) 5%,var(--app-surface));
+}
+.google-error-box b{
+  color:var(--app-red);
+  font-size:var(--type-small);
+}
+.google-error-box span{
+  color:var(--app-text-2);
+  font-size:var(--type-caption);
+  line-height:1.5;
+}
+.google-origin-check{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  padding:11px 12px;
+  border:1px solid color-mix(in srgb,var(--app-blue) 16%,var(--app-border));
+  border-radius:11px;
+  background:var(--app-blue-soft);
+}
+.google-origin-check>div{
+  min-width:0;
+  flex:1;
+}
+.google-origin-check span{
+  display:block;
+  color:var(--app-muted);
+  font-size:var(--type-micro);
+  font-weight:760;
+}
+.google-origin-check code{
+  display:block;
+  margin-top:4px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--app-text);
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important;
+  font-size:var(--type-caption);
+  font-weight:720;
+}
+.google-origin-note{
+  margin-top:8px!important;
+  line-height:1.5!important;
+}
+@media(max-width:540px){
+  .google-origin-check{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .google-origin-check .mini-btn{
+    width:100%;
+  }
+}

@@ -1218,7 +1218,7 @@ function nav(){
 }
 const head=(t,d,a='')=>'<div class="page-head"><div><div class="eyebrow">Desca OS</div><h1>'+esc(t)+'</h1><p>'+esc(d)+'</p></div><div class="page-actions">'+a+'</div></div>',prog=p=>'<div class="progress-track"><span style="width:'+clamp(+p||0,0,100)+'%"></span></div>',metric=(l,v,m,i)=>'<div class="metric-card"><div class="metric-icon">'+i+'</div><div class="metric-label">'+l+'</div><div class="metric-value">'+v+'</div><div class="metric-meta">'+m+'</div></div>';
 function goalForecast(g){
-  const progress=clamp(+g.progress||0,0,100),linked=S.tasks.filter(t=>t.goalId===g.id),acts=S.activities.filter(a=>a.goalId===g.id),dates=[g.createdAt,...linked.map(t=>t.date),...acts.map(a=>a.date)].filter(Boolean).sort(),start=dates[0]||add(today(),-14),elapsed=Math.max(1,Math.round((new Date(today()+'T12:00:00')-new Date(start+'T12:00:00'))/86400000)+1);
+  const progress=clamp(+g.progress||0,0,100),linked=S.tasks.filter(t=>t.goalId===g.id),acts=S.activities.filter(a=>a.goalId===g.id),dates=[g.createdAt?.slice?.(0,10)||g.createdAt,...linked.map(t=>t.date),...acts.map(a=>a.date)].filter(Boolean).map(d=>String(d).slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort(),start=dates[0]||add(today(),-14),elapsed=Math.max(1,Math.round((new Date(today()+'T12:00:00')-new Date(start+'T12:00:00'))/86400000)+1);
   if(progress<=0)return{date:'',status:'No Pace',days:null,message:'Belum cukup progress untuk membuat forecast.'};
   if(progress>=100)return{date:today(),status:'Completed',days:0,message:'Goal completed.'};
   const daily=progress/elapsed,remain=Math.ceil((100-progress)/Math.max(.01,daily)),date=add(today(),remain),deadline=g.deadline||'',late=deadline&&date>deadline,status=late?'At Risk':'On Track';
@@ -1331,6 +1331,15 @@ function progressPage(){
   $('#page').innerHTML=head('Progress','Main Desca Score, self-competition seasons, consistency, records, and long-term growth.')+'<section class="grid metric-grid">'+metric('XP',num(xp()),'Task + activity + quests','✦')+metric('Level',l.level,'Current level','↑')+metric('Main Rank',main.rank.name,main.score+'/100 Desca Score','◆')+metric('Season Rank',season.rank.name,season.score+'/100 this month','◇')+metric('Badges',badgeCount,'Consistency unlocked','✦')+'</section>'+descaScoreCard()+seasonCommandCard()+achievementShowcaseCard()+personalRecordsCard()+diligenceMainBadgeCard()+'<div class="grid two-col section-gap">'+seasonHistoryCard()+'<article class="card"><div class="card-head"><div><h2>Activity Heatmap</h2><p>140 hari terakhir.</p></div></div>'+heat()+'</article></div><div class="grid two-col section-gap">'+activityRadarCard(7)+'<article class="card"><div class="card-head"><div><h2>Level & Skill Progress</h2><p>'+l.cur+' / 1200 XP to next level.</p></div></div><div class="metric-value">Level '+l.level+'</div>'+prog(l.pct)+'<div class="grid" style="margin-top:14px">'+['study','research','project','dmath','quran','health'].map(k=>{let m=catMin(k,90),lv=Math.floor(m/600)+1;return'<div class="goal-card"><div class="goal-title">'+C[k][0]+'</div><div class="goal-sub">Level '+lv+' • '+mins(m)+'</div><div class="goal-progress">'+prog((m%600)/6)+'<b>'+Math.round((m%600)/6)+'%</b></div></div>'}).join('')+'</div></article></div>'+consistencyBadgeSection()+achievementSection()
 }
 
+const S2_PIPELINE=[
+['research','Researching'],
+['preparing','Preparing'],
+['ready','Ready'],
+['applied','Applied'],
+['interview','Interview / Selection'],
+['accepted','Accepted'],
+['rejected','Rejected']
+];
 function s2StageLabel(v){return S2_PIPELINE.find(x=>x[0]===v)?.[1]||v||'Researching'}
 function s2TargetProgress(v){if(v==='rejected')return 100;const i=S2_PIPELINE.findIndex(x=>x[0]===v);return i<0?0:clamp(Math.round(i/(S2_PIPELINE.length-2)*100),0,100)}
 function s2TargetCollection(type){return type==='scholarship'?S.s2Prep.scholarships:S.s2Prep.universities}

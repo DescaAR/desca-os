@@ -69,7 +69,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=62' app.js
+          grep -q 'const BUILD_NUMBER=70' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -97,6 +97,18 @@ jobs:
           grep -q 'const PAGE_GUIDES' app.js
           grep -q 'function openPageGuide' app.js
           grep -q 'function showGuideStep' app.js
+          grep -q 'function booksPage' app.js
+          grep -q 'function bookPace' app.js
+          grep -q 'function weeklyResetModal' app.js
+          grep -q 'function decisionMemoryCard' app.js
+          grep -q 'function planningHorizonCard' app.js
+          grep -q 'function importCenterModal' app.js
+          grep -q 'function openSmartCopilot' app.js
+          grep -q 'function relationshipSuggestionData' app.js
+          grep -q 'function auditTrailCard' app.js
+          grep -q 'v70 — Books OS + Control Layer' ui-v21.css
+          grep -q 'id="mobileFab"' index.html
+          grep -q '"short_name":"Books"' manifest.webmanifest
           grep -q 'v62 — Guided UX + modern input system' ui-v21.css
           grep -q 'id="pageGuideDrawer"' index.html
           grep -q 'v60 — Autonomy Suite' ui-v21.css

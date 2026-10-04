@@ -79,7 +79,7 @@ function todayLifeCard(){const due=dueRoutines(),rc=routineCompletion();return'<
 let undoStack=[],lastSavedJSON=JSON.stringify(S),autoCloudTimer=null,historyTimer=null,suppressAutoCloud=false;
 function recoveryDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open('desca-os-recovery-v1',1);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('versions')){const s=db.createObjectStore('versions',{keyPath:'id'});s.createIndex('createdAt','createdAt')}};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 function recoverySnapshotState(raw=S){const x=JSON.parse(JSON.stringify(raw));if(x.settings){delete x.settings.supabaseAnonKey;delete x.settings.googleClientId}return x}
-async function addVersionSnapshot(snapshot,label='Checkpoint'){try{const db=await recoveryDB(),tx=db.transaction('versions','readwrite'),store=tx.objectStore('versions');store.put({id:uid('ver'),createdAt:new Date().toISOString(),label,revision:snapshot?.meta?.revision||0,state:recoverySnapshotState(snapshot)});await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});const db2=await recoveryDB(),tx2=db2.transaction('versions','readwrite'),all=await new Promise((res,rej)=>{const q=tx2.objectStore('versions').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)});all.sort((a,b)=>a.createdAt.localeCompare(b.createdAt));for(const v of all.slice(0,Math.max(0,all.length-20)))tx2.objectStore('versions').delete(v.id)}catch{}}
+async function addVersionSnapshot(snapshot,label='Checkpoint'){try{const db=await recoveryDB(),tx=db.transaction('versions','readwrite'),store=tx.objectStore('versions');store.put({id:uid('ver'),createdAt:new Date().toISOString(),label,revision:snapshot?.meta?.revision||0,state:recoverySnapshotState(snapshot)});await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});const db2=await recoveryDB(),tx2=db2.transaction('versions','readwrite'),all=await new Promise((res,rej)=>{const q=tx2.objectStore('versions').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)});all.sort((a,b)=>a.createdAt.localeCompare(b.createdAt));for(const v of all.slice(0,Math.max(0,all.length-60)))tx2.objectStore('versions').delete(v.id)}catch{}}
 function queueVersionSnapshot(prev,label='Auto checkpoint'){clearTimeout(historyTimer);historyTimer=setTimeout(()=>addVersionSnapshot(prev,label),1200)}
 async function listVersionSnapshots(){try{const db=await recoveryDB(),tx=db.transaction('versions','readonly'),rows=await new Promise((res,rej)=>{const q=tx.objectStore('versions').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)});return rows.sort((a,b)=>b.createdAt.localeCompare(a.createdAt))}catch{return[]}}
 async function restoreVersion(id){const db=await recoveryDB(),tx=db.transaction('versions','readonly'),v=await new Promise((res,rej)=>{const q=tx.objectStore('versions').get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});if(!v?.state)return;if(!confirm('Pulihkan state dari checkpoint ini? State saat ini akan masuk Version History terlebih dahulu.'))return;await addVersionSnapshot(S,'Sebelum restore');const keep={supabaseUrl:S.settings.supabaseUrl,supabaseAnonKey:S.settings.supabaseAnonKey,googleClientId:S.settings.googleClientId};S=v.state;S.settings={...seed().settings,...S.settings,...keep};S.meta={...seed().meta,...S.meta};lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);syncPomodoro();toast('Version dipulihkan');render()}
@@ -669,6 +669,131 @@ function queueGoogleCalendarRefresh(){if(!googleReady()||G.busy)return;const las
 function importCalendarSnapshotData(pack){const rows=Array.isArray(pack)?pack:Array.isArray(pack?.events)?pack.events:null;if(!rows)throw new Error('Format snapshot tidak valid');S.googleEvents=rows.map(e=>({id:String(e.id||uid('gcal')),title:String(e.title||e.summary||'(Tanpa judul)'),description:String(e.description||''),date:String(e.date||''),time:String(e.time||''),duration:Math.max(0,+e.duration||0),allDay:!!e.allDay,status:e.status||'confirmed',htmlLink:String(e.htmlLink||e.url||''),updated:e.updated||'',descaTaskId:e.descaTaskId||''})).filter(e=>e.date);S.settings.googleLastSync=new Date().toISOString();save('Import Google Calendar snapshot');toast(S.googleEvents.length+' event Google Calendar diimpor');render()}
 function importGoogleEvent(id){const e=S.googleEvents.find(x=>x.id===id);if(!e)return;if(S.tasks.some(t=>t.googleCalendarEventId===e.id)){toast('Event ini sudah terhubung ke task');return}const t={id:uid('t'),title:e.title,date:e.date||today(),deadline:e.date||'',status:'planned',priority:'medium',category:'personal',goalId:null,estimate:e.duration||60,startTime:e.time||'',notes:e.description||'',inbox:false,subtasks:[],tags:['google-calendar'],recurrence:'none',dependsOn:null,googleCalendarSync:true,googleCalendarEventId:e.id};S.tasks.push(t);save();close();toast('Google Calendar event diimpor sebagai task');render()}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
+const BUILD_NUMBER=45;
+let vaultUnlockedSession=false;
+function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
+function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
+async function blobToBackupRow(kind,id,row){if(!row?.blob)return null;return{kind,id,name:row.name||'file',type:row.type||row.blob.type||'application/octet-stream',size:row.size||row.blob.size||0,data:bytesToB64(await row.blob.arrayBuffer())}}
+async function collectFullBackupBundle(){
+  const files=[];
+  for(const p of S.researchPapers){const row=await paperFileGet(p.id),x=await blobToBackupRow('paper',p.id,row);if(x)files.push(x)}
+  for(const v of S.vault){const row=await vaultFileGet(v.id),x=await blobToBackupRow('vault',v.id,row);if(x)files.push(x)}
+  return{app:'Desca OS',bundleVersion:2,build:BUILD_NUMBER,exportedAt:new Date().toISOString(),state:recoverySnapshotState(S),files}
+}
+async function restoreFullBackupBundle(pack){
+  if(!pack?.state||!Array.isArray(pack.state.tasks))throw new Error('Invalid Desca OS bundle');
+  await addVersionSnapshot(S,'Before full bundle restore');
+  for(const x of pack.files||[]){
+    const blob=new Blob([b64ToBytes(x.data)],{type:x.type||'application/octet-stream'}),file=new File([blob],x.name||'file',{type:x.type||blob.type});
+    if(x.kind==='paper')await paperFilePut(x.id,file);else if(x.kind==='vault')await vaultFilePut(x.id,file)
+  }
+  const keep={supabaseUrl:S.settings.supabaseUrl,supabaseAnonKey:S.settings.supabaseAnonKey,googleClientId:S.settings.googleClientId};
+  S=pack.state;S.settings={...seed().settings,...S.settings,...keep};S.meta={...seed().meta,...S.meta};lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);toast('Full backup restored · reloading');setTimeout(()=>location.reload(),500)
+}
+async function cryptoKeyFromPassphrase(pass,salt,usage=['encrypt','decrypt']){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:180000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,usage)
+}
+async function encryptBackupObject(obj,pass){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await cryptoKeyFromPassphrase(pass,salt,['encrypt']),plain=new TextEncoder().encode(JSON.stringify(obj)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plain);
+  return{app:'Desca OS Encrypted Backup',version:1,kdf:'PBKDF2-SHA256-180000',cipher:'AES-GCM-256',salt:bytesToB64(salt),iv:bytesToB64(iv),data:bytesToB64(cipher)}
+}
+async function decryptBackupObject(env,pass){
+  const salt=b64ToBytes(env.salt),iv=b64ToBytes(env.iv),key=await cryptoKeyFromPassphrase(pass,salt,['decrypt']),plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,b64ToBytes(env.data));return JSON.parse(new TextDecoder().decode(plain))
+}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+async function exportFullBackup(encrypted=false){
+  try{const bundle=await collectFullBackupBundle();let out=bundle,suffix='.json';if(encrypted){const pass=prompt('Passphrase untuk mengenkripsi backup:');if(!pass)return;out=await encryptBackupObject(bundle,pass);suffix='.encrypted.json'}downloadBlob(new Blob([JSON.stringify(out)],{type:'application/json'}),'desca-os-full-backup-'+today()+suffix);toast('Full backup dibuat · '+bundle.files.length+' file included')}catch(e){toast('Backup gagal: '+e.message)}
+}
+function chooseFullBackupImport(){let input=document.getElementById('fullBackupImportFile');if(!input){input=document.createElement('input');input.id='fullBackupImportFile';input.type='file';input.accept='.json,application/json';input.hidden=true;document.body.appendChild(input)}input.value='';input.click()}
+async function importFullBackupFile(file){
+  try{let pack=JSON.parse(await file.text());if(pack?.app==='Desca OS Encrypted Backup'){const pass=prompt('Passphrase backup:');if(!pass)return;pack=await decryptBackupObject(pack,pass)}if(!confirm('Restore full Desca OS backup? Current state will be checkpointed first.'))return;await restoreFullBackupBundle(pack)}catch(e){toast('Import backup gagal: '+(e?.message||e))}
+}
+async function backupFullBundleToGoogleDrive(){
+  if(!googleReady()){toast('Connect Google first');return}try{const bundle=await collectFullBackupBundle(),blob=new Blob([JSON.stringify(bundle)],{type:'application/json'}),existing=await driveAppDataFind('desca-os-full-bundle.json');await driveAppDataUpload('desca-os-full-bundle.json',blob,'application/json',existing?.id||'');toast('Full device bundle synced to Google Drive')}catch(e){toast('Full Drive sync failed: '+googleFriendlyError(e))}
+}
+async function restoreFullBundleFromGoogleDrive(){
+  if(!googleReady()){toast('Connect Google first');return}try{const remote=await driveAppDataFind('desca-os-full-bundle.json');if(!remote){toast('No full bundle in Drive');return}const blob=await driveAppDataDownload(remote.id),pack=JSON.parse(await blob.text());if(!confirm('Restore state + files from Google Drive bundle?'))return;await restoreFullBackupBundle(pack)}catch(e){toast('Full Drive restore failed: '+googleFriendlyError(e))}
+}
+async function vaultPassVerifier(pass,saltB64=''){
+  const salt=saltB64?b64ToBytes(saltB64):crypto.getRandomValues(new Uint8Array(16)),base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveBits']),bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:120000,hash:'SHA-256'},base,256);return{salt:bytesToB64(salt),verifier:bytesToB64(bits)}
+}
+async function enableVaultLock(){
+  const p=prompt('Create Vault passphrase:');if(!p)return;const p2=prompt('Repeat Vault passphrase:');if(p!==p2){toast('Passphrase tidak sama');return}const v=await vaultPassVerifier(p);S.settings.vaultLockEnabled=true;S.settings.vaultLockSalt=v.salt;S.settings.vaultLockVerifier=v.verifier;vaultUnlockedSession=true;save('Enable Vault Lock');toast('Vault Lock enabled');render()
+}
+async function unlockVault(){
+  if(!S.settings.vaultLockEnabled){vaultUnlockedSession=true;render();return}const p=prompt('Vault passphrase:');if(!p)return;const v=await vaultPassVerifier(p,S.settings.vaultLockSalt);if(v.verifier!==S.settings.vaultLockVerifier){toast('Passphrase salah');return}vaultUnlockedSession=true;toast('Vault unlocked for this session');render()
+}
+function lockVault(){vaultUnlockedSession=false;toast('Vault locked');render()}
+function disableVaultLock(){if(!confirm('Disable Vault Lock?'))return;S.settings.vaultLockEnabled=false;S.settings.vaultLockSalt='';S.settings.vaultLockVerifier='';vaultUnlockedSession=false;save('Disable Vault Lock');render()}
+function weekSnapshotKey(d=today()){return weeks()[0]}
+async function maybeAutomaticSnapshots(){
+  const d=today(),wk=weekSnapshotKey(),mo=d.slice(0,7);let changed=false;
+  if(S.meta.lastDailySnapshotDate!==d){await addVersionSnapshot(S,'Daily snapshot · '+d);S.meta.lastDailySnapshotDate=d;changed=true}
+  if(S.meta.lastWeeklySnapshotKey!==wk){await addVersionSnapshot(S,'Weekly snapshot · '+wk);S.meta.lastWeeklySnapshotKey=wk;changed=true}
+  if(S.meta.lastMonthlySnapshotKey!==mo){await addVersionSnapshot(S,'Monthly snapshot · '+mo);S.meta.lastMonthlySnapshotKey=mo;changed=true}
+  if(changed){lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON)}
+}
+async function checkForUpdates(silent=false){
+  try{const raw=await fetch('./app.js?update-check='+Date.now(),{cache:'no-store'}).then(r=>r.text()),m=raw.match(/Build v(\d+)/),latest=m?+m[1]:BUILD_NUMBER;S.settings.latestKnownBuild=Math.max(+S.settings.latestKnownBuild||0,latest);S.settings.lastUpdateCheck=new Date().toISOString();lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);if(!silent)toast(latest>BUILD_NUMBER?'Desca OS v'+latest+' available':'Desca OS is up to date');render();return latest}catch(e){if(!silent)toast('Update check failed');return BUILD_NUMBER}
+}
+async function applyAppUpdate(){try{if('serviceWorker'in navigator){const reg=await navigator.serviceWorker.getRegistration();await reg?.update()}const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('desca-os-v')).map(k=>caches.delete(k)));location.reload()}catch{location.reload()}}
+function systemNotifications(){
+  const out=[],push=(key,title,body,route='today',level='info')=>out.push({key,title,body,route,level});
+  const overdue=S.tasks.filter(t=>!t.inbox&&t.status!=='done'&&t.deadline&&t.deadline<today()).length;if(overdue)push('overdue','Overdue tasks',overdue+' task deadline terlewat.','deadlines','danger');
+  for(const p of S.projects){const h=projectHealth(p);if(['At Risk','Stalled'].includes(h.status))push('project-'+p.id,p.title,h.status+' · '+h.inactive+' days inactive.','projects',h.status==='Stalled'?'danger':'warning')}
+  const s2Missing=(S.s2Prep?.documents||[]).filter(x=>!s2LinkedDone(x)&&x.due&&x.due<=add(today(),30)).length;if(s2Missing)push('s2-docs','S2 documents',s2Missing+' document item needs attention.','goals','warning');
+  const exp=S.vault.filter(v=>v.expiry&&v.expiry>=today()&&v.expiry<=add(today(),30)).length;if(exp)push('vault-expiry','Vault expiry',exp+' document expires within 30 days.','vault','warning');
+  if(G.error)push('google-error','Google connection issue',G.error,'settings','danger');
+  const latest=+S.settings.latestKnownBuild||BUILD_NUMBER;if(latest>BUILD_NUMBER)push('update','Update available','Desca OS v'+latest+' is ready.','settings','info');
+  return out
+}
+function pushSystemNotification(title,body,route='today',level='info',key=''){
+  S.notificationsCenter=S.notificationsCenter||[];const k=key||uid('notice');if(key&&S.notificationsCenter.some(n=>n.key===key))return;S.notificationsCenter.push({id:uid('notice'),key:k,title,body,route,level,read:false,at:new Date().toISOString()});S.notificationsCenter=S.notificationsCenter.slice(-200)
+}
+function notificationRows(){
+  const generated=systemNotifications().map(n=>({...n,id:'gen-'+n.key,read:false,at:new Date().toISOString(),generated:true})),history=(S.notificationsCenter||[]).slice().reverse();return[...generated,...history]
+}
+function notificationsPage(){
+  const rows=notificationRows(),unread=rows.filter(x=>!x.read).length;
+  $('#page').innerHTML=head('Notifications','Actionable alerts from deadlines, project health, Vault, Google, ranks, and system updates.','<button class="btn btn-secondary" data-act="markNotificationsRead">Mark All Read</button>')+'<section class="grid metric-grid compact-metrics">'+metric('Unread',unread,'Needs attention','•')+metric('System Alerts',systemNotifications().length,'Live conditions','!')+metric('History',(S.notificationsCenter||[]).length,'Saved events','⌁')+metric('Build','v'+BUILD_NUMBER,(+S.settings.latestKnownBuild||BUILD_NUMBER)>BUILD_NUMBER?'Update available':'Current','◇')+'</section><article class="card"><div class="notification-center-list">'+(rows.length?rows.map(n=>'<button class="notification-center-row '+esc(n.level||'info')+' '+(n.read?'read':'')+'" data-act="openNotification" data-id="'+n.id+'" data-route-target="'+esc(n.route||'today')+'"><span></span><div><b>'+esc(n.title)+'</b><small>'+esc(n.body)+'</small><em>'+new Date(n.at||Date.now()).toLocaleString('id-ID')+'</em></div></button>').join(''):'<div class="empty">No notifications.</div>')+'</div></article>'
+}
+function dataQualityIssues(){
+  const issues=[],seenDoi=new Map(),seenTitle=new Map();
+  for(const p of S.researchPapers){const doi=normalizeDoi(p.doi||'').toLowerCase(),title=(p.title||'').trim().toLowerCase();if(doi){if(seenDoi.has(doi))issues.push({type:'duplicate-paper',level:'warning',title:'Duplicate DOI',detail:p.title});else seenDoi.set(doi,p.id)}if(title){if(seenTitle.has(title))issues.push({type:'duplicate-title',level:'warning',title:'Duplicate paper title',detail:p.title});else seenTitle.set(title,p.id)}}
+  for(const t of S.tasks){if(t.goalId&&!S.goals.some(g=>g.id===t.goalId))issues.push({type:'orphan-task-goal',level:'repair',title:'Task has missing goal',detail:t.title,id:t.id});if(t.projectId&&!S.projects.some(p=>p.id===t.projectId))issues.push({type:'orphan-task-project',level:'repair',title:'Task has missing project',detail:t.title,id:t.id});if(!t.category||!C[t.category])issues.push({type:'task-category',level:'repair',title:'Task has invalid category',detail:t.title,id:t.id})}
+  for(const p of S.projects.filter(x=>x.status==='active'))if(!p.nextAction)issues.push({type:'project-next',level:'info',title:'Project has no next action',detail:p.title,id:p.id});
+  for(const g of S.goals.filter(x=>x.status==='active'))if(!g.deadline)issues.push({type:'goal-deadline',level:'info',title:'Goal has no deadline',detail:g.title,id:g.id});
+  for(const n of S.researchNotes)if(n.paperId&&!S.researchPapers.some(p=>p.id===n.paperId))issues.push({type:'orphan-note-paper',level:'repair',title:'Research note has missing paper',detail:n.title,id:n.id});
+  return issues
+}
+function repairDataQuality(){
+  const issues=dataQualityIssues();for(const i of issues){if(i.type==='orphan-task-goal'){const t=S.tasks.find(x=>x.id===i.id);if(t)t.goalId=null}if(i.type==='orphan-task-project'){const t=S.tasks.find(x=>x.id===i.id);if(t)t.projectId=null}if(i.type==='task-category'){const t=S.tasks.find(x=>x.id===i.id);if(t)t.category=inferCategory(t.title,'personal')}if(i.type==='orphan-note-paper'){const n=S.researchNotes.find(x=>x.id===i.id);if(n)n.paperId=''}}
+  S.meta.lastDataQualityRun=new Date().toISOString();save('Data quality repair');toast('Safe data repairs applied · '+issues.filter(x=>x.level==='repair').length);render()
+}
+async function systemDiagnostics(){
+  const rows=[],add=(name,status,detail)=>rows.push({name,status,detail});
+  try{localStorage.setItem('__desca_test','1');localStorage.removeItem('__desca_test');add('LocalStorage','pass',Math.round((localStorage.getItem(K)||'').length/1024)+' KB state')}catch(e){add('LocalStorage','fail',e.message)}
+  try{await paperFilesDB();add('IndexedDB','pass','Paper + Vault stores reachable')}catch(e){add('IndexedDB','fail',e.message)}
+  if('storage'in navigator&&navigator.storage.estimate){const z=await navigator.storage.estimate();add('Browser storage','pass',paperFileSize(z.usage||0)+' / '+paperFileSize(z.quota||0))}
+  if('serviceWorker'in navigator){const reg=await navigator.serviceWorker.getRegistration();add('Service Worker',reg?.active?'pass':'warn',reg?.active?'Active':'Not active')}else add('Service Worker','warn','Unsupported');
+  add('Google OAuth',googleReady()?'pass':S.settings.googleClientId?'warn':'info',googleReady()?'Connected':'Not connected');
+  add('State schema',+S.meta.version===26?'pass':'warn','v'+S.meta.version+' expected v26');
+  const issues=dataQualityIssues();add('Data quality',issues.some(x=>x.level==='repair')?'warn':'pass',issues.length+' issue(s)');
+  add('Render error',S.meta.lastRenderError?'warn':'pass',S.meta.lastRenderError?.message||'None');
+  S.meta.lastDiagnosticsRun=new Date().toISOString();lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);return rows
+}
+async function runSystemDiagnostics(){
+  const rows=await systemDiagnostics();open('<div class="modal-head"><div><div class="eyebrow">SYSTEM CHECK</div><h2 id="modalTitle">Desca OS Diagnostics</h2></div><button class="icon-btn" data-act="close">×</button></div><div class="diagnostics-list">'+rows.map(r=>'<div class="diagnostic-row '+r.status+'"><span>'+({pass:'✓',warn:'!',fail:'×',info:'•'}[r.status]||'•')+'</span><div><b>'+esc(r.name)+'</b><small>'+esc(r.detail)+'</small></div></div>').join('')+'</div>')
+}
+function archiveMap(type){return{task:S.tasks,goal:S.goals,project:S.projects,researchPaper:S.researchPapers,researchNote:S.researchNotes,vault:S.vault}[type]||null}
+function archiveEntity(type,id,label=''){
+  const arr=archiveMap(type);if(!arr)return;const i=arr.findIndex(x=>x.id===id);if(i<0)return;const data=arr[i];arr.splice(i,1);S.archive.push({id:uid('arc'),entityType:type,entityId:id,label:label||data.title||type,data,archivedAt:new Date().toISOString()});save('Archive '+type);toast('Archived');close();render()
+}
+function restoreArchive(id){const a=S.archive.find(x=>x.id===id);if(!a)return;const arr=archiveMap(a.entityType);if(arr&&!arr.some(x=>x.id===a.entityId))arr.push(a.data);S.archive=S.archive.filter(x=>x.id!==id);save('Restore archive');toast('Restored from Archive');render()}
+function archiveCard(){
+  return'<article class="card"><div class="card-head"><div><h2>Archive</h2><p>Completed or inactive items stay searchable without cluttering active work.</p></div><span class="pill">'+S.archive.length+'</span></div><div class="simple-list">'+(S.archive.length?S.archive.slice().reverse().slice(0,30).map(a=>'<div class="list-row"><div class="item-main"><div class="item-title">'+esc(a.label)+'</div><div class="item-meta">'+esc(a.entityType)+' • '+new Date(a.archivedAt).toLocaleDateString('id-ID')+'</div></div><button class="mini-btn" data-act="restoreArchive" data-id="'+a.id+'">Restore</button></div>').join(''):'<div class="empty">Archive empty.</div>')+'</div></article>'
+}
 async function backupToGoogleDrive(){if(!googleReady()){toast('Hubungkan Google dulu');return}try{await ensureGoogleDriveAccess();const existing=await googleDriveBackupFile(),payload=JSON.stringify({app:'Desca OS',version:1,exportedAt:new Date().toISOString(),state:S});if(existing){await googleFetch('https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(existing.id)+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:payload})}else{const fd=new FormData();fd.append('metadata',new Blob([JSON.stringify({name:'desca-os-backup.json',parents:['appDataFolder']})],{type:'application/json'}));fd.append('file',new Blob([payload],{type:'application/json'}));await googleFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',body:fd})}toast('Backup tersimpan di Google Drive app data')}catch(e){toast('Drive backup gagal: '+e.message)}}
 async function restoreFromGoogleDrive(){if(!googleReady()){toast('Hubungkan Google dulu');return}if(!confirm('Ganti data lokal dengan backup Google Drive?'))return;try{await ensureGoogleDriveAccess();const existing=await googleDriveBackupFile();if(!existing){toast('Belum ada backup Google Drive');return}const raw=await googleFetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(existing.id)+'?alt=media'),pack=typeof raw==='string'?JSON.parse(raw):raw;if(!pack?.state||!Array.isArray(pack.state.tasks))throw new Error('Format backup tidak valid');localStorage.setItem(K,JSON.stringify(pack.state));toast('Backup dipulihkan. Memuat ulang...');location.reload()}catch(e){toast('Restore gagal: '+e.message)}}
 function cloudConfigured(){return /^https:\/\//.test(S.settings.supabaseUrl||'')&&!!S.settings.supabaseAnonKey}

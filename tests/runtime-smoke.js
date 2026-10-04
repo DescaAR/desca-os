@@ -1,6 +1,7 @@
 const fs=require('fs');
 const vm=require('vm');
 const app=fs.readFileSync('app.js','utf8');
+const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats};})();`);
 const routes=['today','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
@@ -65,8 +66,20 @@ function run(route,state){
     fetch:async()=>({ok:false,json:async()=>({})}),matchMedia:()=>({matches:false}),addEventListener(){},removeEventListener(){}
   };
   ctx.window=ctx;ctx.globalThis=ctx;
-  vm.runInNewContext(app,ctx,{filename:'app.js'});
+  vm.runInNewContext(instrumented,ctx,{filename:'app.js'});
   if(errors.length)throw new Error(route+': '+errors.slice(0,3).join(' || '));
+  return ctx;
 }
 for(const route of routes){run(route,null);run(route,richState())}
-console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders');
+const ctx=run('books',richState()),api=ctx.__DESCA_TEST__;
+if(!api)throw new Error('Test API was not exposed');
+const parsed=api.parseSmartCapture('belajar Analisis Real 3 hari lagi jam 9 90 menit');
+if(!parsed.date||parsed.time!=='09:00'||parsed.duration!==90||/3 hari lagi/i.test(parsed.title))throw new Error('Natural-language date parser regression');
+const pace=api.bookPace(api.S.books.items.find(b=>b.id==='b1'));
+if(!(pace.daily>0)||pace.remaining!==288)throw new Error('Book pace regression');
+const openBooks=api.commandParse('buka books');
+if(openBooks?.type!=='open'||openBooks?.route!=='books')throw new Error('Books command regression');
+const readPages=api.commandParse('baca 20 halaman');
+if(readPages?.type!=='readpages'||readPages?.pages!==20)throw new Error('Reading command regression');
+if(api.readingStats().reading.length!==1)throw new Error('Reading stats regression');
+console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders + interaction checks');

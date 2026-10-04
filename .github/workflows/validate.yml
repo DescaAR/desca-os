@@ -69,7 +69,18 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=46' app.js
+          grep -q 'const BUILD_NUMBER=50' app.js
+          grep -q 'function descaScoreData' app.js
+          grep -q 'function scheduleConflictData' app.js
+          grep -q 'function taskPriorityParts' app.js
+          grep -q 'function energyPlanningProfile' app.js
+          grep -q 'function globalHeatmapCard' app.js
+          grep -q 'function lifeBalanceCard' app.js
+          grep -q 'function weeklyIntelligenceCard' app.js
+          grep -q 'function monthlyYearReviewCard' app.js
+          grep -q 'function academicCourseForecast' app.js
+          grep -q 'function semesterControlCenterCard' app.js
+          grep -q 'v50 — Intelligence Suite' ui-v21.css
           grep -q 'function syncVaultToDrive' app.js
           grep -q 'function syncPaperPDFToDrive' app.js
           grep -q 'function vaultPage' app.js

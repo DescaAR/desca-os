@@ -30,3 +30,4 @@ jobs:
           grep -q 'function nowNextCard' app.js
           grep -q 'function nowNextPick' app.js
           grep -q 'function startRoutineTimer' app.js
+          grep -q 'Unified typography system' ui-v21.css

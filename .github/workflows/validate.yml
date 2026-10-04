@@ -36,4 +36,7 @@ jobs:
           grep -q 'Consistency badge system' ui-v21.css
           grep -q 'const DILIGENCE_RANKS' app.js
           grep -q 'function diligenceMainBadgeCard' app.js
+          grep -q 'function requestGoogleToken' app.js
+          grep -q 'function googleFriendlyError' app.js
+          grep -q 'Google OAuth diagnostics' ui-v21.css
           grep -q 'Aggregate diligence rank' ui-v21.css

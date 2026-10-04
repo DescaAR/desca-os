@@ -4920,3 +4920,18 @@ html[data-reduce-motion="true"] *,html[data-reduce-motion="true"] *:before,html[
   .book-card{grid-template-columns:76px minmax(0,1fr)}.book-cover{min-height:114px;border-radius:10px}.book-cover>span{font-size:18px}.book-pace-row{align-items:flex-start}.book-pace-row>span{max-width:70px;text-align:right}
   .book-detail-stats,.weekly-reset-health,.explain-components{grid-template-columns:1fr}
 }
+
+
+/* v70 — interaction polish */
+.shortcut-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:12px 0}
+.shortcut-grid>span{display:flex;flex-direction:column;gap:5px;padding:10px;border:1px solid var(--app-border);border-radius:11px;background:var(--app-surface-2)}
+.shortcut-grid kbd{align-self:flex-start;padding:3px 6px;border:1px solid var(--app-border);border-bottom-width:2px;border-radius:6px;background:var(--app-surface);font:700 8px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--app-blue)}
+.shortcut-grid b{font-size:9px;color:var(--app-text)}
+.copilot-actions.proposed{padding:10px;border:1px solid color-mix(in srgb,var(--app-blue) 20%,var(--app-border));border-radius:12px;background:color-mix(in srgb,var(--app-blue) 4%,var(--app-surface))}
+.copilot-proposed-action{border-color:color-mix(in srgb,var(--app-blue) 30%,var(--app-border))!important;color:var(--app-blue)!important}
+.task-item[data-task-id]{touch-action:pan-y;transition:transform .18s ease,box-shadow .18s ease}
+.task-item[data-task-id]:active{box-shadow:0 7px 18px rgba(15,23,42,.06)}
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:3px solid color-mix(in srgb,var(--app-blue) 58%,transparent);outline-offset:2px}
+.experience-settings-card .btn{margin-top:2px}
+@media(max-width:900px){.shortcut-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.shortcut-grid{grid-template-columns:1fr 1fr}}

@@ -607,6 +607,27 @@ async function ensureGoogleDriveAccess(){
 }
 function disconnectGoogle(){if(G.token&&window.google?.accounts?.oauth2)try{google.accounts.oauth2.revoke(G.token,()=>{})}catch{}G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:true};toast('Google diputus dari sesi ini');render()}
 async function googleFetch(url,opts={}){if(!googleReady())throw new Error('Google session belum aktif');const headers={Authorization:'Bearer '+G.token,...(opts.headers||{})};const r=await fetch(url,{...opts,headers});let body=null;const ct=r.headers.get('content-type')||'';if(ct.includes('application/json')){try{body=await r.json()}catch{}}else{try{body=await r.text()}catch{}}if(!r.ok){const msg=body?.error?.message||body?.error_description||('Google API '+r.status);throw new Error(msg)}return body}
+async function googleFetchBlob(url,opts={}){if(!googleReady())throw new Error('Google session belum aktif');const r=await fetch(url,{...opts,headers:{Authorization:'Bearer '+G.token,...(opts.headers||{})}});if(!r.ok){let msg='Google API '+r.status;try{const j=await r.json();msg=j?.error?.message||msg}catch{}throw new Error(msg)}return await r.blob()}
+async function driveAppDataFind(name){await ensureGoogleDriveAccess();const q=encodeURIComponent("name='"+String(name).replace(/'/g,"\\'")+"' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime,size,mimeType)&pageSize=10');return(data.files||[])[0]||null}
+async function driveAppDataUpload(name,blob,mime,existingId=''){
+  await ensureGoogleDriveAccess();
+  if(existingId){const meta=await googleFetch('https://www.googleapis.com/upload/drive/v3/files/'+encodeURIComponent(existingId)+'?uploadType=media&fields=id,name,modifiedTime,size,mimeType',{method:'PATCH',headers:{'Content-Type':mime||blob.type||'application/octet-stream'},body:blob});return meta}
+  const fd=new FormData();fd.append('metadata',new Blob([JSON.stringify({name,parents:['appDataFolder']})],{type:'application/json'}));fd.append('file',blob,name);
+  return await googleFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime,size,mimeType',{method:'POST',body:fd})
+}
+async function driveAppDataDownload(id){await ensureGoogleDriveAccess();return await googleFetchBlob('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(id)+'?alt=media')}
+async function syncPaperPDFToDrive(id){
+  const p=S.researchPapers.find(x=>x.id===id);if(!p)return;
+  if(!googleReady()){toast('Connect Google first');return}
+  const row=await paperFileGet(id);if(!row?.blob){toast('Local PDF not found');return}
+  try{const name='desca-paper-'+id+'.pdf',existing=p.driveFileId?{id:p.driveFileId}:await driveAppDataFind(name),remote=await driveAppDataUpload(name,row.blob,row.type||'application/pdf',existing?.id||'');p.driveFileId=remote.id;p.driveSyncedAt=new Date().toISOString();save('Sync paper PDF');toast('Paper PDF synced to Google Drive');render()}catch(e){toast('Drive sync failed: '+googleFriendlyError(e))}
+}
+async function restorePaperPDF(id,silent=false){
+  const p=S.researchPapers.find(x=>x.id===id);if(!p)return false;
+  if(!googleReady()){if(!silent)toast('Connect Google first');return false}
+  try{let remote=p.driveFileId?{id:p.driveFileId}:await driveAppDataFind('desca-paper-'+id+'.pdf');if(!remote){if(!silent)toast('No Drive copy found');return false}const blob=await driveAppDataDownload(remote.id),file=new File([blob],p.pdfName||'paper.pdf',{type:p.pdfType||blob.type||'application/pdf'});await paperFilePut(id,file);p.driveFileId=remote.id;p.pdfName=p.pdfName||file.name;p.pdfSize=file.size;p.pdfType=file.type;p.pdfAttachedAt=p.pdfAttachedAt||new Date().toISOString();p.driveSyncedAt=new Date().toISOString();save('Restore paper PDF');if(!silent){toast('Paper PDF restored from Drive');render()}return true}catch(e){if(!silent)toast('Drive restore failed: '+googleFriendlyError(e));return false}
+}
+
 function googleEventLocal(e){const allDay=!!e.start?.date,startRaw=e.start?.dateTime||e.start?.date||'',endRaw=e.end?.dateTime||e.end?.date||'',startTs=e.start?.dateTime?Date.parse(e.start.dateTime):null,endTs=e.end?.dateTime?Date.parse(e.end.dateTime):null,date=allDay?(e.start?.date||''):(startTs?dateFromTs(startTs):''),time=allDay?'':(startTs?timeFromTs(startTs):''),duration=startTs&&endTs?Math.max(1,Math.round((endTs-startTs)/60000)):0;return{id:e.id,title:e.summary||'(Tanpa judul)',description:e.description||'',date,time,duration,allDay,status:e.status||'confirmed',htmlLink:e.htmlLink||'',updated:e.updated||'',descaTaskId:e.extendedProperties?.private?.descaTaskId||''}}
 async function pullGoogleCalendar(){let url='https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=2500&timeMin='+encodeURIComponent(new Date(Date.now()-30*86400000).toISOString())+'&timeMax='+encodeURIComponent(new Date(Date.now()+180*86400000).toISOString())+'&fields='+encodeURIComponent('items(id,summary,description,start,end,status,htmlLink,updated,extendedProperties),nextPageToken'),items=[];while(url){const data=await googleFetch(url);items.push(...(data.items||[]));url=data.nextPageToken?'https://www.googleapis.com/calendar/v3/calendars/primary/events?singleEvents=true&orderBy=startTime&maxResults=2500&timeMin='+encodeURIComponent(new Date(Date.now()-30*86400000).toISOString())+'&timeMax='+encodeURIComponent(new Date(Date.now()+180*86400000).toISOString())+'&pageToken='+encodeURIComponent(data.nextPageToken)+'&fields='+encodeURIComponent('items(id,summary,description,start,end,status,htmlLink,updated,extendedProperties),nextPageToken'):null}S.googleEvents=items.filter(e=>e.status!=='cancelled').map(googleEventLocal)}
 async function loadGoogleTaskLists(){const data=await googleFetch('https://tasks.googleapis.com/tasks/v1/users/@me/lists?maxResults=100');G.taskLists=data.items||[];if(!S.settings.googleTaskListId||!G.taskLists.some(x=>x.id===S.settings.googleTaskListId)){const first=G.taskLists[0];if(first){S.settings.googleTaskListId=first.id;S.settings.googleTaskListTitle=first.title||'Google Tasks'}}}
@@ -1317,7 +1338,7 @@ async function importPaperMetadata(){
   }catch(err){toast('Import DOI gagal: '+(err?.message||err))}
   finally{if(btn){btn.disabled=false;btn.textContent='Ambil Metadata'}}
 }
-function paperFilesDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open('desca-os-paper-files-v1',1);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files',{keyPath:'paperId'})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
+function paperFilesDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open('desca-os-paper-files-v1',2);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('files'))db.createObjectStore('files',{keyPath:'paperId'});if(!db.objectStoreNames.contains('vault'))db.createObjectStore('vault',{keyPath:'documentId'})};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 async function paperFilePut(paperId,file){
   if(!paperId||!file)throw new Error('Paper atau file tidak valid');
   const isPdf=file.type==='application/pdf'||/\.pdf$/i.test(file.name||'');
@@ -1334,6 +1355,19 @@ async function paperFileGet(paperId){
 async function paperFileDelete(paperId){
   try{const db=await paperFilesDB(),tx=db.transaction('files','readwrite');tx.objectStore('files').delete(paperId);await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});return true}catch{return false}
 }
+async function vaultFilePut(documentId,file){
+  if(!documentId||!file)throw new Error('Document atau file tidak valid');
+  if(file.size>100*1024*1024)throw new Error('Ukuran file maksimal 100 MB');
+  const db=await paperFilesDB(),tx=db.transaction('vault','readwrite');
+  tx.objectStore('vault').put({documentId,name:file.name||'document',type:file.type||'application/octet-stream',size:file.size||0,updatedAt:new Date().toISOString(),blob:file});
+  await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error||new Error('Upload dibatalkan'))});return true
+}
+async function vaultFileGet(documentId){try{const db=await paperFilesDB(),tx=db.transaction('vault','readonly');return await new Promise((res,rej)=>{const q=tx.objectStore('vault').get(documentId);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error)})}catch{return null}}
+async function vaultFileDelete(documentId){try{const db=await paperFilesDB(),tx=db.transaction('vault','readwrite');tx.objectStore('vault').delete(documentId);await new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});return true}catch{return false}}
+async function openVaultFile(id){const v=S.vault.find(x=>x.id===id);if(!v)return;let row=await vaultFileGet(id);if(!row?.blob&&v.driveFileId&&googleReady()){await restoreVaultFromDrive(id,true);row=await vaultFileGet(id)}if(!row?.blob){toast('File tidak ditemukan di browser ini');return}const url=URL.createObjectURL(row.blob),w=window.open(url,'_blank','noopener');if(!w){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.click()}setTimeout(()=>URL.revokeObjectURL(url),60000)}
+async function syncVaultToDrive(id){const v=S.vault.find(x=>x.id===id);if(!v)return;if(!googleReady()){toast('Connect Google first');return}const row=await vaultFileGet(id);if(!row?.blob){toast('Local file not found');return}try{const name='desca-vault-'+id+'-'+(v.fileName||'document').replace(/[^A-Za-z0-9._-]+/g,'_'),existing=v.driveFileId?{id:v.driveFileId}:await driveAppDataFind(name),remote=await driveAppDataUpload(name,row.blob,row.type||'application/octet-stream',existing?.id||'');v.driveFileId=remote.id;v.driveSyncedAt=new Date().toISOString();save('Sync vault file');toast('Document synced to Google Drive');render()}catch(e){toast('Drive sync failed: '+googleFriendlyError(e))}}
+async function restoreVaultFromDrive(id,silent=false){const v=S.vault.find(x=>x.id===id);if(!v)return false;if(!googleReady()){if(!silent)toast('Connect Google first');return false}try{let remote=v.driveFileId?{id:v.driveFileId}:null;if(!remote){if(!silent)toast('No Drive copy linked');return false}const blob=await driveAppDataDownload(remote.id),file=new File([blob],v.fileName||'document',{type:v.fileType||blob.type||'application/octet-stream'});await vaultFilePut(id,file);v.fileSize=file.size;v.fileType=file.type;v.driveSyncedAt=new Date().toISOString();save('Restore vault file');if(!silent){toast('Document restored from Drive');render()}return true}catch(e){if(!silent)toast('Drive restore failed: '+googleFriendlyError(e));return false}}
+
 function paperFileSize(v){const n=Math.max(0,+v||0);return n>=1048576?(n/1048576).toFixed(n>=10485760?0:1)+' MB':n>=1024?Math.round(n/1024)+' KB':n+' B'}
 async function openPaperPDF(id){
   const p=S.researchPapers.find(x=>x.id===id);if(!p)return;

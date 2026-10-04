@@ -171,12 +171,20 @@ function nowNextReason(x,now=minutesFromHHMM(localTime())||0){
   if(t?.priority==='high')return'High priority';
   return'Pilihan terbaik berdasarkan prioritas dan jadwal'
 }
+function nowNextEligibleNow(x,now=minutesFromHHMM(localTime())||0){
+  if(!x)return false;
+  if(x.kind==='routine'){if(!x.time)return true;return nowNextTimeDelta(x.time,now)<=30}
+  const t=S.tasks.find(v=>v.id===x.id);if(!t)return false;
+  if(t.status==='doing'||nowNextDateDiff(t.date)<0||nowNextDateDiff(t.deadline)<=0)return true;
+  if(!t.startTime)return true;
+  return nowNextTimeDelta(t.startTime,now)<=30
+}
 function nowNextPick(){
   const now=minutesFromHHMM(localTime())||0,timer=activeTimer(),google=nowNextCurrentGoogle(now),candidates=nowNextCandidates();
   let current=null,excludeKind='',excludeId='',nextAfter=now;
   if(timer){current={kind:'timer',id:timer.id,title:timer.title,category:timer.category||'personal',duration:Math.max(1,Math.round(timerElapsedSeconds(timer)/60)),time:timer.startTime||'',taskId:timer.taskId||null,routineId:timer.routineId||null};excludeKind=timer.taskId?'task':timer.routineId?'routine':'';excludeId=timer.taskId||timer.routineId||''}
   else if(google){current={kind:'google',id:google.id,title:google.title,category:'google',duration:Math.max(15,+google.duration||30),time:google.time||'',date:google.date};nextAfter=google._e}
-  else if(candidates.length){current=candidates[0];excludeKind=current.kind;excludeId=current.id}
+  else{const eligible=candidates.filter(x=>nowNextEligibleNow(x,now));if(eligible.length){current=eligible[0];excludeKind=current.kind;excludeId=current.id}}
   const rest=candidates.filter(x=>!(x.kind===excludeKind&&x.id===excludeId));
   const future=rest.filter(x=>x.time&&(minutesFromHHMM(x.time)||0)>=nextAfter).sort((a,b)=>(minutesFromHHMM(a.time)||9999)-(minutesFromHHMM(b.time)||9999)||b.score-a.score);
   const next=future[0]||rest[0]||null;

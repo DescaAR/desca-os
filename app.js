@@ -451,6 +451,105 @@ function suggestionList(id,items=[]){return'<datalist id="'+id+'">'+items.map(x=
 const GOAL_AREAS=['Academic','S2','Research','DMath Learning','Career','Health','Finance','Personal'];
 const PROJECT_AREAS=['Academic','Research','DMath Learning','S2','Product','Personal'];
 const FINANCE_CATEGORIES=['Makanan','Transportasi','Pendidikan','Kesehatan','Internet & Subscription','Belanja','Hiburan','Honor Tutor','Gaji','Freelance','DMath Learning','Investasi','Tabungan','Lainnya'];
+function smartText(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function smartHas(t,words){return words.some(w=>t.includes(w))}
+function inferCategory(title,fallback='personal'){
+  const t=smartText(title);
+  if(smartHas(t,['quran','alquran','al-quran','hafalan','murajaah','surah','ayat']))return'quran';
+  if(smartHas(t,['lari','running','jog','olahraga','workout','gym']))return'health';
+  if(smartHas(t,['dmath','instagram','youtube','reels','shorts','carousel','konten','content']))return'dmath';
+  if(smartHas(t,['riset','skripsi','tesis','paper','jurnal','journal','derivasi','derivation','spektrum','spectrum','alexandroff','teorema','lemma']))return'research';
+  if(smartHas(t,['belajar','study','kuliah','kelas','uts','uas','onmipa','on-mipa','soal','latihan','kalkulus','aljabar','analisis','kombinatorika','topologi','toefl','ielts','bahasa inggris']))return'study';
+  if(smartHas(t,['bayar','beli','makan','honor','gaji','transfer','uang','budget']))return'finance';
+  return fallback&&C[fallback]?fallback:'personal'
+}
+function inferPriority(title){
+  const t=smartText(title);
+  if(smartHas(t,['urgent','segera','deadline','uts','uas','ujian','final','hari ini','today']))return'high';
+  if(smartHas(t,['nanti','opsional','santai','baca ringan']))return'low';
+  return'medium'
+}
+function inferEstimate(title,category){
+  const t=smartText(title),m=t.match(/(?:^|\s)(\d{1,3})\s*(?:m|min|menit)(?:\s|$)/);
+  if(m)return clamp(+m[1],5,480);
+  if(smartHas(t,['cek ','review','rencana hari','planning']))return 15;
+  if(category==='quran')return 20;
+  if(category==='health')return 30;
+  if(smartHas(t,['ujian','uts','uas','final','tryout','kompetisi']))return 120;
+  if(category==='study'||category==='research')return 90;
+  if(category==='dmath'||category==='project')return 60;
+  return 45
+}
+function inferArea(title,fallback='Academic'){
+  const t=smartText(title);
+  if(smartHas(t,['s2','beasiswa','lpdp','pmdsu','master']))return'S2';
+  if(smartHas(t,['riset','skripsi','paper','jurnal','research']))return'Research';
+  if(smartHas(t,['dmath','youtube','instagram','website','konten']))return'DMath Learning';
+  if(smartHas(t,['karier','career','kerja','cv','lamaran']))return'Career';
+  if(smartHas(t,['lari','health','olahraga']))return'Health';
+  if(smartHas(t,['finance','keuangan','tabungan','investasi']))return'Finance';
+  return fallback
+}
+function overlapScore(a,b){
+  const stop=new Set(['dan','yang','untuk','dengan','dari','pada','the','of','to','a','an']);
+  const A=[...new Set(smartText(a).split(/[^a-z0-9]+/).filter(x=>x.length>2&&!stop.has(x)))],B=new Set(smartText(b).split(/[^a-z0-9]+/).filter(x=>x.length>2&&!stop.has(x)));
+  return A.reduce((n,x)=>n+(B.has(x)?1:0),0)
+}
+function inferGoalId(title,current=''){
+  if(current&&current!=='__auto__')return current;
+  const rows=S.goals.filter(x=>x.status!=='completed').map(x=>({id:x.id,score:overlapScore(title,x.title)})).sort((a,b)=>b.score-a.score);
+  return rows[0]?.score>=1?rows[0].id:null
+}
+function inferProjectId(title,current=''){
+  if(current&&current!=='__auto__')return current;
+  const active=S.projects.filter(x=>x.status==='active');
+  const rows=active.map(x=>({id:x.id,score:Math.max(overlapScore(title,x.title),overlapScore(title,x.nextAction))})).sort((a,b)=>b.score-a.score);
+  if(rows[0]?.score>=1)return rows[0].id;
+  if(route==='projects'&&active.length===1)return active[0].id;
+  return null
+}
+function inferStudyTopicId(title,current=''){
+  if(current&&current!=='__auto__')return current;
+  const rows=S.studyTopics.map(x=>({id:x.id,score:Math.max(overlapScore(title,x.title),overlapScore(title,x.subject))})).sort((a,b)=>b.score-a.score);
+  if(rows[0]?.score>=1)return rows[0].id;
+  return null
+}
+function inferFinanceType(title){
+  const t=smartText(title);
+  return smartHas(t,['honor','gaji','fee','freelance','pemasukan','income','bonus','refund','dibayar'])?'income':'expense'
+}
+function inferFinanceCategory(title,type){
+  const t=smartText(title);
+  if(type==='income'){
+    if(smartHas(t,['tutor','mengajar','privat']))return'Honor Tutor';
+    if(smartHas(t,['gaji']))return'Gaji';
+    if(smartHas(t,['freelance','fee']))return'Freelance';
+    if(smartHas(t,['dmath']))return'DMath Learning';
+    return'Lainnya'
+  }
+  if(smartHas(t,['makan','minum','kopi','snack','food']))return'Makanan';
+  if(smartHas(t,['grab','gojek','bensin','transport','parkir','kereta','bus']))return'Transportasi';
+  if(smartHas(t,['buku','kuliah','kelas','kursus','toefl','pendidikan']))return'Pendidikan';
+  if(smartHas(t,['obat','dokter','kesehatan']))return'Kesehatan';
+  if(smartHas(t,['internet','wifi','subscription','langganan']))return'Internet & Subscription';
+  if(smartHas(t,['invest','saham','reksa','emas']))return'Investasi';
+  if(smartHas(t,['tabung','saving']))return'Tabungan';
+  if(smartHas(t,['film','game','hiburan']))return'Hiburan';
+  if(smartHas(t,['beli','belanja']))return'Belanja';
+  return'Lainnya'
+}
+function inferFinanceBucket(category,type){
+  if(type==='income')return'savings';
+  if(['Makanan','Transportasi','Pendidikan','Kesehatan','Internet & Subscription'].includes(category))return'needs';
+  if(['Investasi'].includes(category))return'investment';
+  if(['Tabungan'].includes(category))return'savings';
+  return'wants'
+}
+function smartAdvanced(inner,open=false,label='Detail lanjutan'){
+  return'<details class="smart-optional smart-auto-details" '+(open?'open':'')+'><summary>'+label+' <span>Opsional</span></summary><div class="smart-auto-inner">'+inner+'</div></details>'
+}
+function autoSummaryLine(parts=[]){return'<div class="smart-auto-strip"><span class="smart-auto-spark">✦</span><div><b>Diisi otomatis</b><small>'+parts.filter(Boolean).map(esc).join(' • ')+'</small></div></div>'}
+
 function goalForm(g={}){const ms=(g.milestones||[]).join('\n');return'<form id="goalForm"><div class="form-grid"><div class="field full"><label>Nama goal</label><input name="title" required value="'+esc(g.title||'')+'" placeholder="Contoh: Selesaikan skripsi"></div><div class="field"><label>Area</label><input name="area" list="goalAreaOptions" value="'+esc(g.area||'Academic')+'" placeholder="Pilih atau ketik area">'+suggestionList('goalAreaOptions',GOAL_AREAS)+'</div><div class="field"><label>Deadline</label><input name="deadline" type="date" value="'+(g.deadline||add(today(),30))+'"></div><div class="field"><label>Status</label><select name="status">'+['active','paused','completed'].map(s=>'<option value="'+s+'" '+(g.status===s?'selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="field"><label>Progress mode</label><select name="autoProgress"><option value="true" '+(g.autoProgress!==false?'selected':'')+'>Otomatis dari task + milestone</option><option value="false" '+(g.autoProgress===false?'selected':'')+'>Manual</option></select></div><div class="field"><label>Manual progress (%)</label><input name="progress" type="number" min="0" max="100" value="'+clamp(+g.progress||0,0,100)+'"></div><div class="field full"><label>Milestones — satu baris satu milestone</label><textarea name="milestones" rows="6" placeholder="Literature review\nMain theorem\nFinal revision">'+esc(ms)+'</textarea></div></div><input type="hidden" name="id" value="'+(g.id||'')+'"><button class="btn btn-primary" style="margin-top:14px">Simpan Goal</button></form>'}
 function openGoal(g=null){open('<div class="modal-head"><div><div class="eyebrow">Goal</div><h2 id="modalTitle">'+(g?'Edit Goal':'Goal Baru')+'</h2></div><button class="icon-btn" data-act="close">×</button></div>'+goalForm(g||{})+trashDeleteButton('goal',g,g?.title))}
 function projectForm(p={}){const ms=(p.milestones||[]).map(x=>x.title).join('\n');return'<form id="projectForm"><div class="form-grid"><div class="field full"><label>Nama project</label><input name="title" required value="'+esc(p.title||'')+'"></div><div class="field"><label>Area</label><input name="area" list="projectAreaOptions" value="'+esc(p.area||'Academic')+'" placeholder="Pilih atau ketik area">'+suggestionList('projectAreaOptions',PROJECT_AREAS)+'</div><div class="field"><label>Status</label><select name="status">'+['active','paused','completed'].map(s=>'<option value="'+s+'" '+((p.status||'active')===s?'selected':'')+'>'+s+'</option>').join('')+'</select></div><div class="field"><label>Mulai</label><input type="date" name="startDate" value="'+esc(p.startDate||today())+'"></div><div class="field"><label>Deadline</label><input type="date" name="deadline" value="'+esc(p.deadline||'')+'"></div><div class="field"><label>Progress manual (%)</label><input type="number" name="progress" min="0" max="100" value="'+clamp(+p.progress||0,0,100)+'"></div><div class="field full"><label>Next action</label><input name="nextAction" value="'+esc(p.nextAction||'')+'" placeholder="Langkah paling konkret berikutnya"></div><div class="field full"><label>Milestones — satu baris satu milestone</label><textarea name="milestones" rows="5">'+esc(ms)+'</textarea></div><div class="field full"><label>Catatan</label><textarea name="notes" rows="4">'+esc(p.notes||'')+'</textarea></div></div><input type="hidden" name="id" value="'+(p.id||'')+'"><button class="btn btn-primary" style="margin-top:12px;width:100%">Simpan Project</button></form>'}

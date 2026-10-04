@@ -133,7 +133,7 @@ function nowNextTaskScore(t,now){
   if(t.startTime){const delta=nowNextTimeDelta(t.startTime,now),dur=Math.max(15,+t.estimate||60);if(delta<=0&&delta>=-dur)score+=300;else if(delta<0)score+=180;else if(delta<=15)score+=250;else if(delta<=60)score+=130;else if(delta<=180)score+=45;else score-=Math.min(80,Math.floor(delta/30))}
   else score+=25;
   if(t.goalId)score+=12;if(t.projectId)score+=10;
-  if(t.category==='research'&&researchGapDays()>=3)score+=35;
+  if(t.category==='research'&&researchGapDays()>=3)score+=35;const mode=activeExamMode();if(mode&&t.category===mode.category)score+=120;
   return score
 }
 function nowNextRoutineScore(r,now){
@@ -749,12 +749,15 @@ async function unlockVault(){
 function lockVault(){vaultUnlockedSession=false;toast('Vault locked');render()}
 function disableVaultLock(){if(!confirm('Disable Vault Lock?'))return;S.settings.vaultLockEnabled=false;S.settings.vaultLockSalt='';S.settings.vaultLockVerifier='';vaultUnlockedSession=false;save('Disable Vault Lock');render()}
 function weekSnapshotKey(d=today()){return weeks()[0]}
+let snapshotBusy=false;
 async function maybeAutomaticSnapshots(){
-  const d=today(),wk=weekSnapshotKey(),mo=d.slice(0,7);let changed=false;
-  if(S.meta.lastDailySnapshotDate!==d){await addVersionSnapshot(S,'Daily snapshot · '+d);S.meta.lastDailySnapshotDate=d;changed=true}
-  if(S.meta.lastWeeklySnapshotKey!==wk){await addVersionSnapshot(S,'Weekly snapshot · '+wk);S.meta.lastWeeklySnapshotKey=wk;changed=true}
-  if(S.meta.lastMonthlySnapshotKey!==mo){await addVersionSnapshot(S,'Monthly snapshot · '+mo);S.meta.lastMonthlySnapshotKey=mo;changed=true}
-  if(changed){lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON)}
+  if(snapshotBusy)return;snapshotBusy=true;
+  try{const d=today(),wk=weekSnapshotKey(),mo=d.slice(0,7);let changed=false;
+    if(S.meta.lastDailySnapshotDate!==d){await addVersionSnapshot(S,'Daily snapshot · '+d);S.meta.lastDailySnapshotDate=d;changed=true}
+    if(S.meta.lastWeeklySnapshotKey!==wk){await addVersionSnapshot(S,'Weekly snapshot · '+wk);S.meta.lastWeeklySnapshotKey=wk;changed=true}
+    if(S.meta.lastMonthlySnapshotKey!==mo){await addVersionSnapshot(S,'Monthly snapshot · '+mo);S.meta.lastMonthlySnapshotKey=mo;changed=true}
+    if(changed){lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON)}
+  }finally{snapshotBusy=false}
 }
 async function checkForUpdates(silent=false){
   try{const raw=await fetch('./app.js?update-check='+Date.now(),{cache:'no-store'}).then(r=>r.text()),m=raw.match(/Build v(\d+)/),latest=m?+m[1]:BUILD_NUMBER;S.settings.latestKnownBuild=Math.max(+S.settings.latestKnownBuild||0,latest);S.settings.lastUpdateCheck=new Date().toISOString();lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);if(!silent)toast(latest>BUILD_NUMBER?'Desca OS v'+latest+' available':'Desca OS is up to date');render();return latest}catch(e){if(!silent)toast('Update check failed');return BUILD_NUMBER}
@@ -854,7 +857,7 @@ function taskBadgeCount(routeKey){
   if(routeKey==='inbox')return open.filter(t=>t.inbox).length;
   if(routeKey==='tasks')return open.filter(t=>!t.inbox).length;
   if(routeKey==='today')return open.filter(t=>!t.inbox&&t.date===today()).length;
-  if(routeKey==='calendar')return open.filter(t=>!t.inbox&&t.date===today()).length;if(routeKey==='recovery')return (S.trash?.length||0)+(S.meta.cloudConflict?1:0);
+  if(routeKey==='calendar')return open.filter(t=>!t.inbox&&t.date===today()).length;if(routeKey==='deadlines')return deadlineItems().filter(x=>x.days<=7).length;if(routeKey==='notifications')return systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(routeKey==='recovery')return (S.trash?.length||0)+(S.meta.cloudConflict?1:0);
   if(routeKey==='quran'){const taskCount=open.filter(t=>!t.inbox&&t.category==='quran').length,due=(S.quran?.entries||[]).filter(q=>q.nextReview&&q.nextReview<=today()&&q.status!=='new').length;return taskCount+due}
   const category=Object.keys(categoryRoute).find(k=>categoryRoute[k]===routeKey);
   return category?open.filter(t=>!t.inbox&&t.category===category).length:0
@@ -1146,8 +1149,9 @@ async function hydrateVaultLocalStatus(){
   for(const v of S.vault){const row=await vaultFileGet(v.id),el=document.querySelector('[data-vault-local="'+v.id+'"]');if(el)el.textContent=row?.blob?'Local ready':'Local missing'}
 }
 function vaultPage(){
+  if(S.settings.vaultLockEnabled&&!vaultUnlockedSession){$('#page').innerHTML=head('Document Vault','Sensitive documents are locked for this browser session.')+'<article class="card vault-locked-card"><div class="vault-lock-icon">▣</div><div><div class="eyebrow">VAULT LOCK</div><h2>Document Vault Locked</h2><p>Unlock with your Vault passphrase to view filenames, metadata, and files. Search also hides Vault contents while locked.</p></div><button class="btn btn-primary" data-act="unlockVault">Unlock Vault</button></article>';return}
   const docs=S.vault.slice().sort((a,b)=>(b.updatedAt||b.createdAt||'').localeCompare(a.updatedAt||a.createdAt||'')),synced=docs.filter(x=>x.driveFileId).length,linked=docs.filter(x=>x.s2DocumentId).length,expiring=docs.filter(x=>x.expiry&&x.expiry>=today()&&x.expiry<=add(today(),60)).length;
-  $('#page').innerHTML=head('Document Vault','Local-first storage for S2 files, certificates, academic documents, and important records.','<button class="btn btn-primary" data-act="newVaultDocument">+ Document</button>')+'<section class="grid metric-grid compact-metrics">'+metric('Documents',docs.length,'Stored metadata','▣')+metric('Drive Synced',synced,'Optional cloud copy','↻')+metric('S2 Linked',linked,'Checklist auto-match','◎')+metric('Expiring Soon',expiring,'Next 60 days','!')+metric('Storage Mode','Local-first',googleReady()?'Google optional':'No account required','◇')+'</section><article class="card vault-info"><div class="card-head"><div><h2>Secure File Workflow</h2><p>Files live in IndexedDB on this browser. Google Drive App Data is optional for cross-device restore.</p></div></div><div class="vault-info-grid"><span>Local file storage</span><span>Optional Drive sync</span><span>S2 auto-link</span><span>Expiry tracking</span></div></article><div class="vault-grid">'+(docs.length?docs.map(v=>vaultCard(v)).join(''):'<div class="empty empty-state-large"><span class="empty-icon">▣</span><b>Vault is empty.</b><small>Add CV, transcript, certificates, recommendation letters, or other important documents.</small><button class="btn btn-primary" data-act="newVaultDocument">Add First Document</button></div>')+'</div>';setTimeout(hydrateVaultLocalStatus,0)
+  $('#page').innerHTML=head('Document Vault','Local-first storage for S2 files, certificates, academic documents, and important records.','<div class="button-row compact">'+(S.settings.vaultLockEnabled?'<button class="btn btn-secondary" data-act="lockVault">Lock</button>':'')+'<button class="btn btn-primary" data-act="newVaultDocument">+ Document</button></div>')+'<section class="grid metric-grid compact-metrics">'+metric('Documents',docs.length,'Stored metadata','▣')+metric('Drive Synced',synced,'Optional cloud copy','↻')+metric('S2 Linked',linked,'Checklist auto-match','◎')+metric('Expiring Soon',expiring,'Next 60 days','!')+metric('Storage Mode','Local-first',googleReady()?'Google optional':'No account required','◇')+'</section><article class="card vault-info"><div class="card-head"><div><h2>Secure File Workflow</h2><p>Files live in IndexedDB on this browser. Google Drive App Data is optional for cross-device restore.</p></div></div><div class="vault-info-grid"><span>Local file storage</span><span>Optional Drive sync</span><span>S2 auto-link</span><span>Expiry tracking</span></div></article><div class="vault-grid">'+(docs.length?docs.map(v=>vaultCard(v)).join(''):'<div class="empty empty-state-large"><span class="empty-icon">▣</span><b>Vault is empty.</b><small>Add CV, transcript, certificates, recommendation letters, or other important documents.</small><button class="btn btn-primary" data-act="newVaultDocument">Add First Document</button></div>')+'</div>';setTimeout(hydrateVaultLocalStatus,0)
 }
 function chartEmpty(msg='Belum ada data untuk grafik ini.'){return'<div class="chart-empty"><span>▥</span><b>Belum cukup data</b><small>'+esc(msg)+'</small></div>'}
 function lineChart(values,labels,{suffix='m',height=176}={}){if(!values.some(v=>+v>0))return chartEmpty();const w=640,h=height,p=24,max=Math.max(...values,1),step=(w-p*2)/Math.max(values.length-1,1),pts=values.map((v,i)=>[p+i*step,h-p-(+v/max)*(h-p*2)]),poly=pts.map(x=>x.join(',')).join(' '),area=p+','+(h-p)+' '+poly+' '+(w-p)+','+(h-p),ticks=[0,.25,.5,.75,1].map(q=>'<line x1="'+p+'" y1="'+(h-p-q*(h-p*2))+'" x2="'+(w-p)+'" y2="'+(h-p-q*(h-p*2))+'" class="chart-gridline"/>').join(''),dots=pts.map((pt,i)=>'<circle cx="'+pt[0]+'" cy="'+pt[1]+'" r="3.2" class="chart-dot"><title>'+esc(labels[i]||'')+': '+Math.round(values[i])+' '+suffix+'</title></circle>').join(''),showEvery=Math.max(1,Math.ceil(labels.length/7)),xlabels=labels.map((l,i)=>i%showEvery===0||i===labels.length-1?'<text x="'+pts[i][0]+'" y="'+(h-5)+'" text-anchor="middle" class="chart-xlabel">'+esc(l)+'</text>':'').join('');return'<div class="svg-chart"><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Grafik tren">'+ticks+'<polygon points="'+area+'" class="chart-area"/><polyline points="'+poly+'" class="chart-line"/>'+dots+xlabels+'</svg></div>'}
@@ -1381,8 +1385,8 @@ function morningCommandScreen(){
   return'<div class="morning-command-overlay"><div class="morning-command-panel rank-'+rank.rank.key+'"><div class="eyebrow">MORNING COMMAND</div><h1>Good morning, '+esc(S.profile.name)+'.</h1><div class="morning-rank"><span>✦</span><div><small>Main Rank</small><b>'+esc(rank.rank.name)+'</b><em>'+rank.score+'/100</em></div></div><div class="morning-command-grid"><div><span>First Agenda</span><b>'+esc(agenda?.title||'Open morning')+'</b><small>'+(agenda?.time||'Flexible')+'</small></div><div><span>Now</span><b>'+esc(now?.title||'No urgent objective')+'</b><small>'+mins(now?.duration||0)+'</small></div><div><span>Daily Quests</span><b>'+quests.filter(x=>x.done).length+'/'+quests.length+'</b><small>'+quests.length+' adaptive objectives</small></div><div><span>Today Load</span><b>'+(load.overload?'Over '+mins(load.overload):'Balanced')+'</b><small>'+mins(load.workload)+' movable work</small></div></div>'+(guard.active?'<div class="morning-recovery-note">Recovery Guard is active. Today’s quest difficulty is reduced.</div>':'')+'<button class="btn btn-primary" data-act="startDay">Start Day</button></div></div>'
 }
 function dailyQuestData(d=today()){
-  const st=stats(d),tasks=S.tasks.filter(t=>!t.inbox&&t.date===d),priorityTasks=tasks.filter(t=>t.priority==='high'||t.deadline===d),priorityDone=priorityTasks.filter(t=>t.status==='done').length,due=dueRoutines(d),routineDone=due.filter(r=>routineActivity(r,d)).length,domains=gameDomainSet(d),guard=recoveryGuardData(d),weak=adaptiveQuestFocus(),weakCurrent=S.activities.filter(a=>a.date===d&&a.category===weak.k).reduce((n,a)=>n+(+a.duration||0),0);
-  const focusTarget=guard.active?45:Math.max(45,Math.min(120,Math.round(S.profile.dailyFocusTarget*.35)));
+  const st=stats(d),tasks=S.tasks.filter(t=>!t.inbox&&t.date===d),priorityTasks=tasks.filter(t=>t.priority==='high'||t.deadline===d),priorityDone=priorityTasks.filter(t=>t.status==='done').length,due=dueRoutines(d),routineDone=due.filter(r=>routineActivity(r,d)).length,guard=recoveryGuardData(d),weak=adaptiveQuestFocus(),weakCurrent=S.activities.filter(a=>a.date===d&&a.category===weak.k).reduce((n,a)=>n+(+a.duration||0),0),mode=d===today()?activeExamMode():null,modeCurrent=mode?S.activities.filter(a=>a.date===d&&a.category===mode.category).reduce((n,a)=>n+(+a.duration||0),0):0;
+  const focusTarget=guard.active?45:Math.max(45,Math.min(120,Math.round(S.profile.dailyFocusTarget*.35))),special=mode?{key:'mode-'+mode.id,title:'Campaign · '+mode.title,desc:'Focus Mode overrides the balance quest until target date',current:modeCurrent,target:+mode.dailyTarget||120,unit:'min',xp:100}:{key:'adaptive-'+weak.k,title:'Balance Quest · '+cat(weak.k),desc:'Strengthen the least-active domain this week',current:weakCurrent,target:30,unit:'min',xp:75};
   const quests=guard.active?[
     {key:'recovery-focus',title:'Recovery Protocol',desc:'Keep one short meaningful focus block',current:st.productive,target:focusTarget,unit:'min',xp:40},
     {key:'essential',title:'Essential Objective',desc:'Complete only one priority item',current:priorityTasks.length?priorityDone:tasks.filter(t=>t.status==='done').length,target:1,unit:'task',xp:35},
@@ -1391,7 +1395,7 @@ function dailyQuestData(d=today()){
     {key:'focus',title:'Deep Focus',desc:'Build meaningful focus time',current:st.productive,target:focusTarget,unit:'min',xp:60},
     {key:'priority',title:'First Strike',desc:priorityTasks.length?'Clear a priority objective':'Complete one planned task',current:priorityTasks.length?priorityDone:tasks.filter(t=>t.status==='done').length,target:1,unit:'task',xp:45},
     {key:'routine',title:'Routine Keeper',desc:'Protect your daily rhythm',current:routineDone,target:Math.max(1,Math.min(2,due.length||1)),unit:'routine',xp:50},
-    {key:'adaptive-'+weak.k,title:'Balance Quest · '+cat(weak.k),desc:'Strengthen the least-active domain this week',current:weakCurrent,target:30,unit:'min',xp:75}
+    special
   ];
   return quests.map(q=>({...q,done:q.current>=q.target,pct:questPct(q.current,q.target)}))
 }
@@ -1538,7 +1542,12 @@ function searchItems(q=''){
   for(const p of S.researchPapers)if(match(p.title,p.authors,p.doi,(p.tags||[]).join(' '),p.notes,p.annotations,p.pdfName))push({type:'Paper',title:p.title,meta:(p.status||'to-read')+' • '+(+p.readProgress||0)+'% read'+(p.pdfName?' • PDF':''),route:'research'});
   for(const n of S.researchNotes)if(match(n.title,n.text,n.type))push({type:'Research Note',title:n.title,meta:(n.type||'idea')+(n.date?' • '+n.date:''),route:'research'});
   for(const c of (S.dmath?.content||[]))if(match(c.title,c.format,c.platform,c.notes,c.status))push({type:'DMath Content',title:c.title,meta:dmathContentStatusLabel(c.status)+' • '+(S.dmath[c.platform]?.name||c.platform),route:'dmath'});
-  for(const v of (S.vault||[]))if(match(v.title,v.category,v.fileName,v.notes))push({type:'Vault Document',title:v.title,meta:(v.category||'Other')+' • '+(v.driveFileId?'Drive synced':'Local'),route:'vault'});
+  if(!S.settings.vaultLockEnabled||vaultUnlockedSession)for(const v of (S.vault||[]))if(match(v.title,v.category,v.fileName,v.notes))push({type:'Vault Document',title:v.title,meta:(v.category||'Other')+' • '+(v.driveFileId?'Drive synced':'Local'),route:'vault'});
+  for(const sem of S.academic.semesters)if(match(sem.name,sem.status))push({type:'Semester',title:sem.name,meta:sem.status,route:'academic'});
+  for(const c of S.academic.courses)if(match(c.name,c.lecturer,c.category,c.grade))push({type:'Course',title:c.name,meta:(c.grade||'Not graded')+' • '+c.credits+' SKS',route:'academic'});
+  for(const a of S.academic.assessments)if(match(a.title,S.academic.courses.find(c=>c.id===a.courseId)?.name))push({type:'Assessment',title:a.title,meta:a.date,route:'academic'});
+  for(const m of S.examModes)if(match(m.title,m.notes,cat(m.category)))push({type:'Focus Mode',title:m.title,meta:m.date+' • '+cat(m.category),route:'academic'});
+  for(const a of S.archive)if(match(a.label,a.entityType))push({type:'Archive',title:a.label,meta:a.entityType+' • archived',route:'recovery'});
   for(const n of S.notes)if(match(n.text))push({type:'Note',title:n.text.slice(0,90),meta:n.date,route:'inbox'});
   for(const [d,j] of Object.entries(S.journal))if(match(...Object.values(j||{})))push({type:'Journal',title:(j.l||j.a||j.t||'Journal entry').slice(0,90),meta:d,route:'journal'});
   return out.slice(0,30)

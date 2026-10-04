@@ -3196,3 +3196,8 @@ input,select,textarea{
     white-space:normal;
   }
 }
+
+
+/* v40 — Game-inspired badge rank accents */
+.tier-mythic{--badge-accent:#7c3aed}
+.tier-immortal{--badge-accent:#c026d3}

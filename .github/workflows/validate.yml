@@ -39,4 +39,11 @@ jobs:
           grep -q 'function requestGoogleToken' app.js
           grep -q 'function googleFriendlyError' app.js
           grep -q 'Google OAuth diagnostics' ui-v21.css
+          grep -q 'Productivity RPG system' ui-v21.css
+          grep -q 'function syncGameRewards' app.js
+          grep -q 'function replanRemainingDay' app.js
+          grep -q 'function activityRadarSvg' app.js
+          grep -q 'function rankUpOverlayHtml' app.js
+          grep -q 'function seasonRankData' app.js
+          grep -q 'function dailyQuestData' app.js
           grep -q 'Aggregate diligence rank' ui-v21.css

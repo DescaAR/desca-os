@@ -4663,3 +4663,112 @@ input,select,textarea{
 @media(max-width:480px){
   .capacity-budget-grid,.inbox-zero-grid,.day-closure-grid,.research-graph-stats,.project-command-grid,.confidence-grid,.scenario-result,.season-mission-grid{grid-template-columns:1fr}
 }
+
+
+/* v62 — Guided UX + modern input system */
+.guide-top-btn{
+  height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 11px;border:1px solid color-mix(in srgb,var(--app-blue) 22%,var(--app-border));
+  border-radius:12px;background:color-mix(in srgb,var(--app-blue) 6%,var(--app-surface));color:var(--app-text);font:inherit;font-size:11px;font-weight:800;cursor:pointer;
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease
+}
+.guide-top-btn span{width:20px;height:20px;display:grid;place-items:center;border-radius:7px;background:var(--app-blue);color:white;font-size:11px;font-weight:900}
+.guide-top-btn:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--app-blue) 46%,var(--app-border));box-shadow:0 8px 24px color-mix(in srgb,var(--app-blue) 9%,transparent)}
+
+.page-guide-backdrop{
+  position:fixed;inset:0;z-index:1180;background:rgba(11,17,27,.32);backdrop-filter:blur(2px);opacity:1
+}
+.page-guide-drawer{
+  position:fixed;top:0;right:0;z-index:1190;width:min(430px,92vw);height:100dvh;padding:22px;overflow:auto;
+  background:color-mix(in srgb,var(--app-surface) 96%,transparent);border-left:1px solid var(--app-border);box-shadow:-22px 0 60px rgba(15,23,42,.16);
+  transform:translateX(18px);opacity:0;transition:transform .22s ease,opacity .22s ease
+}
+.page-guide-drawer.open{transform:translateX(0);opacity:1}
+body.guide-open{overflow:hidden}
+.guide-drawer-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start;padding-bottom:18px;border-bottom:1px solid var(--app-border)}
+.guide-drawer-head h2{margin:4px 0 6px;font-size:25px;line-height:1.15}.guide-drawer-head p{margin:0;color:var(--app-text-2);font-size:12px;line-height:1.55}
+.guide-progress{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 0 10px}
+.guide-progress span{font-size:11px;font-weight:850;color:var(--app-blue);text-transform:uppercase;letter-spacing:.05em}.guide-progress small{font-size:10px;color:var(--app-muted);text-align:right}
+.guide-step-list{display:grid;gap:8px}
+.guide-step{
+  width:100%;display:grid;grid-template-columns:35px minmax(0,1fr) 24px;gap:10px;align-items:start;padding:13px;
+  border:1px solid var(--app-border);border-radius:15px;background:var(--app-surface-2);color:var(--app-text);text-align:left;cursor:pointer;
+  transition:border-color .18s ease,transform .18s ease,background .18s ease,box-shadow .18s ease
+}
+.guide-step:hover,.guide-step.active{transform:translateY(-1px);border-color:color-mix(in srgb,var(--app-blue) 40%,var(--app-border));background:color-mix(in srgb,var(--app-blue) 5%,var(--app-surface));box-shadow:0 8px 22px rgba(15,23,42,.05)}
+.guide-step-num{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:var(--app-surface);border:1px solid var(--app-border);font-size:9px;font-weight:900;color:var(--app-blue)}
+.guide-step-copy b,.guide-step-copy small{display:block}.guide-step-copy b{font-size:12px;margin:1px 0 4px}.guide-step-copy small{font-size:10.5px;line-height:1.5;color:var(--app-muted)}
+.guide-step-arrow{font-size:13px;color:var(--app-muted);padding-top:7px}.guide-step.active .guide-step-arrow{color:var(--app-blue)}
+.guide-drawer-foot{position:sticky;bottom:-22px;margin:18px -22px -22px;padding:14px 22px 20px;border-top:1px solid var(--app-border);background:color-mix(in srgb,var(--app-surface) 96%,transparent);backdrop-filter:blur(12px)}
+.guide-drawer-foot .btn{width:100%}
+.guide-highlight{
+  position:relative;z-index:1175!important;outline:3px solid color-mix(in srgb,var(--app-blue) 65%,transparent)!important;outline-offset:5px!important;
+  box-shadow:0 0 0 10px color-mix(in srgb,var(--app-blue) 10%,transparent),0 22px 55px rgba(15,23,42,.18)!important;
+  transition:outline-color .2s ease,box-shadow .2s ease
+}
+
+/* Form fields now behave like compact input cards instead of browser-default controls. */
+.form-grid{gap:12px}
+.field{
+  display:grid;gap:6px;align-content:start;padding:9px 11px 10px;border:1px solid var(--app-border);border-radius:15px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--app-surface-2) 72%,var(--app-surface)),var(--app-surface));
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease,background .18s ease
+}
+.field:hover{border-color:color-mix(in srgb,var(--app-text) 16%,var(--app-border))}
+.field:focus-within{
+  border-color:color-mix(in srgb,var(--app-blue) 62%,var(--app-border));background:color-mix(in srgb,var(--app-blue) 3%,var(--app-surface));
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--app-blue) 10%,transparent),0 9px 24px rgba(15,23,42,.05);transform:translateY(-1px)
+}
+.field>label{
+  display:flex;align-items:center;gap:6px;margin:0;color:var(--app-muted);font-size:9.5px;font-weight:850;text-transform:uppercase;letter-spacing:.065em;line-height:1.2
+}
+.field .field-auto{margin-left:auto;padding:3px 6px;border-radius:999px;background:color-mix(in srgb,var(--app-blue) 8%,var(--app-surface));color:var(--app-blue);font-size:8px;letter-spacing:.02em;text-transform:none}
+.field>input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+.field>select,.field>textarea,
+.form-grid .field input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+.form-grid .field select,.form-grid .field textarea{
+  width:100%;min-width:0;margin:0;padding:4px 0 2px;border:0!important;outline:0!important;background:transparent!important;color:var(--app-text);
+  font:inherit;font-size:13px;font-weight:650;line-height:1.35;box-shadow:none!important
+}
+.field>input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),.field>select{min-height:29px}
+.field>textarea{min-height:82px;resize:vertical}
+.field input::placeholder,.field textarea::placeholder{color:color-mix(in srgb,var(--app-muted) 72%,transparent);font-weight:500}
+.field>select{appearance:none;padding-right:24px;background-image:linear-gradient(45deg,transparent 50%,var(--app-muted) 50%),linear-gradient(135deg,var(--app-muted) 50%,transparent 50%)!important;background-position:calc(100% - 13px) 52%,calc(100% - 8px) 52%!important;background-size:5px 5px,5px 5px!important;background-repeat:no-repeat!important}
+.field>input[type="date"],.field>input[type="time"],.field>input[type="month"]{font-variant-numeric:tabular-nums}
+.field>input[type="file"]{
+  width:100%;padding:7px;border:1px dashed color-mix(in srgb,var(--app-blue) 28%,var(--app-border));border-radius:10px;background:color-mix(in srgb,var(--app-blue) 4%,var(--app-surface));color:var(--app-muted);font-size:10px
+}
+.field.full{grid-column:1/-1}
+
+/* Modal forms receive a clearer information hierarchy. */
+.modal form:not(.copilot-form):not(.universal-capture-box){display:grid;gap:14px}
+.modal .form-grid{gap:11px}
+.modal .modal-head{padding-bottom:14px;margin-bottom:5px;border-bottom:1px solid var(--app-border)}
+.modal .modal-head h2{letter-spacing:-.02em}
+.modal .smart-auto-strip{
+  border:1px solid color-mix(in srgb,var(--app-blue) 18%,var(--app-border));border-radius:14px;
+  background:color-mix(in srgb,var(--app-blue) 5%,var(--app-surface));padding:11px 12px
+}
+.smart-auto-details{
+  border:1px solid var(--app-border);border-radius:15px;background:var(--app-surface-2);overflow:hidden
+}
+.smart-auto-details>summary{padding:12px 14px;cursor:pointer;font-size:11px;font-weight:800;color:var(--app-text)}
+.smart-auto-details>summary span{float:right;color:var(--app-muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.smart-auto-inner{padding:0 12px 12px}
+
+/* Standalone inputs that are not wrapped in .field still get the same visual language. */
+.search-modal-box,.universal-capture-input,.copilot-form .search-modal-box{
+  border-radius:15px!important;border-color:color-mix(in srgb,var(--app-blue) 20%,var(--app-border))!important;
+  box-shadow:0 7px 22px rgba(15,23,42,.04);transition:border-color .18s ease,box-shadow .18s ease
+}
+.search-modal-box:focus-within,.universal-capture-input:focus-within,.copilot-form .search-modal-box:focus-within{
+  border-color:color-mix(in srgb,var(--app-blue) 60%,var(--app-border))!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--app-blue) 10%,transparent),0 10px 28px rgba(15,23,42,.07)
+}
+.universal-capture-box{border-radius:18px}
+.capture-file-btn span{border-radius:12px}
+
+@media(max-width:760px){
+  .guide-top-btn b{display:none}.guide-top-btn{width:38px;padding:0;justify-content:center}.guide-top-btn span{width:22px;height:22px}
+  .page-guide-drawer{width:94vw;padding:18px}.guide-drawer-foot{margin:16px -18px -18px;padding:12px 18px 18px}
+  .guide-progress{align-items:flex-start;flex-direction:column}.guide-progress small{text-align:left}
+  .field{padding:9px 10px}.form-grid{gap:9px}
+}

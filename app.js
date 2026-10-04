@@ -1112,7 +1112,7 @@ function deadlineItems(){
   for(const g of S.goals.filter(x=>x.status!=='completed')){const rem=S.tasks.filter(t=>t.goalId===g.id&&t.status!=='done').reduce((n,t)=>n+(+t.estimate||60),0);push('Goal',g.id,g.title,g.deadline,goalComputedProgress(g),'goals',goalForecast(g).status,rem)}
   for(const p of S.projects.filter(x=>x.status!=='completed')){const rem=S.tasks.filter(t=>t.projectId===p.id&&t.status!=='done').reduce((n,t)=>n+(+t.estimate||60),0);push('Project',p.id,p.title,p.deadline,projectProgress(p),'projects',projectHealth(p).status,rem)}
   for(const a of S.academic.assessments){const c=S.academic.courses.find(x=>x.id===a.courseId),t=a.taskId?S.tasks.find(x=>x.id===a.taskId):null;push('Academic',a.id,a.title,a.date,a.score!==''&&a.score!==undefined?100:0,'academic',c?.name||'Course',t&&t.status!=='done'?+t.estimate||120:0)}
-  for(const x of [...(S.s2Prep?.universities||[]),...(S.s2Prep?.scholarships||[])])push('S2',x.id,x.name,x.deadline,s2StageIndex(x.status)/Math.max(1,S2_STAGES.length-1)*100,'goals',s2StageLabel(x.status),0);
+  for(const x of [...(S.s2Prep?.universities||[]),...(S.s2Prep?.scholarships||[])])push('S2',x.id,x.name,x.deadline,s2TargetProgress(x.status),'goals',s2StageLabel(x.status),0);
   for(const m of S.examModes.filter(x=>x.active!==false))push('Mode',m.id,m.title,m.date,0,'academic','Focus mode',Math.max(0,+m.dailyTarget||120)*Math.max(1,Math.min(7,Math.round((new Date(m.date+'T12:00:00')-new Date(today()+'T12:00:00'))/86400000))));
   return out.sort((a,b)=>a.date.localeCompare(b.date))
 }

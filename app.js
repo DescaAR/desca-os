@@ -465,6 +465,22 @@ const PROJECT_AREAS=['Academic','Research','DMath Learning','S2','Product','Pers
 const FINANCE_CATEGORIES=['Makanan','Transportasi','Pendidikan','Kesehatan','Internet & Subscription','Belanja','Hiburan','Honor Tutor','Gaji','Freelance','DMath Learning','Investasi','Tabungan','Lainnya'];
 function smartText(v){return String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function smartHas(t,words){return words.some(w=>t.includes(w))}
+function parseSmartCapture(raw){
+  let title=String(raw||'').trim(),date=today(),time='',duration=0,priority='';
+  const lower=()=>smartText(title);
+  if(/\blusa\b/i.test(title)){date=add(today(),2);title=title.replace(/\blusa\b/ig,' ').trim()}
+  else if(/\b(besok|tomorrow)\b/i.test(title)){date=add(today(),1);title=title.replace(/\b(besok|tomorrow)\b/ig,' ').trim()}
+  else if(/\b(hari ini|today)\b/i.test(title)){date=today();title=title.replace(/\b(hari ini|today)\b/ig,' ').trim()}
+  let tm=title.match(/\b(?:jam|pukul)\s*([01]?\d|2[0-3])(?:[.:]([0-5]\d))?/i);
+  if(tm){time=String(+tm[1]).padStart(2,'0')+':'+String(tm[2]||'00').padStart(2,'0');title=title.replace(tm[0],' ').trim()}
+  else{tm=title.match(/\b([01]\d|2[0-3]):([0-5]\d)\b/);if(tm){time=tm[0];title=title.replace(tm[0],' ').trim()}}
+  let dm=title.match(/\b(?:selama\s*)?(\d+(?:[.,]\d+)?)\s*(jam|menit|minute|min|m)\b/i);
+  if(dm){const v=parseFloat(dm[1].replace(',','.'));duration=/jam/i.test(dm[2])?Math.round(v*60):Math.round(v);title=title.replace(dm[0],' ').trim()}
+  if(/\b(urgent|mendesak|prioritas tinggi)\b/i.test(title)){priority='high';title=title.replace(/\b(urgent|mendesak|prioritas tinggi)\b/ig,' ').trim()}
+  else if(/\b(prioritas rendah|low priority)\b/i.test(title)){priority='low';title=title.replace(/\b(prioritas rendah|low priority)\b/ig,' ').trim()}
+  title=title.replace(/\s{2,}/g,' ').replace(/^[,;\-–—\s]+|[,;\-–—\s]+$/g,'').trim();
+  return{title:title||String(raw||'').trim(),date,time,duration,priority}
+}
 function inferCategory(title,fallback='personal'){
   const t=smartText(title);
   if(smartHas(t,['quran','alquran','al-quran','hafalan','murajaah','surah','ayat']))return'quran';

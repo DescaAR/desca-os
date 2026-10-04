@@ -25,3 +25,5 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
+          grep -q 'function taskXP' app.js
+          grep -q 'function activityXP' app.js

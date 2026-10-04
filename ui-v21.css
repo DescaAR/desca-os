@@ -4935,3 +4935,31 @@ html[data-reduce-motion="true"] *,html[data-reduce-motion="true"] *:before,html[
 .experience-settings-card .btn{margin-top:2px}
 @media(max-width:900px){.shortcut-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){.shortcut-grid{grid-template-columns:1fr 1fr}}
+
+
+/* v70 — Reading analytics + planning completion */
+.bookshelf-controls{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.book-search-box{
+  min-width:220px;height:35px;display:flex;align-items:center;gap:7px;padding:0 10px;border:1px solid var(--app-border);
+  border-radius:11px;background:var(--app-surface);transition:border-color .16s ease,box-shadow .16s ease
+}
+.book-search-box:focus-within{border-color:color-mix(in srgb,var(--app-blue) 55%,var(--app-border));box-shadow:0 0 0 3px color-mix(in srgb,var(--app-blue) 9%,transparent)}
+.book-search-box>span{color:var(--app-blue);font-size:14px}.book-search-box input{width:100%;border:0;outline:0;background:transparent;color:var(--app-text);font:inherit;font-size:10px}
+.reading-trend-card,.reading-highlights-card{min-width:0}
+.reading-highlight-list{display:grid;gap:7px}
+.reading-highlight-list>button{
+  width:100%;display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;padding:10px;border:1px solid var(--app-border);
+  border-radius:12px;background:var(--app-surface-2);color:var(--app-text);text-align:left;cursor:pointer
+}
+.reading-highlight-list>button>span{width:28px;height:34px;display:grid;place-items:center;border-radius:7px;background:linear-gradient(145deg,color-mix(in srgb,var(--app-blue) 15%,var(--app-surface)),var(--app-surface));color:var(--app-blue);font-weight:900}
+.reading-highlight-list b,.reading-highlight-list small{display:block}.reading-highlight-list small{font-size:9px;color:var(--app-muted);margin-top:2px}
+.reading-highlight-list blockquote{margin:7px 0 0;padding-left:8px;border-left:2px solid var(--app-blue);font-size:10px;line-height:1.45;color:var(--app-text-2)}
+.reading-highlight-list p{margin:6px 0 0;font-size:9.5px;line-height:1.45;color:var(--app-muted)}
+
+.plan-outcome-checklist{display:grid;gap:7px;padding:12px;border:1px solid var(--app-border);border-radius:15px;background:var(--app-surface-2)}
+.plan-outcome-checklist>.eyebrow{margin-bottom:2px}
+.plan-outcome-checklist label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:9px;align-items:start;padding:9px;border-radius:10px;background:var(--app-surface);cursor:pointer}
+.plan-outcome-checklist input{margin-top:2px}.plan-outcome-checklist b,.plan-outcome-checklist small{display:block}.plan-outcome-checklist b{font-size:10.5px}.plan-outcome-checklist small{margin-top:2px;font-size:8.5px;color:var(--app-muted)}
+@media(max-width:700px){
+  .bookshelf-controls{width:100%;align-items:stretch;flex-direction:column}.book-search-box{width:100%;min-width:0}.bookshelf-filter{overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:3px}.bookshelf-filter .mini-btn{flex:none}
+}

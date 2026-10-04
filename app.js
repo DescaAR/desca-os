@@ -999,7 +999,7 @@ async function openSmartCopilot(q=''){
 }
 
 function aiSettingsCard(){
-  return'<article class="card ai-settings-card"><div class="card-head"><div><div class="eyebrow">AI COPILOT</div><h2>Optional AI endpoint</h2><p>Desca OS is static/local-first. Connect a compatible HTTPS endpoint if you want model-based answers; otherwise Copilot stays local and explainable.</p></div><span class="pill '+(S.settings.copilotEndpoint?'green':'')+'">'+(S.settings.copilotEndpoint?'CONNECTED':'LOCAL')+'</span></div><form id="copilotEndpointForm"><div class="field"><label>Copilot endpoint URL</label><input name="endpoint" type="url" value="'+esc(S.settings.copilotEndpoint||'')+'" placeholder="https://your-endpoint.example.com/copilot"></div><button class="btn btn-secondary">Save Endpoint</button></form></article>'
+  return'<article class="card ai-settings-card"><div class="card-head"><div><div class="eyebrow">AI COPILOT</div><h2>Optional AI endpoint</h2><p>Desca OS is static/local-first. Connect a compatible HTTPS endpoint if you want model-based answers. When enabled, the current question and a compact workspace context are sent to that endpoint; otherwise Copilot stays local.</p></div><span class="pill '+(S.settings.copilotEndpoint?'green':'')+'">'+(S.settings.copilotEndpoint?'CONNECTED':'LOCAL')+'</span></div><form id="copilotEndpointForm"><div class="field"><label>Copilot endpoint URL</label><input name="endpoint" type="url" value="'+esc(S.settings.copilotEndpoint||'')+'" placeholder="https://your-endpoint.example.com/copilot"></div><button class="btn btn-secondary">Save Endpoint</button></form></article>'
 }
 
 function quranVerseCount(x){const a=Math.max(1,+x.fromAyah||1),b=Math.max(a,+x.toAyah||a);return b-a+1}
@@ -1315,6 +1315,7 @@ function dataQualityIssues(){
   for(const course of S.academic.courses||[]){const rows=assessments.filter(a=>a.courseId===course.id),sum=rows.reduce((n,a)=>n+(+a.weight||0),0);if(rows.length&&sum!==100)issues.push({type:'course-weight-total',level:'warning',title:'Assessment weights do not total 100%',detail:course.name+' · '+sum+'%',id:course.id})}
   if(S.healthLogs.filter(h=>h.date>=add(today(),-13)).length<3)issues.push({type:'energy-confidence',level:'info',title:'Energy planner confidence is low',detail:'Fewer than 3 health logs in the last 14 days'});
   for(const t of S.studyTopics||[])if(studyTopicEvidence(t).evidence<2)issues.push({type:'mastery-confidence',level:'info',title:'Mastery evidence is sparse',detail:t.title,id:t.id});
+  for(const b of S.books.items){if(!(+b.totalPages>0))issues.push({type:'book-pages',level:'warning',title:'Book page count missing',detail:b.title,id:b.id});if(+b.currentPage>+b.totalPages&&+b.totalPages>0)issues.push({type:'book-progress',level:'warning',title:'Book progress exceeds total pages',detail:b.title,id:b.id});if(b.status==='reading'&&bookTargetDate(b)&&bookTargetDate(b)<today()&&bookProgress(b)<100)issues.push({type:'book-target',level:'info',title:'Reading target has passed',detail:b.title,id:b.id})}
   return issues
 }
 function repairDataQuality(){
@@ -1580,7 +1581,7 @@ const PAGE_GUIDES={
     {selector:'.form-grid',title:'Profile & Targets',desc:'Nama, target fokus, planner hours, dan preferensi dasar.'},
     {selector:'.pwa-install-card',title:'Install App',desc:'PWA dan shortcut Task, Focus, Run, serta Expense pada perangkat yang mendukung.'},
     {selector:'.data-confidence-card',title:'Data Confidence',desc:'Menjelaskan apakah forecast memiliki data cukup atau masih banyak informasi hilang.'},
-    {selector:'.automation-settings-card',title:'Automation Engine',desc:'Kontrol autoplan, escalation, day closure, smart notification, dan rule lainnya.'},
+    {selector:'.experience-settings-card',title:'Experience & Shortcuts',desc:'Atur Smart Digest, reduced motion, serta lihat keyboard shortcuts utama.'},{selector:'.automation-settings-card',title:'Automation Engine',desc:'Kontrol autoplan, escalation, day closure, smart notification, dan rule lainnya.'},
     {selector:'.system-control-card',title:'System Control',desc:'Backup, restore, Vault Lock, update, dan kontrol sistem lanjutan.'}
   ]}
 };
@@ -2243,7 +2244,7 @@ function searchItems(q=''){
   const term=q.trim().toLowerCase();if(!term)return[];let out=[],match=(...vals)=>vals.filter(Boolean).join(' ').toLowerCase().includes(term),push=(x)=>out.push(x);
   for(const t of S.tasks)if(match(t.title,t.notes,(t.tags||[]).join(' ')))push({type:'Task',title:t.title,meta:(t.date||'Inbox')+' • '+cat(t.category),route:'tasks'});
   for(const r of S.routines)if(match(r.title,cat(r.category)))push({type:'Routine',title:r.title,meta:(r.time||'Flexible')+' • '+cat(r.category),route:'life'});
-  for(const a of S.activities)if(match(a.title,a.notes,cat(a.category)))push({type:'Activity',title:a.title,meta:a.date+' • '+cat(a.category)+' • '+mins(a.duration),route:a.category==='study'?'study':a.category==='research'?'research':a.category==='dmath'?'dmath':a.category==='quran'?'quran':a.category==='health'?'health':'timeline'});
+  for(const a of S.activities)if(match(a.title,a.notes,cat(a.category)))push({type:'Activity',title:a.title,meta:a.date+' • '+cat(a.category)+' • '+mins(a.duration),route:a.category==='study'?'study':a.category==='research'?'research':a.category==='dmath'?'dmath':a.category==='quran'?'quran':a.category==='reading'?'books':a.category==='health'?'health':'timeline'});
   for(const r of (S.runs||[]))if(match(r.title,runTypeLabel(r.type),r.distanceKm+'km',r.shoe,r.surface,r.notes))push({type:'Run',title:r.title||runTypeLabel(r.type),meta:r.date+' • '+r.distanceKm.toFixed(2)+' km • '+runPaceText(runPaceSec(r)),route:'running'});
   for(const e of (S.quran?.entries||[])){const label=quranPlainLabel(e);if(match(label,e.notes,e.juz))push({type:'Quran',title:label,meta:(e.status||'new')+' • '+clamp(+e.mastery||0,0,100)+'% mastery',route:'quran'})}
   for(const g of S.goals)if(match(g.title,g.area,(g.milestones||[]).join(' ')))push({type:'Goal',title:g.title,meta:(g.area||'Goal')+' • '+(g.progress||0)+'% • '+goalForecast(g).status,route:'goals'});
@@ -2771,7 +2772,7 @@ document.addEventListener('submit',async e=>{
   if(f.id==='weeklyResetForm'){const outcomes=[d.o1,d.o2,d.o3].map(x=>(x||'').trim()).filter(Boolean);S.plans.push({id:uid('plan'),title:'Weekly Outcomes · '+fmt(today(),{day:'numeric',month:'short'}),horizon:'Week',start:today(),end:add(today(),6),outcomes,doneOutcomes:[],createdAt:new Date().toISOString()});S.meta.lastWeeklyReset=today();save('Weekly Reset');if(d.autoPlan==='true')buildWeekPlan();else{close();toast('Weekly Reset complete');render()}return}
   if(f.id==='onboardingForm'){S.profile.name=(d.name||'Desca').trim()||'Desca';S.profile.dailyFocusTarget=Math.max(30,+d.daily||240);S.profile.weeklyTarget=Math.max(60,+d.weekly||1800);S.books.annualTarget=Math.max(1,+d.books||24);S.settings.automationAutoPlan=d.autoplan==='true';S.meta.onboardingDone=true;save('Complete onboarding');close();toast('Desca OS is ready');render();return}
   if(f.id==='importCenterForm'){let text=(d.content||'').trim(),file=f.elements.file?.files?.[0]||null;if(file)text=await file.text();if(!text){toast('Paste data or choose a file');return}const count=importData(d.type||'tasks',text);close();toast(count?count+' item(s) imported':'No valid records found');render();return}
-  if(f.id==='copilotEndpointForm'){S.settings.copilotEndpoint=(d.endpoint||'').trim();save('Copilot endpoint');toast(S.settings.copilotEndpoint?'AI endpoint saved':'AI endpoint cleared');render();return}
+  if(f.id==='copilotEndpointForm'){const endpoint=(d.endpoint||'').trim();if(endpoint&&!/^https:\/\//i.test(endpoint)){toast('Gunakan endpoint HTTPS');return}S.settings.copilotEndpoint=endpoint;save('Copilot endpoint');toast(S.settings.copilotEndpoint?'AI endpoint saved':'AI endpoint cleared');render();return}
   if(f.id==='copilotForm'||f.id==='copilotHomeForm'){const q=(d.query||'').trim();if(q)openCopilot(q);return}
   if(f.id==='customPomodoroForm'){S.settings.pomodoroFocus=clamp(+d.focus||25,5,180);S.settings.pomodoroShortBreak=clamp(+d.short||5,1,60);S.settings.pomodoroLongBreak=clamp(+d.long||15,1,90);S.settings.pomodoroCycles=clamp(+d.cycles||4,1,12);S.settings.pomodoroPreset='custom';focus.phase='focus';focus.cycle=1;focus.startedAt=null;syncPomodoro();focus.total=phaseMinutes()*60;focus.left=focus.total;save();close();toast('Custom Pomodoro aktif: '+S.settings.pomodoroFocus+' / '+S.settings.pomodoroShortBreak);render();return}
 

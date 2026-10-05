@@ -5043,3 +5043,4 @@ html[data-reduce-motion="true"] *,html[data-reduce-motion="true"] *:before,html[
   .reading-command-stats{grid-template-columns:1fr}
   .book-search-box input{width:130px}
 }
+\n\n/* v72 — accessibility & motion safety */\n@media (prefers-reduced-motion: reduce){\n  html{scroll-behavior:auto!important}\n  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}\n}\n

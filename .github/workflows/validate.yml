@@ -72,7 +72,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=70' app.js
+          grep -q 'const BUILD_NUMBER=71' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -101,6 +101,12 @@ jobs:
           grep -q 'function openPageGuide' app.js
           grep -q 'function showGuideStep' app.js
           grep -q 'function booksPage' app.js
+          grep -q 'function readingCommandCard' app.js
+          grep -q 'function readingForecastCard' app.js
+          grep -q 'function readingQueueCard' app.js
+          grep -q 'function quickBookPages' app.js
+          grep -q 'function startBook' app.js
+          grep -q 'v71 — Premium Reading Command Center' ui-v21.css
           grep -q 'function bookPace' app.js
           grep -q 'function weeklyResetModal' app.js
           grep -q 'function decisionMemoryCard' app.js

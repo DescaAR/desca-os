@@ -30,7 +30,7 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
-          grep -q 'runtime-guard.js?v=73' index.html
+          grep -q 'runtime-guard.js?v=74' index.html
           grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
@@ -39,6 +39,8 @@ jobs:
           grep -q 'function startRoutineTimer' app.js
           grep -q 'const DESCA_GOAL_BASELINE' app.js
           grep -q 'function installDescaGoalBaseline' app.js
+          grep -q 'const DESCA_CALENDAR_BASELINE' app.js
+          grep -q 'function installCalendarBaseline' app.js
           grep -q 'Unified typography system' ui-v21.css
           grep -q 'const CONSISTENCY_TIERS' app.js
           grep -q 'function consistencyBadgeSection' app.js
@@ -78,7 +80,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=73' app.js
+          grep -q 'const BUILD_NUMBER=74' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js

@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const BUILD_NUMBER=76,KEY='desca-os-runtime-errors-v1',MAX_RECORDS=20;
+const BUILD_NUMBER=77,KEY='desca-os-runtime-errors-v1',MAX_RECORDS=20;
 let lastSignature='',lastAt=0;
 
 function messageFrom(value){

@@ -1575,10 +1575,15 @@ const PAGE_GUIDES={
   ]},
   books:{title:'Books',intro:'Personal reading OS untuk melacak buku, target selesai, pace halaman per hari, reading session, dan insight yang ingin disimpan.',steps:[
     {selector:'.books-hero',title:'Reading Goal',desc:'Melihat target buku tahunan dan progres membaca secara keseluruhan.'},
-    {selector:'.reading-plan-card',title:'Reading Plan',desc:'Desca OS menghitung berapa halaman yang perlu dibaca hari ini untuk mengejar target selesai setiap buku.'},
+    {selector:'.reading-command-card',title:'Reading Command Center',desc:'Ringkasan paling penting: total halaman yang perlu dibaca hari ini, buku aktif, buku yang tertinggal, rata-rata pace, dan finish terdekat.'},
+    {selector:'.reading-plan-card',title:'Today’s Reading Plan',desc:'Desca OS menghitung halaman per hari untuk setiap buku. Tombol +5 dan +10 mencatat progress cepat tanpa membuka form.'},
+    {selector:'.reading-forecast-card',title:'Finish Forecast',desc:'Membandingkan pace aktual dengan pace yang diperlukan dan memperkirakan tanggal selesai dari kebiasaan membaca nyata.'},
+    {selector:'.reading-queue-card',title:'Reading Queue',desc:'Daftar Want to Read berikutnya. Tekan Start untuk memulai buku dengan target selesai default.'},
     {selector:'.book-grid',title:'Bookshelf',desc:'Semua buku dibagi menjadi Reading, Want to Read, Paused, Finished, atau Dropped. Open membuka detail dan histori.'},
     {selector:'.book-card.status-reading',title:'Active Book',desc:'Buku aktif menampilkan progress, target tanggal, status pace, dan tombol + Reading untuk mencatat sesi.'},
-    {selector:'.reading-trend-card',title:'Reading Analytics',desc:'Grafik 30 hari menunjukkan berapa halaman yang benar-benar dibaca setiap hari.'},{selector:'.reading-highlights-card',title:'Highlights & Notes',desc:'Catatan dan quote terbaru dari reading session terkumpul di sini.'},{selector:'.reading-year-card',title:'Annual Reading Goal',desc:'Target jumlah buku selesai dalam satu tahun. Ubah dari tombol Reading Goal.'}
+    {selector:'.reading-trend-card',title:'Reading Analytics',desc:'Grafik 30 hari menunjukkan berapa halaman yang benar-benar dibaca setiap hari.'},
+    {selector:'.reading-highlights-card',title:'Highlights & Notes',desc:'Catatan dan quote terbaru dari reading session terkumpul di sini.'},
+    {selector:'.reading-year-card',title:'Annual Reading Goal',desc:'Target jumlah buku selesai dalam satu tahun. Ubah dari tombol Reading Goal.'}
   ]},
   running:{title:'Running',intro:'Mencatat latihan lari, pace, jarak, dan tren performa.',steps:[
     {selector:'.running-hero',title:'Running Overview',desc:'Ringkasan jarak dan pace utama.'},

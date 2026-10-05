@@ -16,6 +16,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check app.js
+          node --check runtime-guard.js
           node --check modules/growth-utils.js
           node --check tests/runtime-smoke.js
       - name: Runtime route smoke test
@@ -23,11 +24,14 @@ jobs:
       - name: Validate required files
         run: |
           test -f index.html
+          test -f runtime-guard.js
           test -f styles.css
           test -f manifest.webmanifest
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
+          grep -q 'runtime-guard.js?v=72' index.html
+          grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
           grep -q 'function nowNextCard' app.js

@@ -1148,7 +1148,22 @@ const GOOGLE_CORE_SCOPES=[
   'https://www.googleapis.com/auth/tasks'
 ].join(' ');
 const GOOGLE_DRIVE_SCOPE='https://www.googleapis.com/auth/drive.appdata';
-let G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:false};
+const GOOGLE_SESSION_KEY='desca-os-google-session-v1';
+function readGoogleSession(){
+  try{
+    const x=JSON.parse(sessionStorage.getItem(GOOGLE_SESSION_KEY)||'null');
+    if(!x?.token||x.clientId!==S.settings.googleClientId||+x.expiresAt<=Date.now()+60000)return null;
+    return x
+  }catch{return null}
+}
+function persistGoogleSession(){
+  try{
+    if(G.token&&G.expiresAt>Date.now()+60000)sessionStorage.setItem(GOOGLE_SESSION_KEY,JSON.stringify({token:G.token,expiresAt:G.expiresAt,scopes:G.scopes||'',clientId:S.settings.googleClientId||''}));
+    else sessionStorage.removeItem(GOOGLE_SESSION_KEY)
+  }catch{}
+}
+const RESTORED_GOOGLE_SESSION=readGoogleSession();
+let G={token:RESTORED_GOOGLE_SESSION?.token||null,expiresAt:+RESTORED_GOOGLE_SESSION?.expiresAt||0,scopes:RESTORED_GOOGLE_SESSION?.scopes||'',taskLists:[],busy:false,error:null,autoTried:false};
 function googleReady(){return !!G.token&&Date.now()<G.expiresAt-60000}
 function loadGoogleIdentity(){return new Promise((resolve,reject)=>{if(window.google?.accounts?.oauth2)return resolve();const old=document.querySelector('script[data-desca-google-gis]');if(old){if(window.google?.accounts?.oauth2)return resolve();old.addEventListener('load',resolve,{once:true});old.addEventListener('error',()=>reject(new Error('Google Identity Services gagal dimuat')),{once:true});return}const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.defer=true;s.dataset.descaGoogleGis='1';s.onload=resolve;s.onerror=()=>reject(new Error('Google Identity Services gagal dimuat'));document.head.appendChild(s)})}
 function googleFriendlyError(err){
@@ -1168,7 +1183,8 @@ function applyGoogleToken(token){
   G.token=token.access_token;
   G.expiresAt=Date.now()+(+token.expires_in||3600)*1000;
   G.scopes=token.scope||G.scopes||'';
-  G.error=null
+  G.error=null;
+  persistGoogleSession()
 }
 async function requestGoogleToken({clientId=S.settings.googleClientId,scopes=GOOGLE_CORE_SCOPES,interactive=false}={}){
   await loadGoogleIdentity();
@@ -1185,12 +1201,23 @@ async function requestGoogleToken({clientId=S.settings.googleClientId,scopes=GOO
     try{tc.requestAccessToken({prompt:interactive?'consent':''})}catch(e){fail(e)}
   })
 }
+function saveGoogleClientId(){
+  const input=$('#googleClientId'),clientId=(input?.value||'').trim();
+  if(!clientId||!clientId.endsWith('.apps.googleusercontent.com')){toast('Client ID Google belum valid');return false}
+  const changed=clientId!==S.settings.googleClientId;
+  if(changed&&G.token){
+    try{if(window.google?.accounts?.oauth2)google.accounts.oauth2.revoke(G.token,()=>{})}catch{}
+    G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:false};
+    try{sessionStorage.removeItem(GOOGLE_SESSION_KEY)}catch{}
+  }
+  S.settings.googleClientId=clientId;save('Save Google Client ID');toast(changed?'Google Client ID tersimpan':'Google Client ID sudah tersimpan');render();return true
+}
 async function connectGoogle(){
   const input=$('#googleClientId'),clientId=(input?.value.trim()||S.settings.googleClientId||'').trim();
   if(!clientId||!clientId.endsWith('.apps.googleusercontent.com')){
     route='settings';location.hash='settings';render();toast('Isi Google OAuth Client ID tipe Web application terlebih dahulu');return
   }
-  S.settings.googleClientId=clientId;save();
+  S.settings.googleClientId=clientId;save('Save Google Client ID');
   try{
     const token=await requestGoogleToken({clientId,scopes:GOOGLE_CORE_SCOPES,interactive:true});
     applyGoogleToken(token);
@@ -1215,6 +1242,7 @@ async function autoReconnectGoogle(){
     return true
   }catch(e){
     G.error=null;
+    try{sessionStorage.removeItem(GOOGLE_SESSION_KEY)}catch{}
     return false
   }
 }
@@ -1225,7 +1253,7 @@ async function ensureGoogleDriveAccess(){
   applyGoogleToken(token);
   return true
 }
-function disconnectGoogle(){if(G.token&&window.google?.accounts?.oauth2)try{google.accounts.oauth2.revoke(G.token,()=>{})}catch{}G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:true};toast('Google diputus dari sesi ini');render()}
+function disconnectGoogle(){if(G.token&&window.google?.accounts?.oauth2)try{google.accounts.oauth2.revoke(G.token,()=>{})}catch{}try{sessionStorage.removeItem(GOOGLE_SESSION_KEY)}catch{}G={token:null,expiresAt:0,scopes:'',taskLists:[],busy:false,error:null,autoTried:true};toast('Google diputus dari sesi ini');render()}
 async function googleFetch(url,opts={}){if(!googleReady())throw new Error('Google session belum aktif');const headers={Authorization:'Bearer '+G.token,...(opts.headers||{})};const r=await fetch(url,{...opts,headers});let body=null;const ct=r.headers.get('content-type')||'';if(ct.includes('application/json')){try{body=await r.json()}catch{}}else{try{body=await r.text()}catch{}}if(!r.ok){const msg=body?.error?.message||body?.error_description||('Google API '+r.status);throw new Error(msg)}return body}
 async function googleFetchBlob(url,opts={}){if(!googleReady())throw new Error('Google session belum aktif');const r=await fetch(url,{...opts,headers:{Authorization:'Bearer '+G.token,...(opts.headers||{})}});if(!r.ok){let msg='Google API '+r.status;try{const j=await r.json();msg=j?.error?.message||msg}catch{}throw new Error(msg)}return await r.blob()}
 async function driveAppDataFind(name){await ensureGoogleDriveAccess();const q=encodeURIComponent("name='"+String(name).replace(/'/g,"\\'")+"' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime,size,mimeType)&pageSize=10');return(data.files||[])[0]||null}
@@ -1289,7 +1317,7 @@ function queueGoogleCalendarRefresh(){if(!googleReady()||G.busy)return;const las
 function importCalendarSnapshotData(pack){const rows=Array.isArray(pack)?pack:Array.isArray(pack?.events)?pack.events:null;if(!rows)throw new Error('Format snapshot tidak valid');S.googleEvents=rows.map(e=>({id:String(e.id||uid('gcal')),title:String(e.title||e.summary||'(Tanpa judul)'),description:String(e.description||''),date:String(e.date||''),time:String(e.time||''),duration:Math.max(0,+e.duration||0),allDay:!!e.allDay,status:e.status||'confirmed',htmlLink:String(e.htmlLink||e.url||''),updated:e.updated||'',descaTaskId:e.descaTaskId||''})).filter(e=>e.date);S.settings.googleLastSync=new Date().toISOString();save('Import Google Calendar snapshot');toast(S.googleEvents.length+' event Google Calendar diimpor');render()}
 function importGoogleEvent(id){const e=S.googleEvents.find(x=>x.id===id);if(!e)return;if(S.tasks.some(t=>t.googleCalendarEventId===e.id)){toast('Event ini sudah terhubung ke task');return}const t={id:uid('t'),title:e.title,date:e.date||today(),deadline:e.date||'',status:'planned',priority:'medium',category:'personal',goalId:null,estimate:e.duration||60,startTime:e.time||'',notes:e.description||'',inbox:false,subtasks:[],tags:['google-calendar'],recurrence:'none',dependsOn:null,googleCalendarSync:true,googleCalendarEventId:e.id};S.tasks.push(t);save();close();toast('Google Calendar event diimpor sebagai task');render()}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-const BUILD_NUMBER=74;
+const BUILD_NUMBER=75;
 let vaultUnlockedSession=false;
 function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
 function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -2304,7 +2332,7 @@ function localFirstStatusCard(){
 }
 function googleSettingsCard(){
   const gstat=googleStatusLabel(),lastGoogle=S.settings.googleLastSync?fmt(dateFromTs(Date.parse(S.settings.googleLastSync)),{day:'numeric',month:'short',year:'numeric'})+' '+timeFromTs(Date.parse(S.settings.googleLastSync)):'Belum pernah',origin=location.origin,needsSetup=!S.settings.googleClientId||!!G.error;
-  return'<article class="card google-integration-card"><div class="card-head"><div><h2>Google Workspace <span class="optional-badge">Opsional</span></h2><p>Calendar dan Tasks memakai izin inti. Drive backup meminta izin tambahan hanya saat dipakai.</p></div><span class="pill '+(googleReady()?'green':'')+'">'+gstat+'</span></div>'+(googleReady()?'<div class="connected-account-summary"><span class="google-connected-dot"></span><div><b>Google tersambung</b><small>Token aktif hanya di sesi browser ini dan akan diminta ulang saat perlu.</small></div></div>':'<div class="callout">Tidak perlu Google untuk memakai Desca OS. Untuk koneksi dari GitHub Pages, OAuth Web Client harus mengizinkan origin situs ini.</div>')+(G.error?'<div class="google-error-box"><b>Google connection issue</b><span>'+esc(G.error)+'</span></div>':'')+'<div class="button-row" style="margin-top:12px">'+(googleReady()?'<button class="btn btn-primary" data-act="googleSync">'+(G.busy?'Syncing...':'Sync Calendar & Tasks')+'</button><button class="btn btn-secondary" data-act="googleDriveBackup">Backup Drive</button><button class="btn btn-ghost" data-act="googleDisconnect">Disconnect</button>':'<button class="btn btn-primary" data-act="googleConnect">Connect Google</button>')+'</div><details class="smart-optional settings-advanced" '+(needsSetup?'open':'')+'><summary>Setup Google <span>Hanya sekali per origin</span></summary><div class="advanced-inner"><div class="field"><label>Google OAuth Client ID</label><input id="googleClientId" value="'+esc(S.settings.googleClientId||'')+'" placeholder="xxxxxxxx.apps.googleusercontent.com"></div><div class="google-origin-check"><div><span>Authorized JavaScript origin</span><code>'+esc(origin)+'</code></div><button class="mini-btn" data-act="copyGoogleOrigin">Copy Origin</button></div><div class="item-meta google-origin-note">Pastikan OAuth Client bertipe <b>Web application</b> dan origin di atas terdaftar persis di Google Cloud. Jika sebelumnya memakai domain Vercel, tambahkan origin GitHub Pages ini juga.</div><div class="field" style="margin-top:10px"><label>Google Tasks list</label><select id="googleTaskListSelect" '+(!googleReady()?'disabled':'')+'>'+googleTaskListOptions()+'</select></div><div class="google-scope-list"><span>Calendar</span><span>Tasks</span><span>Drive · on demand</span></div></div></details><div class="item-meta" style="margin-top:10px">Last sync · '+esc(lastGoogle)+'</div></article>'
+  return'<article class="card google-integration-card"><div class="card-head"><div><h2>Google Workspace <span class="optional-badge">Opsional</span></h2><p>Calendar dan Tasks memakai izin inti. Drive backup meminta izin tambahan hanya saat dipakai.</p></div><span class="pill '+(googleReady()?'green':'')+'">'+gstat+'</span></div>'+(googleReady()?'<div class="connected-account-summary"><span class="google-connected-dot"></span><div><b>Google tersambung</b><small>Sesi Google dipertahankan saat refresh tab selama token masih berlaku.</small></div></div>':'<div class="callout">Tidak perlu Google untuk memakai Desca OS. Untuk koneksi dari GitHub Pages, OAuth Web Client harus mengizinkan origin situs ini.</div>')+(G.error?'<div class="google-error-box"><b>Google connection issue</b><span>'+esc(G.error)+'</span></div>':'')+'<div class="button-row" style="margin-top:12px">'+(googleReady()?'<button class="btn btn-primary" data-act="googleSync">'+(G.busy?'Syncing...':'Sync Calendar & Tasks')+'</button><button class="btn btn-secondary" data-act="googleDriveBackup">Backup Drive</button><button class="btn btn-ghost" data-act="googleDisconnect">Disconnect</button>':'<button class="btn btn-primary" data-act="googleConnect">Connect Google</button>')+'</div><details class="smart-optional settings-advanced" '+(needsSetup?'open':'')+'><summary>Setup Google <span>Hanya sekali per origin</span></summary><div class="advanced-inner"><div class="field"><label>Google OAuth Client ID</label><input id="googleClientId" value="'+esc(S.settings.googleClientId||'')+'" placeholder="xxxxxxxx.apps.googleusercontent.com"><div class="button-row compact" style="margin-top:8px"><button class="mini-btn" type="button" data-act="saveGoogleClientId">Save Client ID</button><span class="item-meta">'+(S.settings.googleClientId?'Saved in this browser':'Not saved yet')+'</span></div></div><div class="google-origin-check"><div><span>Authorized JavaScript origin</span><code>'+esc(origin)+'</code></div><button class="mini-btn" data-act="copyGoogleOrigin">Copy Origin</button></div><div class="item-meta google-origin-note">Pastikan OAuth Client bertipe <b>Web application</b> dan origin di atas terdaftar persis di Google Cloud. Jika sebelumnya memakai domain Vercel, tambahkan origin GitHub Pages ini juga.</div><div class="field" style="margin-top:10px"><label>Google Tasks list</label><select id="googleTaskListSelect" '+(!googleReady()?'disabled':'')+'>'+googleTaskListOptions()+'</select></div><div class="google-scope-list"><span>Calendar</span><span>Tasks</span><span>Drive · on demand</span></div></div></details><div class="item-meta" style="margin-top:10px">Last sync · '+esc(lastGoogle)+'</div></article>'
 }
 function cloudBackupCard(){
   const cloud=cloudSession?.user?.email||null;
@@ -2786,7 +2814,7 @@ document.addEventListener('click',e=>{
 
   
   if(a==='requestNotifications')requestNotifications();
-  if(a==='googleConnect')connectGoogle();if(a==='copyGoogleOrigin'){navigator.clipboard?.writeText(location.origin).then(()=>toast('Origin disalin: '+location.origin)).catch(()=>toast('Origin: '+location.origin))}if(a==='importCalendarSnapshot')$('#calendarSnapshotFile')?.click();
+  if(a==='googleConnect')connectGoogle();if(a==='saveGoogleClientId')saveGoogleClientId();if(a==='copyGoogleOrigin'){navigator.clipboard?.writeText(location.origin).then(()=>toast('Origin disalin: '+location.origin)).catch(()=>toast('Origin: '+location.origin))}if(a==='importCalendarSnapshot')$('#calendarSnapshotFile')?.click();
   if(a==='googleSync'){const sel=$('#googleTaskListSelect');if(sel&&sel.value){S.settings.googleTaskListId=sel.value;S.settings.googleTaskListTitle=sel.options[sel.selectedIndex]?.text||'';save()}googleSyncAll()}
   if(a==='googleDisconnect')disconnectGoogle();
   if(a==='googleDriveBackup')backupToGoogleDrive();

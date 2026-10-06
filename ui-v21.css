@@ -5096,3 +5096,15 @@ html[data-reduce-motion="true"] *,html[data-reduce-motion="true"] *:before,html[
 .running-lab-card{background:linear-gradient(180deg,color-mix(in srgb,var(--app-blue) 3%,var(--app-surface)),var(--app-surface))}
 @media(max-width:950px){.sports-hero{grid-template-columns:1fr}.sports-history{grid-template-columns:1fr}}
 @media(max-width:620px){.sports-hero{padding:20px}.sport-core-metrics{grid-template-columns:1fr 1fr}}
+
+
+/* v80 — Interactive charts + live Pomodoro accumulation */
+.svg-chart{position:relative}
+.chart-point{cursor:pointer;outline:none}
+.chart-hit{fill:transparent;stroke:transparent;pointer-events:all}
+.chart-point .chart-dot{transition:r .15s ease,stroke-width .15s ease}
+.chart-point:hover .chart-dot,.chart-point:focus .chart-dot,.chart-point.selected .chart-dot{r:5.4px;stroke-width:2.6px}
+.chart-point:focus-visible .chart-hit{stroke:var(--app-blue);stroke-width:1.5;stroke-dasharray:2 2}
+.chart-tooltip{position:absolute;z-index:5;transform:translate(-50%,-100%);min-width:92px;max-width:180px;padding:8px 10px;border:1px solid var(--app-border);border-radius:10px;background:var(--app-surface);color:var(--app-text);box-shadow:0 8px 24px rgba(15,23,42,.12);pointer-events:none;text-align:center}
+.chart-tooltip b,.chart-tooltip span{display:block;white-space:nowrap}.chart-tooltip b{font-size:10px}.chart-tooltip span{margin-top:2px;font-size:12px;font-weight:800}
+.chart-tooltip[hidden]{display:none}

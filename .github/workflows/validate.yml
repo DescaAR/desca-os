@@ -30,7 +30,7 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
-          grep -q 'runtime-guard.js?v=78' index.html
+          grep -q 'runtime-guard.js?v=79' index.html
           grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
@@ -49,6 +49,8 @@ jobs:
           grep -q 'const SPORT_TYPES' app.js
           grep -q 'function sportsPage' app.js
           grep -q 'function sportsForm' app.js
+          grep -q 'todayMoreOpen' app.js
+          grep -q 'desca-os-today-more-open' app.js
           grep -q 'function syncWorkPaymentFinance' app.js
           grep -q 'function ensurePrayerTimes' app.js
           grep -q 'GOOGLE_SESSION_KEY' app.js
@@ -92,7 +94,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=78' app.js
+          grep -q 'const BUILD_NUMBER=79' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js

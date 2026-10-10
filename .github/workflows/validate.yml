@@ -30,7 +30,7 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
-          grep -q 'runtime-guard.js?v=81' index.html
+          grep -q 'runtime-guard.js?v=82' index.html
           grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
@@ -52,6 +52,7 @@ jobs:
           grep -q 'todayMoreOpen' app.js
           grep -q 'function syncPomodoroDraft' app.js
           grep -q 'S.meta.version=36' app.js
+          grep -q 'S.meta.version=37' app.js
           grep -q 'data-chart-point' app.js
           grep -q 'chart-tooltip' ui-v21.css
           grep -q 'desca-os-today-more-open' app.js
@@ -98,7 +99,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=81' app.js
+          grep -q 'const BUILD_NUMBER=82' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js

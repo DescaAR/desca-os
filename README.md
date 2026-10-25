@@ -150,11 +150,11 @@ Cloud Sync tidak diperlukan untuk memakai Desca OS. Jika ingin sinkron lintas pe
 RLS pada `supabase.sql` membatasi satu pengguna hanya ke row miliknya sendiri. Jangan pernah menaruh `service_role` key pada Desca OS frontend.
 
 
-## Google Integration
+## Google Tasks & Drive (opsional)
 
 Google tidak dibuat sebagai hub terpisah. Integrasi masuk langsung ke modul Desca OS:
 
-- **Calendar**: Google Calendar events ditampilkan di Month/Week/Day view. Event Google dapat diimpor menjadi task Desca OS.
+- **Kalender internal**: Month/Week/Day menampilkan task Desca OS dan agenda lokal. Tidak memakai API atau sinkronisasi Google Calendar.
 - **Tasks**: task Desca OS dapat dipilih untuk disinkronkan ke Google Tasks. Google Tasks pada list yang dipilih juga dapat ditarik ke Desca OS.
 - **Drive App Data**: backup state Desca OS dapat disimpan ke folder aplikasi tersembunyi Google Drive dan dipulihkan kembali.
 - OAuth access token hanya disimpan di memory session dan hilang setelah reload/disconnect.
@@ -164,7 +164,6 @@ Google tidak dibuat sebagai hub terpisah. Integrasi masuk langsung ke modul Desc
 
 1. Buat atau pilih Google Cloud project.
 2. Enable:
-   - Google Calendar API
    - Google Tasks API
    - Google Drive API
 3. Konfigurasi OAuth consent screen.

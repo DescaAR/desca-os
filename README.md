@@ -413,3 +413,7 @@ UI Desca OS diperbarui menjadi workspace yang lebih modern tanpa mengubah strukt
 - visual hierarchy Growth workspace diseragamkan
 - dark mode ikut menggunakan sistem visual baru
 - PWA cache diperbarui ke v18
+
+## Integrasi kalender (v88)
+
+Google Calendar tidak lagi terhubung ke Desca OS: tidak ada izin OAuth Calendar, impor/sinkronisasi otomatis dari Google Calendar, atau pembaruan event ke Google Calendar. Kalender internal pada Planner tetap berjalan memakai tugas dan agenda lokal (termasuk file ICS yang diimpor manual). Data sinkronisasi lama tidak ditampilkan namun tidak dimusnahkan dari cadangan pengguna. Google Tasks dan Google Drive tetap opsional dan terpisah.

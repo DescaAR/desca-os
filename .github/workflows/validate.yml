@@ -30,7 +30,7 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
-          grep -q 'runtime-guard.js?v=85' index.html
+          grep -q 'runtime-guard.js?v=86' index.html
           grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
@@ -106,7 +106,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=85' app.js
+          grep -q 'const BUILD_NUMBER=86' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -156,6 +156,8 @@ jobs:
           grep -q 'function parseGPX' app.js
           grep -q 'function parseICSDateTime' app.js
           grep -q 'v70 — Books OS + Control Layer' ui-v21.css
+          grep -q 'Desca OS v86' ui-v21.css
+          grep -q 'ui-v21.css?v=86' index.html
           grep -q 'id="mobileFab"' index.html
           grep -q '"short_name":"Books"' manifest.webmanifest
           grep -q 'v62 — Guided UX + modern input system' ui-v21.css

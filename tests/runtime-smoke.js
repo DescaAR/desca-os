@@ -2,7 +2,7 @@ const fs=require('fs');
 const vm=require('vm');
 const app=fs.readFileSync('app.js','utf8');
 const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats};})();`);
-const routes=['today','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
+const routes=['today','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
   return {
@@ -71,6 +71,10 @@ function run(route,state){
   return ctx;
 }
 for(const route of routes){run(route,null);run(route,richState())}
+const navigation=run('planner',richState()).document.querySelector('#sideNav').innerHTML;
+if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
+const academicNavigation=run('english',richState()).document.querySelector('#sideNav').innerHTML;
+if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
 const ctx=run('books',richState()),api=ctx.__DESCA_TEST__;
 if(!api)throw new Error('Test API was not exposed');
 const parsed=api.parseSmartCapture('belajar Analisis Real 3 hari lagi jam 9 90 menit');

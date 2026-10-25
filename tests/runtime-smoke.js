@@ -81,6 +81,13 @@ const academicNavigation=run('english',richState()).document.querySelector('#sid
 if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
 const cal=run('calendar',richState()).document.querySelector('#page').innerHTML;
 if(!cal.includes('Tidak terhubung ke Google Calendar')||cal.includes('data-act="googleConnect"')||cal.includes('google-calendar-banner'))throw new Error('Calendar must be local only');
+
+const freshEnglish=run('english',richState()).__DESCA_TEST__.S.english.sites.find(site=>site.id==='english_volingo');
+if(freshEnglish?.url!=='https://app.volingo.my.id/')throw new Error('Volingo preset URL regression');
+const legacyEnglish=richState();
+legacyEnglish.english={sites:[{id:'english_volingo',title:'Volingo',url:'https://volingo.my.id/',progress:75,visits:12,description:'My private notes',status:'active'}],sessions:[]};
+const migratedEnglish=run('english',legacyEnglish).__DESCA_TEST__.S.english.sites[0];
+if(migratedEnglish.url!=='https://app.volingo.my.id/'||migratedEnglish.progress!==75||migratedEnglish.visits!==12||migratedEnglish.description!=='My private notes')throw new Error('Volingo saved-link migration regression');
 const ctx=run('books',richState()),api=ctx.__DESCA_TEST__;
 if(!api)throw new Error('Test API was not exposed');
 const parsed=api.parseSmartCapture('belajar Analisis Real 3 hari lagi jam 9 90 menit');

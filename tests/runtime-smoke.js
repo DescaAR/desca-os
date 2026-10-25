@@ -1,6 +1,10 @@
 const fs=require('fs');
 const vm=require('vm');
 const app=fs.readFileSync('app.js','utf8');
+if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Error('Google Calendar OAuth scope must be removed');
+if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
+if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
+if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
 const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats};})();`);
 const routes=['today','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
@@ -75,6 +79,8 @@ const navigation=run('planner',richState()).document.querySelector('#sideNav').i
 if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
 const academicNavigation=run('english',richState()).document.querySelector('#sideNav').innerHTML;
 if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
+const cal=run('calendar',richState()).document.querySelector('#page').innerHTML;
+if(!cal.includes('Tidak terhubung ke Google Calendar')||cal.includes('data-act="googleConnect"')||cal.includes('google-calendar-banner'))throw new Error('Calendar must be local only');
 const ctx=run('books',richState()),api=ctx.__DESCA_TEST__;
 if(!api)throw new Error('Test API was not exposed');
 const parsed=api.parseSmartCapture('belajar Analisis Real 3 hari lagi jam 9 90 menit');

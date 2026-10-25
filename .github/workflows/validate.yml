@@ -30,7 +30,7 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
-          grep -q 'runtime-guard.js?v=84' index.html
+          grep -q 'runtime-guard.js?v=85' index.html
           grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js
@@ -50,6 +50,9 @@ jobs:
           grep -q 'function englishSiteForm' app.js
           grep -q 'function englishSessionForm' app.js
           grep -q 'S.meta.version=38' app.js
+          grep -q 'S.meta.version=39' app.js
+          grep -q 'const ENGLISH_SITE_CATALOG' app.js
+          grep -q 'englishCriteriaFilter' app.js
           grep -q 'const SPORT_TYPES' app.js
           grep -q 'function sportsPage' app.js
           grep -q 'function sportsForm' app.js
@@ -103,7 +106,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=84' app.js
+          grep -q 'const BUILD_NUMBER=85' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js

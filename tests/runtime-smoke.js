@@ -77,6 +77,9 @@ function run(route,state){
 for(const route of routes){run(route,null);run(route,richState())}
 const navigation=run('planner',richState()).document.querySelector('#sideNav').innerHTML;
 if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
+const academicTabs=run('academic',richState()).document.querySelector('#page').innerHTML;
+if(academicTabs.includes('data-route="vault"')||academicTabs.includes('>Library</button>'))throw new Error('Library must not appear in Academic tabs');
+if(!academicTabs.includes('data-route="books"')||!academicTabs.includes('>Reading</button>'))throw new Error('Reading tab must remain available');
 const academicNavigation=run('english',richState()).document.querySelector('#sideNav').innerHTML;
 if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
 const cal=run('calendar',richState()).document.querySelector('#page').innerHTML;

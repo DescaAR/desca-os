@@ -62,14 +62,530 @@ function installDescaGoalBaseline(){
   return added
 }
 
+const ENGLISH_CRITERIA={
+  "main": "Website pembelajaran utama",
+  "speaking": "Listening, Speaking, dan Pronunciation",
+  "dictation": "Dictation",
+  "writing": "Writing, Vocabulary, dan Evaluasi",
+  "exams": "Tryout IELTS dan TOEFL",
+  "academic": "Academic English dan Matematika",
+  "paid": "Alternatif platform berbayar"
+};
+const ENGLISH_SITE_CATALOG=[
+  {
+    "id": "english_volingo",
+    "title": "Volingo",
+    "url": "https://volingo.my.id/",
+    "criteria": "main",
+    "skill": "General",
+    "tier": "core",
+    "useCases": [
+      "Main course",
+      "Vocabulary",
+      "Grammar"
+    ],
+    "sourcePosition": 1
+  },
+  {
+    "id": "english_chatgpt",
+    "title": "ChatGPT Voice",
+    "url": "https://chatgpt.com/",
+    "criteria": "main",
+    "skill": "Speaking",
+    "tier": "core",
+    "useCases": [
+      "Speaking",
+      "Conversation",
+      "Pronunciation"
+    ],
+    "sourcePosition": 2
+  },
+  {
+    "id": "english_british",
+    "title": "British Council LearnEnglish",
+    "url": "https://learnenglish.britishcouncil.org/",
+    "criteria": "main",
+    "skill": "Grammar",
+    "tier": "core",
+    "useCases": [
+      "Grammar",
+      "Reading",
+      "Vocabulary"
+    ],
+    "sourcePosition": 3
+  },
+  {
+    "id": "english_bbc",
+    "title": "BBC Learning English",
+    "url": "https://www.bbc.co.uk/learningenglish",
+    "criteria": "main",
+    "skill": "Listening",
+    "tier": "core",
+    "useCases": [
+      "Listening",
+      "Vocabulary",
+      "Pronunciation"
+    ],
+    "sourcePosition": 4
+  },
+  {
+    "id": "english_elllo",
+    "title": "ELLLO",
+    "url": "https://elllo.org/",
+    "criteria": "main",
+    "skill": "Listening",
+    "tier": "core",
+    "useCases": [
+      "Listening",
+      "Conversation"
+    ],
+    "sourcePosition": 5
+  },
+  {
+    "id": "english_engoo",
+    "title": "Engoo Materials",
+    "url": "https://engoo.com/app/materials/en",
+    "criteria": "main",
+    "skill": "Reading",
+    "tier": "recommended",
+    "useCases": [
+      "Reading",
+      "Speaking",
+      "Conversation"
+    ],
+    "sourcePosition": 6
+  },
+  {
+    "id": "english_cambridge",
+    "title": "Cambridge English",
+    "url": "https://www.cambridgeenglish.org/learning-english/",
+    "criteria": "main",
+    "skill": "Reading",
+    "tier": "recommended",
+    "useCases": [
+      "Reading",
+      "Grammar"
+    ],
+    "sourcePosition": 7
+  },
+  {
+    "id": "english_voa",
+    "title": "VOA Learning English",
+    "url": "https://learningenglish.voanews.com/",
+    "criteria": "speaking",
+    "skill": "Listening",
+    "tier": "recommended",
+    "useCases": [
+      "Listening",
+      "Reading"
+    ],
+    "sourcePosition": 8
+  },
+  {
+    "id": "english_speak_improve",
+    "title": "Speak & Improve",
+    "url": "https://speakandimprove.com/",
+    "criteria": "speaking",
+    "skill": "Speaking",
+    "tier": "recommended",
+    "useCases": [
+      "Speaking",
+      "Evaluation"
+    ],
+    "sourcePosition": 9
+  },
+  {
+    "id": "english_youglish",
+    "title": "YouGlish",
+    "url": "https://youglish.com/",
+    "criteria": "speaking",
+    "skill": "Pronunciation",
+    "tier": "recommended",
+    "useCases": [
+      "Pronunciation",
+      "Listening"
+    ],
+    "sourcePosition": 10
+  },
+  {
+    "id": "english_tandem",
+    "title": "Tandem",
+    "url": "https://tandem.net/",
+    "criteria": "speaking",
+    "skill": "Speaking",
+    "tier": "reference",
+    "useCases": [
+      "Speaking",
+      "Conversation"
+    ],
+    "sourcePosition": 11
+  },
+  {
+    "id": "english_hellotalk",
+    "title": "HelloTalk",
+    "url": "https://www.hellotalk.com/",
+    "criteria": "speaking",
+    "skill": "Speaking",
+    "tier": "reference",
+    "useCases": [
+      "Speaking",
+      "Conversation"
+    ],
+    "sourcePosition": 12
+  },
+  {
+    "id": "english_daily_dictation",
+    "title": "DailyDictation",
+    "url": "https://dailydictation.com/",
+    "criteria": "dictation",
+    "skill": "Listening",
+    "tier": "core",
+    "useCases": [
+      "Dictation",
+      "Listening"
+    ],
+    "sourcePosition": 13
+  },
+  {
+    "id": "english_speechling",
+    "title": "Speechling",
+    "url": "https://speechling.com/dictation",
+    "criteria": "dictation",
+    "skill": "Listening",
+    "tier": "recommended",
+    "useCases": [
+      "Dictation",
+      "Listening",
+      "Pronunciation"
+    ],
+    "sourcePosition": 14
+  },
+  {
+    "id": "english_englishclub",
+    "title": "EnglishClub Dictation",
+    "url": "https://www.englishclub.com/listening/dictation.php",
+    "criteria": "dictation",
+    "skill": "Listening",
+    "tier": "reference",
+    "useCases": [
+      "Dictation",
+      "Listening"
+    ],
+    "sourcePosition": 15
+  },
+  {
+    "id": "english_dictation_today",
+    "title": "DictationToday",
+    "url": "https://dictationtoday.com/",
+    "criteria": "dictation",
+    "skill": "Listening",
+    "tier": "reference",
+    "useCases": [
+      "Dictation",
+      "Listening"
+    ],
+    "sourcePosition": 16
+  },
+  {
+    "id": "english_english_dictations",
+    "title": "EnglishDictations",
+    "url": "https://englishdictations.com/",
+    "criteria": "dictation",
+    "skill": "Listening",
+    "tier": "reference",
+    "useCases": [
+      "Dictation",
+      "Listening"
+    ],
+    "sourcePosition": 17
+  },
+  {
+    "id": "english_write_improve",
+    "title": "Write & Improve",
+    "url": "https://writeandimprove.com/",
+    "criteria": "writing",
+    "skill": "Writing",
+    "tier": "recommended",
+    "useCases": [
+      "Writing",
+      "Evaluation"
+    ],
+    "sourcePosition": 18
+  },
+  {
+    "id": "english_anki",
+    "title": "Anki",
+    "url": "https://apps.ankiweb.net/",
+    "criteria": "writing",
+    "skill": "Vocabulary",
+    "tier": "core",
+    "useCases": [
+      "Vocabulary",
+      "Flashcards"
+    ],
+    "sourcePosition": 19
+  },
+  {
+    "id": "english_cambridge_dictionary",
+    "title": "Cambridge Dictionary",
+    "url": "https://dictionary.cambridge.org/",
+    "criteria": "writing",
+    "skill": "Vocabulary",
+    "tier": "recommended",
+    "useCases": [
+      "Vocabulary",
+      "Pronunciation"
+    ],
+    "sourcePosition": 20
+  },
+  {
+    "id": "english_efset",
+    "title": "EF SET",
+    "url": "https://www.efset.org/",
+    "criteria": "writing",
+    "skill": "Exam Prep",
+    "tier": "recommended",
+    "useCases": [
+      "CEFR",
+      "Evaluation",
+      "Placement test"
+    ],
+    "sourcePosition": 21
+  },
+  {
+    "id": "english_language_reactor",
+    "title": "Language Reactor",
+    "url": "https://www.languagereactor.com/",
+    "criteria": "writing",
+    "skill": "Listening",
+    "tier": "reference",
+    "useCases": [
+      "Listening",
+      "Vocabulary",
+      "Video"
+    ],
+    "sourcePosition": 22
+  },
+  {
+    "id": "english_ielts_ready",
+    "title": "IELTS Ready – British Council",
+    "url": "https://takeielts.britishcouncil.org/prepare/ielts-ready",
+    "criteria": "exams",
+    "skill": "Exam Prep",
+    "tier": "reference",
+    "useCases": [
+      "IELTS",
+      "Practice test"
+    ],
+    "sourcePosition": 23
+  },
+  {
+    "id": "english_ielts_academic",
+    "title": "IELTS Academic – Official Practice",
+    "url": "https://ielts.org/take-a-test/preparation-resources/sample-test-questions/academic-test",
+    "criteria": "exams",
+    "skill": "Exam Prep",
+    "tier": "reference",
+    "useCases": [
+      "IELTS",
+      "Academic"
+    ],
+    "sourcePosition": 24
+  },
+  {
+    "id": "english_idp_ielts",
+    "title": "IDP IELTS Indonesia",
+    "url": "https://ielts.idp.com/indonesia/prepare/",
+    "criteria": "exams",
+    "skill": "Exam Prep",
+    "tier": "reference",
+    "useCases": [
+      "IELTS",
+      "Practice test"
+    ],
+    "sourcePosition": 25
+  },
+  {
+    "id": "english_ets_ibt",
+    "title": "ETS TOEFL iBT",
+    "url": "https://www.ets.org/toefl/test-takers/ibt/prepare.html",
+    "criteria": "exams",
+    "skill": "Exam Prep",
+    "tier": "reference",
+    "useCases": [
+      "TOEFL",
+      "Practice test"
+    ],
+    "sourcePosition": 26
+  },
+  {
+    "id": "english_ets_itp",
+    "title": "ETS TOEFL ITP",
+    "url": "https://www.ets.org/toefl/itp/prepare.html",
+    "criteria": "exams",
+    "skill": "Exam Prep",
+    "tier": "reference",
+    "useCases": [
+      "TOEFL",
+      "Practice test"
+    ],
+    "sourcePosition": 27
+  },
+  {
+    "id": "english_phrasebank",
+    "title": "Academic Phrasebank – University of Manchester",
+    "url": "https://www.phrasebank.manchester.ac.uk/",
+    "criteria": "academic",
+    "skill": "Writing",
+    "tier": "reference",
+    "useCases": [
+      "Academic",
+      "Writing",
+      "Research"
+    ],
+    "sourcePosition": 28
+  },
+  {
+    "id": "english_mit",
+    "title": "MIT OpenCourseWare",
+    "url": "https://ocw.mit.edu/",
+    "criteria": "academic",
+    "skill": "Listening",
+    "tier": "reference",
+    "useCases": [
+      "Academic",
+      "Mathematics",
+      "Listening"
+    ],
+    "sourcePosition": 29
+  },
+  {
+    "id": "english_movies",
+    "title": "EnglishWithMovies",
+    "url": "https://englishwithmovies.id/",
+    "criteria": "paid",
+    "skill": "Listening",
+    "tier": "reference",
+    "useCases": [
+      "Listening",
+      "Movie"
+    ],
+    "sourcePosition": 30
+  },
+  {
+    "id": "english_englishverse",
+    "title": "EnglishVerse",
+    "url": "https://englishwithmovies.com/kursus",
+    "criteria": "paid",
+    "skill": "General",
+    "tier": "reference",
+    "useCases": [
+      "Course",
+      "General"
+    ],
+    "sourcePosition": 31
+  },
+  {
+    "id": "english_bilingo",
+    "title": "Bilingo",
+    "url": "https://www.instagram.com/bilingo_id/",
+    "criteria": "paid",
+    "skill": "General",
+    "tier": "reference",
+    "useCases": [
+      "Course",
+      "General"
+    ],
+    "sourcePosition": 32
+  },
+  {
+    "id": "english_udemy",
+    "title": "Udemy",
+    "url": "https://www.udemy.com/",
+    "criteria": "paid",
+    "skill": "General",
+    "tier": "reference",
+    "useCases": [
+      "Course",
+      "General"
+    ],
+    "sourcePosition": 33
+  },
+  {
+    "id": "english_espresso",
+    "title": "Espresso English",
+    "url": "https://courses.espressoenglish.net/academy/",
+    "criteria": "paid",
+    "skill": "Grammar",
+    "tier": "reference",
+    "useCases": [
+      "Course",
+      "Grammar"
+    ],
+    "sourcePosition": 34
+  },
+  {
+    "id": "english_rocket",
+    "title": "Rocket English",
+    "url": "https://www.rocketlanguages.com/",
+    "criteria": "paid",
+    "skill": "Speaking",
+    "tier": "reference",
+    "useCases": [
+      "Course",
+      "Speaking"
+    ],
+    "sourcePosition": 35
+  },
+  {
+    "id": "english_lingq",
+    "title": "LingQ",
+    "url": "https://www.lingq.com/",
+    "criteria": "paid",
+    "skill": "Reading",
+    "tier": "reference",
+    "useCases": [
+      "Reading",
+      "Vocabulary"
+    ],
+    "sourcePosition": 36
+  },
+  {
+    "id": "english_rosetta",
+    "title": "Rosetta Stone",
+    "url": "https://www.rosettastone.com/",
+    "criteria": "paid",
+    "skill": "General",
+    "tier": "reference",
+    "useCases": [
+      "Course",
+      "General"
+    ],
+    "sourcePosition": 37
+  }
+];
 function englishWebsitePresets(){
-  return[
-    {id:'english_volingo',title:'Volingo',url:'',skill:'General',status:'active',access:'paid',priority:1,progress:0,description:'Platform utama yang sudah kamu beli. Isi URL login atau dashboard pribadimu.',createdAt:'2026-10-25',visits:0},
-    {id:'english_bbc',title:'BBC Learning English',url:'https://feeds.bbci.co.uk/learningenglish',skill:'Grammar',status:'active',access:'free',priority:2,progress:0,description:'Grammar, vocabulary, pronunciation, dan latihan bahasa Inggris bertahap.',createdAt:'2026-10-25',visits:0},
-    {id:'english_elllo',title:'ELLLO',url:'https://www.elllo.org/',skill:'Listening',status:'active',access:'free',priority:3,progress:0,description:'Listening dengan audio/video, transkrip, dan kuis untuk berbagai level.',createdAt:'2026-10-25',visits:0},
-    {id:'english_movies',title:'EnglishWithMovies',url:'https://englishwithmovies.id/',skill:'Listening',status:'planned',access:'freemium',priority:4,progress:0,description:'Belajar lewat film, listening, vocabulary dan speaking.',createdAt:'2026-10-25',visits:0},
-    {id:'english_chatgpt',title:'ChatGPT Voice',url:'https://chatgpt.com/',skill:'Speaking',status:'active',access:'freemium',priority:5,progress:0,description:'Latihan conversation dan pengucapan. Aktifkan Voice di ChatGPT.',createdAt:'2026-10-25',visits:0}
-  ]
+  return ENGLISH_SITE_CATALOG.map(x=>({...x,status:x.tier==='core'?'active':'planned',access:x.id==='english_volingo'?'paid':'unknown',priority:x.sourcePosition,progress:0,description:x.id==='english_volingo'?'Platform utama yang sudah dibeli.':x.useCases.join(' · '),createdAt:'2026-10-25',visits:0}))
+}
+function upgradeEnglishCatalog(existing){
+  const list=Array.isArray(existing)?existing:[];
+  for(const item of ENGLISH_SITE_CATALOG){
+    let row=list.find(x=>x.id===item.id);
+    if(!row){
+      // Allow users to have added the resource themselves under a different ID.
+      const needle=item.title.replace(/[^a-z0-9]/gi,'').toLowerCase();
+      row=list.find(x=>String(x.title||'').replace(/[^a-z0-9]/gi,'').toLowerCase()===needle)
+    }
+    if(row){
+      if(!row.criteria)row.criteria=item.criteria;
+      if(!Array.isArray(row.useCases)||!row.useCases.length)row.useCases=item.useCases.slice();
+      if(!row.tier)row.tier=item.tier;
+      if(!row.url)row.url=item.url;
+      if(!row.sourcePosition)row.sourcePosition=item.sourcePosition;
+      // Preserve user-customized status, progress, priority, notes, and URLs.
+    }else list.push({...englishWebsitePresets().find(x=>x.id===item.id)})
+  }
+  return list
 }
 
 function seed(){return{profile:{name:'Desca',timezone:'Asia/Jakarta',dailyFocusTarget:240,weeklyTarget:1800},settings:{theme:'light',sidebarCollapsed:false,pomodoroPreset:'classic',pomodoroFocus:25,pomodoroShortBreak:5,pomodoroLongBreak:15,pomodoroCycles:4,notifications:false,reminderLead:30,calendarView:'month',plannerStart:'08:00',plannerEnd:'22:00',supabaseUrl:'',supabaseAnonKey:'',googleClientId:'',googleTaskListId:'',googleTaskListTitle:'',googleLastSync:'',autoCloudSync:false,autoReplan:false,automationEnabled:true,automationAutoPlan:true,automationCalendarPrep:true,automationDeadline:true,automationS2:true,automationResearchNudge:true,autoDayClosure:true,smartNotifications:true,digestMode:true,reduceMotion:false,copilotEndpoint:'',runningMaxHR:190,runningRestingHR:60,runningWeeklyGoalKm:20,sportsWeeklyGoalMin:150,sportsWeeklyGoalSessions:3,dashboardWidgets:['now','quests','timeline','summary','planner','priorities','life','timer','pomodoro','recommendation','weekly','goals'],vaultLockEnabled:false,vaultLockSalt:'',vaultLockVerifier:'',lastUpdateCheck:'',latestKnownBuild:71},tasks:[],activities:[],routines:DAILY_ROUTINE_PRESETS.map(cloneDailyPreset),routineSkips:[],attendance:[],goals:[],projects:[],studyTopics:[],studyTests:[],researchPapers:[],researchNotes:[],vault:[],rankHistory:[],archive:[],notificationsCenter:[],examModes:[],academic:{semesters:[],courses:[],assessments:[]},s2Prep:{focus:'Analisis / Kombinatorika',targetIntake:'',universities:[{id:'s2u_undip',name:'UNDIP',status:'shortlist'},{id:'s2u_ub',name:'UB',status:'shortlist'},{id:'s2u_uns',name:'UNS',status:'shortlist'}],scholarships:[{id:'s2s_lpdp',name:'LPDP',status:'research'},{id:'s2s_bu',name:'Beasiswa Unggulan',status:'research'},{id:'s2s_pmdsu',name:'PMDSU',status:'research'}],checklist:[{id:'s2c_focus',title:'Tetapkan fokus bidang utama S2',group:'Academic',done:false,due:''},{id:'s2c_program',title:'Bandingkan program, kurikulum, dan kelompok riset kampus target',group:'Academic',done:false,due:''},{id:'s2c_cv',title:'Siapkan CV akademik terbaru',group:'Documents',done:false,due:''},{id:'s2c_transcript',title:'Siapkan transkrip dan dokumen akademik',group:'Documents',done:false,due:''},{id:'s2c_sop',title:'Tulis draft statement of purpose',group:'Documents',done:false,due:''},{id:'s2c_research',title:'Siapkan arah atau proposal riset awal',group:'Research',done:false,due:''},{id:'s2c_english',title:'Rencanakan tes bahasa Inggris sesuai persyaratan tujuan',group:'Tests',done:false,due:''},{id:'s2c_scholarship',title:'Petakan beasiswa dan timeline pendaftaran',group:'Scholarship',done:false,due:''},{id:'s2c_recommendation',title:'Identifikasi calon pemberi surat rekomendasi',group:'Documents',done:false,due:''}],documents:[
@@ -96,7 +612,7 @@ normalizeStudyTest:(x,i=0)=>({id:x?.id||'test_'+i,title:String(x?.title||'Mock T
 normalizePaper:(x,i=0)=>({id:x?.id||'paper_'+i,title:String(x?.title||'Paper'),authors:String(x?.authors||''),year:String(x?.year||''),status:x?.status||'to-read',doi:String(x?.doi||''),url:String(x?.url||''),projectId:x?.projectId||'',tags:Array.isArray(x?.tags)?x.tags:String(x?.tags||'').split(',').map(s=>s.trim()).filter(Boolean),notes:String(x?.notes||''),annotations:String(x?.annotations||''),paperMarks:Array.isArray(x?.paperMarks)?x.paperMarks:[],citedPaperIds:Array.isArray(x?.citedPaperIds)?x.citedPaperIds:[],readProgress:clamp(+x?.readProgress||0,0,100),lastPage:Math.max(0,+x?.lastPage||0),rating:clamp(+x?.rating||0,0,5),lastOpenedAt:x?.lastOpenedAt||'',pdfName:String(x?.pdfName||''),pdfSize:Math.max(0,+x?.pdfSize||0),pdfType:String(x?.pdfType||''),pdfAttachedAt:x?.pdfAttachedAt||'',driveFileId:x?.driveFileId||'',driveSyncedAt:x?.driveSyncedAt||'',createdAt:x?.createdAt||''}),
 normalizeResearchNote:(x,i=0)=>({id:x?.id||'rnote_'+i,type:x?.type||'idea',title:String(x?.title||'Research Note'),text:String(x?.text||''),projectId:x?.projectId||'',paperId:x?.paperId||'',date:x?.date||'',createdAt:x?.createdAt||''})
 };
-let S;try{S=JSON.parse(localStorage.getItem(K))||seed()}catch{S=seed()}S.profile={...seed().profile,...S.profile};S.settings={...seed().settings,...S.settings};S.activities=Array.isArray(S.activities)?S.activities:[];S.tasks=Array.isArray(S.tasks)?S.tasks:[];S.routines=Array.isArray(S.routines)?S.routines:[];S.routineSkips=Array.isArray(S.routineSkips)?S.routineSkips:[];S.attendance=Array.isArray(S.attendance)?S.attendance:[];S.goals=Array.isArray(S.goals)?S.goals:[];S.projects=(Array.isArray(S.projects)?S.projects:[]).map((p,i)=>DG.normalizeProject(p,i));S.studyTopics=(Array.isArray(S.studyTopics)?S.studyTopics:[]).map((x,i)=>DG.normalizeStudyTopic(x,i));S.studyTests=(Array.isArray(S.studyTests)?S.studyTests:[]).map((x,i)=>DG.normalizeStudyTest(x,i));S.researchPapers=(Array.isArray(S.researchPapers)?S.researchPapers:[]).map((x,i)=>DG.normalizePaper(x,i));S.researchNotes=(Array.isArray(S.researchNotes)?S.researchNotes:[]).map((x,i)=>DG.normalizeResearchNote(x,i));S.vault=Array.isArray(S.vault)?S.vault:[];S.rankHistory=Array.isArray(S.rankHistory)?S.rankHistory:[];S.archive=Array.isArray(S.archive)?S.archive:[];S.notificationsCenter=Array.isArray(S.notificationsCenter)?S.notificationsCenter:[];S.examModes=Array.isArray(S.examModes)?S.examModes:[];S.academic=S.academic||{semesters:[],courses:[],assessments:[]};S.academic.semesters=Array.isArray(S.academic.semesters)?S.academic.semesters:[];S.academic.courses=Array.isArray(S.academic.courses)?S.academic.courses:[];S.academic.assessments=Array.isArray(S.academic.assessments)?S.academic.assessments:[];const s2Seed=seed().s2Prep;S.s2Prep={...s2Seed,...(S.s2Prep||{})};S.s2Prep.universities=Array.isArray(S.s2Prep.universities)?S.s2Prep.universities:s2Seed.universities.slice();S.s2Prep.scholarships=Array.isArray(S.s2Prep.scholarships)?S.s2Prep.scholarships:s2Seed.scholarships.slice();S.s2Prep.checklist=Array.isArray(S.s2Prep.checklist)?S.s2Prep.checklist:s2Seed.checklist.slice();S.s2Prep.documents=Array.isArray(S.s2Prep.documents)?S.s2Prep.documents:s2Seed.documents.map(x=>({...x}));S.s2Prep.universities=S.s2Prep.universities.map((x,i)=>({id:x.id||uid('s2u'),name:String(x.name||'Kampus'),status:x.status==='shortlist'?'research':x.status==='applying'?'preparing':(x.status||'research'),program:String(x.program||''),deadline:x.deadline||'',appliedDate:x.appliedDate||'',url:String(x.url||''),notes:String(x.notes||'')}));S.s2Prep.scholarships=S.s2Prep.scholarships.map((x,i)=>({id:x.id||uid('s2s'),name:String(x.name||'Beasiswa'),status:x.status==='shortlist'?'research':x.status==='applying'?'preparing':(x.status||'research'),program:String(x.program||''),deadline:x.deadline||'',appliedDate:x.appliedDate||'',url:String(x.url||''),notes:String(x.notes||'')}));S.s2Prep.checklist=S.s2Prep.checklist.map((x,i)=>({id:x.id||uid('s2c'),title:String(x.title||'Persiapan S2'),group:x.group||'General',done:!!x.done,due:x.due||'',taskId:x.taskId||null}));S.s2Prep.documents=S.s2Prep.documents.map((x,i)=>({id:x.id||uid('s2d'),title:String(x.title||'Berkas S2'),group:x.group||'Lainnya',done:!!x.done,due:x.due||'',taskId:x.taskId||null,vaultDocumentId:x.vaultDocumentId||''}));S.finance=Array.isArray(S.finance)?S.finance:[];S.budgets=Array.isArray(S.budgets)?S.budgets:[];S.investments=Array.isArray(S.investments)?S.investments:[];S.financeGoals=Array.isArray(S.financeGoals)?S.financeGoals:[];S.recurringFinance=Array.isArray(S.recurringFinance)?S.recurringFinance:[];S.debts=Array.isArray(S.debts)?S.debts:[];S.netWorthSnapshots=Array.isArray(S.netWorthSnapshots)?S.netWorthSnapshots:[];S.work=S.work&&typeof S.work==='object'?S.work:{jobs:[],payments:[],sessions:[]};S.work.jobs=Array.isArray(S.work.jobs)?S.work.jobs:[];S.work.payments=Array.isArray(S.work.payments)?S.work.payments:[];S.work.sessions=Array.isArray(S.work.sessions)?S.work.sessions:[];S.healthLogs=Array.isArray(S.healthLogs)?S.healthLogs:[];S.runs=(Array.isArray(S.runs)?S.runs:[]).map(r=>({...r,sport:r.sport||'running',distanceKm:Math.max(0,+r.distanceKm||0),durationSec:Math.max(0,+r.durationSec||0)}));S.dayClosures=Array.isArray(S.dayClosures)?S.dayClosures:[];S.reminderLog=Array.isArray(S.reminderLog)?S.reminderLog:[];S.automationLog=Array.isArray(S.automationLog)?S.automationLog:[];S.googleEvents=Array.isArray(S.googleEvents)?S.googleEvents:[];const dmSeed=seed().dmath;S.dmath=S.dmath||dmSeed;for(const k of ['instagram','youtube','facebook','website'])S.dmath[k]={...dmSeed[k],...(S.dmath[k]||{})};S.dmath.updates=Array.isArray(S.dmath.updates)?S.dmath.updates:[];S.dmath.content=Array.isArray(S.dmath.content)?S.dmath.content:[];for(const k of ['instagram','youtube','facebook','website'])S.dmath[k].monthlyTarget=Math.max(0,+S.dmath[k].monthlyTarget||0);S.english=S.english&&typeof S.english==='object'?S.english:seed().english;S.english.sites=Array.isArray(S.english.sites)?S.english.sites:englishWebsitePresets();S.english.sessions=Array.isArray(S.english.sessions)?S.english.sessions:[];S.english.dailyTargetMin=Math.max(1,+S.english.dailyTargetMin||360);S.english.currentLevel=S.english.currentLevel||'Not assessed';S.english.targetLevel=S.english.targetLevel||'B2';S.quran=S.quran||seed().quran;S.quran.entries=Array.isArray(S.quran.entries)?S.quran.entries:[];S.quran.sessions=Array.isArray(S.quran.sessions)?S.quran.sessions:[];S.quran.dailyTargetVerses=Math.max(1,+S.quran.dailyTargetVerses||5);const ibadahSeed=seed().ibadah;S.ibadah={...ibadahSeed,...(S.ibadah||{})};S.ibadah.prayers=S.ibadah.prayers&&typeof S.ibadah.prayers==='object'?S.ibadah.prayers:{};S.ibadah.extras=S.ibadah.extras&&typeof S.ibadah.extras==='object'?S.ibadah.extras:{};S.ibadah.prayerCity=String(S.ibadah.prayerCity||'Semarang');S.ibadah.prayerCountry=String(S.ibadah.prayerCountry||'Indonesia');S.ibadah.prayerTimesCache=S.ibadah.prayerTimesCache&&typeof S.ibadah.prayerTimesCache==='object'?S.ibadah.prayerTimesCache:{};const bookSeed=seed().books;S.books={...bookSeed,...(S.books||{})};S.books.items=Array.isArray(S.books.items)?S.books.items:[];S.books.sessions=Array.isArray(S.books.sessions)?S.books.sessions:[];S.books.annualTarget=Math.max(1,+S.books.annualTarget||24);S.books.defaultFinishDays=Math.max(1,+S.books.defaultFinishDays||30);S.decisions=Array.isArray(S.decisions)?S.decisions:[];S.plans=Array.isArray(S.plans)?S.plans:[];S.changeLog=Array.isArray(S.changeLog)?S.changeLog:[];S.offlineQueue=Array.isArray(S.offlineQueue)?S.offlineQueue:[];S.trash=(Array.isArray(S.trash)?S.trash:[]).filter(x=>!x.deletedAt||Date.now()-Date.parse(x.deletedAt)<30*86400000);S.notes=Array.isArray(S.notes)?S.notes:[];S.journal=S.journal||{};S.meta={version:18,activeTimer:null,revision:0,modifiedAt:'',lastCloudSync:'',lastCloudRevision:0,...(S.meta||{})};if(!Array.isArray(S.settings.dashboardWidgets))S.settings.dashboardWidgets=seed().settings.dashboardWidgets.slice();if((+S.meta.version||0)<12){S.settings.dashboardWidgets=S.settings.dashboardWidgets.filter(x=>!['tasks','attendance','note'].includes(x));S.meta.version=12}if((+S.meta.version||0)<13)S.meta.version=13;if((+S.meta.version||0)<14){if(!S.settings.dashboardWidgets.includes('summary'))S.settings.dashboardWidgets=['summary',...S.settings.dashboardWidgets];S.meta.version=14}if((+S.meta.version||0)<15){S.settings.sidebarCollapsed=false;S.meta.version=15}if((+S.meta.version||0)<16){for(const k of Object.keys(DMATH_PRESETS))if(S.dmath?.[k])S.dmath[k].metric=DMATH_PRESETS[k].metric;S.meta.version=16}if((+S.meta.version||0)<17){installDailyBaseline(false);S.meta.version=17}if((+S.meta.version||0)<18){S.settings.automationEnabled=true;S.settings.automationCalendarPrep=true;S.settings.automationDeadline=true;S.settings.automationS2=true;S.settings.automationResearchNudge=true;S.meta.version=18}if((+S.meta.version||0)<19){S.settings.automationAutoPlan=true;S.meta.lastAutoPlanDate=S.meta.lastAutoPlanDate||'';S.meta.lastAutoPlanCount=+S.meta.lastAutoPlanCount||0;S.meta.version=19}if((+S.meta.version||0)<20){S.meta.version=20}if((+S.meta.version||0)<21){S.meta.nowNextSnoozes=S.meta.nowNextSnoozes||{};const dw=Array.isArray(S.settings.dashboardWidgets)?S.settings.dashboardWidgets:[];if(!dw.includes('now'))S.settings.dashboardWidgets=['now',...dw];S.meta.version=21}if((+S.meta.version||0)<22){const dw=Array.isArray(S.settings.dashboardWidgets)?S.settings.dashboardWidgets:[];if(!dw.includes('quests'))S.settings.dashboardWidgets=['now','quests',...dw.filter(x=>x!=='now')];S.meta.lastDiligenceRankIndex=S.meta.lastDiligenceRankIndex??null;S.meta.highestDiligenceRankIndex=+S.meta.highestDiligenceRankIndex||0;S.meta.pendingRankUp=S.meta.pendingRankUp||null;S.meta.version=22}if((+S.meta.version||0)<23){S.meta.questAwards=S.meta.questAwards||{};S.meta.version=23}if((+S.meta.version||0)<24){S.vault=Array.isArray(S.vault)?S.vault:[];S.rankHistory=Array.isArray(S.rankHistory)?S.rankHistory:[];S.meta.morningStartedDate=S.meta.morningStartedDate||'';S.meta.lastRecoveryGuardDate=S.meta.lastRecoveryGuardDate||'';S.meta.version=24}if((+S.meta.version||0)<25){S.meta.recoveryDays=Array.isArray(S.meta.recoveryDays)?S.meta.recoveryDays:[];S.meta.version=25}if((+S.meta.version||0)<26){S.archive=Array.isArray(S.archive)?S.archive:[];S.notificationsCenter=Array.isArray(S.notificationsCenter)?S.notificationsCenter:[];S.examModes=Array.isArray(S.examModes)?S.examModes:[];S.academic=S.academic||{semesters:[],courses:[],assessments:[]};S.meta.lastDailySnapshotDate=S.meta.lastDailySnapshotDate||'';S.meta.lastWeeklySnapshotKey=S.meta.lastWeeklySnapshotKey||'';S.meta.lastMonthlySnapshotKey=S.meta.lastMonthlySnapshotKey||'';S.meta.version=26}if((+S.meta.version||0)<27){S.dayClosures=Array.isArray(S.dayClosures)?S.dayClosures:[];S.settings.autoDayClosure=S.settings.autoDayClosure!==false;S.settings.smartNotifications=S.settings.smartNotifications!==false;S.meta.lastAutoClosureDate=S.meta.lastAutoClosureDate||'';S.meta.shareTargetHandled=S.meta.shareTargetHandled||'';S.meta.version=27}if((+S.meta.version||0)<28){S.books=S.books||{items:[],sessions:[],annualTarget:24,defaultFinishDays:30};S.decisions=Array.isArray(S.decisions)?S.decisions:[];S.plans=Array.isArray(S.plans)?S.plans:[];S.meta.onboardingDone=!!(S.tasks.length||S.activities.length||S.projects.length||S.goals.length);S.meta.version=28}if((+S.meta.version||0)<29){S.changeLog=Array.isArray(S.changeLog)?S.changeLog:[];S.offlineQueue=Array.isArray(S.offlineQueue)?S.offlineQueue:[];S.settings.digestMode=S.settings.digestMode!==false;S.settings.reduceMotion=!!S.settings.reduceMotion;S.settings.copilotEndpoint=S.settings.copilotEndpoint||'';S.meta.version=29}if((+S.meta.version||0)<30){S.meta.lastWeeklyReset=S.meta.lastWeeklyReset||'';S.meta.version=30}if((+S.meta.version||0)<31){installDescaGoalBaseline();S.meta.version=31}if((+S.meta.version||0)<32){installCalendarBaseline();S.meta.version=32}if((+S.meta.version||0)<33){S.ibadah={prayers:{},extras:{},prayerCity:'Semarang',prayerCountry:'Indonesia',prayerTimesCache:{},...(S.ibadah||{})};S.meta.version=33}if((+S.meta.version||0)<34){S.work=S.work||{jobs:[],payments:[],sessions:[]};S.work.jobs=Array.isArray(S.work.jobs)?S.work.jobs:[];S.work.payments=Array.isArray(S.work.payments)?S.work.payments:[];S.work.sessions=Array.isArray(S.work.sessions)?S.work.sessions:[];S.meta.version=34}if((+S.meta.version||0)<35){S.runs=(Array.isArray(S.runs)?S.runs:[]).map(r=>({...r,sport:r.sport||'running'}));S.meta.version=35}if((+S.meta.version||0)<36){S.ibadah=S.ibadah||{prayers:{},extras:{},prayerCity:'Semarang',prayerCountry:'Indonesia',prayerTimesCache:{}};S.ibadah.prayers=S.ibadah.prayers||{};S.ibadah.prayers['2026-10-06']={...(S.ibadah.prayers['2026-10-06']||{}),maghrib:true,isha:true};S.meta.version=36}if((+S.meta.version||0)<37){S.ibadah=S.ibadah||{prayers:{},extras:{},prayerCity:'Semarang',prayerCountry:'Indonesia',prayerTimesCache:{}};S.ibadah.prayers=S.ibadah.prayers||{};S.ibadah.prayers['2026-10-09']={...(S.ibadah.prayers['2026-10-09']||{}),isha:true};S.meta.version=37}if((+S.meta.version||0)<38){S.english=S.english&&typeof S.english==='object'?S.english:seed().english;S.english.sites=Array.isArray(S.english.sites)?S.english.sites:englishWebsitePresets();S.english.sessions=Array.isArray(S.english.sessions)?S.english.sessions:[];S.meta.version=38}S.meta.recoveryDays=Array.isArray(S.meta.recoveryDays)?S.meta.recoveryDays:[];S.meta.nowNextSnoozes=S.meta.nowNextSnoozes||{};S.meta.highestDiligenceRankIndex=+S.meta.highestDiligenceRankIndex||0;S.meta.questAwards=S.meta.questAwards||{};S.tasks=S.tasks.map(t=>{const rawTags=Array.isArray(t.tags)?t.tags:[],legacyAutomationTag=rawTags.find(v=>typeof v==='string'&&v.startsWith('automation:'));return{...t,status:t.status==='todo'?'planned':(t.status||'planned'),subtasks:Array.isArray(t.subtasks)?t.subtasks:[],automationKey:t.automationKey||(legacyAutomationTag?legacyAutomationTag.slice('automation:'.length):''),tags:rawTags.filter(v=>v!=='automation'&&!(typeof v==='string'&&v.startsWith('automation:'))),recurrence:t.recurrence||'none',projectId:t.projectId||null,studyTopicId:t.studyTopicId||null}});
+let S;try{S=JSON.parse(localStorage.getItem(K))||seed()}catch{S=seed()}S.profile={...seed().profile,...S.profile};S.settings={...seed().settings,...S.settings};S.activities=Array.isArray(S.activities)?S.activities:[];S.tasks=Array.isArray(S.tasks)?S.tasks:[];S.routines=Array.isArray(S.routines)?S.routines:[];S.routineSkips=Array.isArray(S.routineSkips)?S.routineSkips:[];S.attendance=Array.isArray(S.attendance)?S.attendance:[];S.goals=Array.isArray(S.goals)?S.goals:[];S.projects=(Array.isArray(S.projects)?S.projects:[]).map((p,i)=>DG.normalizeProject(p,i));S.studyTopics=(Array.isArray(S.studyTopics)?S.studyTopics:[]).map((x,i)=>DG.normalizeStudyTopic(x,i));S.studyTests=(Array.isArray(S.studyTests)?S.studyTests:[]).map((x,i)=>DG.normalizeStudyTest(x,i));S.researchPapers=(Array.isArray(S.researchPapers)?S.researchPapers:[]).map((x,i)=>DG.normalizePaper(x,i));S.researchNotes=(Array.isArray(S.researchNotes)?S.researchNotes:[]).map((x,i)=>DG.normalizeResearchNote(x,i));S.vault=Array.isArray(S.vault)?S.vault:[];S.rankHistory=Array.isArray(S.rankHistory)?S.rankHistory:[];S.archive=Array.isArray(S.archive)?S.archive:[];S.notificationsCenter=Array.isArray(S.notificationsCenter)?S.notificationsCenter:[];S.examModes=Array.isArray(S.examModes)?S.examModes:[];S.academic=S.academic||{semesters:[],courses:[],assessments:[]};S.academic.semesters=Array.isArray(S.academic.semesters)?S.academic.semesters:[];S.academic.courses=Array.isArray(S.academic.courses)?S.academic.courses:[];S.academic.assessments=Array.isArray(S.academic.assessments)?S.academic.assessments:[];const s2Seed=seed().s2Prep;S.s2Prep={...s2Seed,...(S.s2Prep||{})};S.s2Prep.universities=Array.isArray(S.s2Prep.universities)?S.s2Prep.universities:s2Seed.universities.slice();S.s2Prep.scholarships=Array.isArray(S.s2Prep.scholarships)?S.s2Prep.scholarships:s2Seed.scholarships.slice();S.s2Prep.checklist=Array.isArray(S.s2Prep.checklist)?S.s2Prep.checklist:s2Seed.checklist.slice();S.s2Prep.documents=Array.isArray(S.s2Prep.documents)?S.s2Prep.documents:s2Seed.documents.map(x=>({...x}));S.s2Prep.universities=S.s2Prep.universities.map((x,i)=>({id:x.id||uid('s2u'),name:String(x.name||'Kampus'),status:x.status==='shortlist'?'research':x.status==='applying'?'preparing':(x.status||'research'),program:String(x.program||''),deadline:x.deadline||'',appliedDate:x.appliedDate||'',url:String(x.url||''),notes:String(x.notes||'')}));S.s2Prep.scholarships=S.s2Prep.scholarships.map((x,i)=>({id:x.id||uid('s2s'),name:String(x.name||'Beasiswa'),status:x.status==='shortlist'?'research':x.status==='applying'?'preparing':(x.status||'research'),program:String(x.program||''),deadline:x.deadline||'',appliedDate:x.appliedDate||'',url:String(x.url||''),notes:String(x.notes||'')}));S.s2Prep.checklist=S.s2Prep.checklist.map((x,i)=>({id:x.id||uid('s2c'),title:String(x.title||'Persiapan S2'),group:x.group||'General',done:!!x.done,due:x.due||'',taskId:x.taskId||null}));S.s2Prep.documents=S.s2Prep.documents.map((x,i)=>({id:x.id||uid('s2d'),title:String(x.title||'Berkas S2'),group:x.group||'Lainnya',done:!!x.done,due:x.due||'',taskId:x.taskId||null,vaultDocumentId:x.vaultDocumentId||''}));S.finance=Array.isArray(S.finance)?S.finance:[];S.budgets=Array.isArray(S.budgets)?S.budgets:[];S.investments=Array.isArray(S.investments)?S.investments:[];S.financeGoals=Array.isArray(S.financeGoals)?S.financeGoals:[];S.recurringFinance=Array.isArray(S.recurringFinance)?S.recurringFinance:[];S.debts=Array.isArray(S.debts)?S.debts:[];S.netWorthSnapshots=Array.isArray(S.netWorthSnapshots)?S.netWorthSnapshots:[];S.work=S.work&&typeof S.work==='object'?S.work:{jobs:[],payments:[],sessions:[]};S.work.jobs=Array.isArray(S.work.jobs)?S.work.jobs:[];S.work.payments=Array.isArray(S.work.payments)?S.work.payments:[];S.work.sessions=Array.isArray(S.work.sessions)?S.work.sessions:[];S.healthLogs=Array.isArray(S.healthLogs)?S.healthLogs:[];S.runs=(Array.isArray(S.runs)?S.runs:[]).map(r=>({...r,sport:r.sport||'running',distanceKm:Math.max(0,+r.distanceKm||0),durationSec:Math.max(0,+r.durationSec||0)}));S.dayClosures=Array.isArray(S.dayClosures)?S.dayClosures:[];S.reminderLog=Array.isArray(S.reminderLog)?S.reminderLog:[];S.automationLog=Array.isArray(S.automationLog)?S.automationLog:[];S.googleEvents=Array.isArray(S.googleEvents)?S.googleEvents:[];const dmSeed=seed().dmath;S.dmath=S.dmath||dmSeed;for(const k of ['instagram','youtube','facebook','website'])S.dmath[k]={...dmSeed[k],...(S.dmath[k]||{})};S.dmath.updates=Array.isArray(S.dmath.updates)?S.dmath.updates:[];S.dmath.content=Array.isArray(S.dmath.content)?S.dmath.content:[];for(const k of ['instagram','youtube','facebook','website'])S.dmath[k].monthlyTarget=Math.max(0,+S.dmath[k].monthlyTarget||0);S.english=S.english&&typeof S.english==='object'?S.english:seed().english;S.english.sites=Array.isArray(S.english.sites)?S.english.sites:englishWebsitePresets();S.english.sessions=Array.isArray(S.english.sessions)?S.english.sessions:[];S.english.dailyTargetMin=Math.max(1,+S.english.dailyTargetMin||360);S.english.currentLevel=S.english.currentLevel||'Not assessed';S.english.targetLevel=S.english.targetLevel||'B2';S.quran=S.quran||seed().quran;S.quran.entries=Array.isArray(S.quran.entries)?S.quran.entries:[];S.quran.sessions=Array.isArray(S.quran.sessions)?S.quran.sessions:[];S.quran.dailyTargetVerses=Math.max(1,+S.quran.dailyTargetVerses||5);const ibadahSeed=seed().ibadah;S.ibadah={...ibadahSeed,...(S.ibadah||{})};S.ibadah.prayers=S.ibadah.prayers&&typeof S.ibadah.prayers==='object'?S.ibadah.prayers:{};S.ibadah.extras=S.ibadah.extras&&typeof S.ibadah.extras==='object'?S.ibadah.extras:{};S.ibadah.prayerCity=String(S.ibadah.prayerCity||'Semarang');S.ibadah.prayerCountry=String(S.ibadah.prayerCountry||'Indonesia');S.ibadah.prayerTimesCache=S.ibadah.prayerTimesCache&&typeof S.ibadah.prayerTimesCache==='object'?S.ibadah.prayerTimesCache:{};const bookSeed=seed().books;S.books={...bookSeed,...(S.books||{})};S.books.items=Array.isArray(S.books.items)?S.books.items:[];S.books.sessions=Array.isArray(S.books.sessions)?S.books.sessions:[];S.books.annualTarget=Math.max(1,+S.books.annualTarget||24);S.books.defaultFinishDays=Math.max(1,+S.books.defaultFinishDays||30);S.decisions=Array.isArray(S.decisions)?S.decisions:[];S.plans=Array.isArray(S.plans)?S.plans:[];S.changeLog=Array.isArray(S.changeLog)?S.changeLog:[];S.offlineQueue=Array.isArray(S.offlineQueue)?S.offlineQueue:[];S.trash=(Array.isArray(S.trash)?S.trash:[]).filter(x=>!x.deletedAt||Date.now()-Date.parse(x.deletedAt)<30*86400000);S.notes=Array.isArray(S.notes)?S.notes:[];S.journal=S.journal||{};S.meta={version:18,activeTimer:null,revision:0,modifiedAt:'',lastCloudSync:'',lastCloudRevision:0,...(S.meta||{})};if(!Array.isArray(S.settings.dashboardWidgets))S.settings.dashboardWidgets=seed().settings.dashboardWidgets.slice();if((+S.meta.version||0)<12){S.settings.dashboardWidgets=S.settings.dashboardWidgets.filter(x=>!['tasks','attendance','note'].includes(x));S.meta.version=12}if((+S.meta.version||0)<13)S.meta.version=13;if((+S.meta.version||0)<14){if(!S.settings.dashboardWidgets.includes('summary'))S.settings.dashboardWidgets=['summary',...S.settings.dashboardWidgets];S.meta.version=14}if((+S.meta.version||0)<15){S.settings.sidebarCollapsed=false;S.meta.version=15}if((+S.meta.version||0)<16){for(const k of Object.keys(DMATH_PRESETS))if(S.dmath?.[k])S.dmath[k].metric=DMATH_PRESETS[k].metric;S.meta.version=16}if((+S.meta.version||0)<17){installDailyBaseline(false);S.meta.version=17}if((+S.meta.version||0)<18){S.settings.automationEnabled=true;S.settings.automationCalendarPrep=true;S.settings.automationDeadline=true;S.settings.automationS2=true;S.settings.automationResearchNudge=true;S.meta.version=18}if((+S.meta.version||0)<19){S.settings.automationAutoPlan=true;S.meta.lastAutoPlanDate=S.meta.lastAutoPlanDate||'';S.meta.lastAutoPlanCount=+S.meta.lastAutoPlanCount||0;S.meta.version=19}if((+S.meta.version||0)<20){S.meta.version=20}if((+S.meta.version||0)<21){S.meta.nowNextSnoozes=S.meta.nowNextSnoozes||{};const dw=Array.isArray(S.settings.dashboardWidgets)?S.settings.dashboardWidgets:[];if(!dw.includes('now'))S.settings.dashboardWidgets=['now',...dw];S.meta.version=21}if((+S.meta.version||0)<22){const dw=Array.isArray(S.settings.dashboardWidgets)?S.settings.dashboardWidgets:[];if(!dw.includes('quests'))S.settings.dashboardWidgets=['now','quests',...dw.filter(x=>x!=='now')];S.meta.lastDiligenceRankIndex=S.meta.lastDiligenceRankIndex??null;S.meta.highestDiligenceRankIndex=+S.meta.highestDiligenceRankIndex||0;S.meta.pendingRankUp=S.meta.pendingRankUp||null;S.meta.version=22}if((+S.meta.version||0)<23){S.meta.questAwards=S.meta.questAwards||{};S.meta.version=23}if((+S.meta.version||0)<24){S.vault=Array.isArray(S.vault)?S.vault:[];S.rankHistory=Array.isArray(S.rankHistory)?S.rankHistory:[];S.meta.morningStartedDate=S.meta.morningStartedDate||'';S.meta.lastRecoveryGuardDate=S.meta.lastRecoveryGuardDate||'';S.meta.version=24}if((+S.meta.version||0)<25){S.meta.recoveryDays=Array.isArray(S.meta.recoveryDays)?S.meta.recoveryDays:[];S.meta.version=25}if((+S.meta.version||0)<26){S.archive=Array.isArray(S.archive)?S.archive:[];S.notificationsCenter=Array.isArray(S.notificationsCenter)?S.notificationsCenter:[];S.examModes=Array.isArray(S.examModes)?S.examModes:[];S.academic=S.academic||{semesters:[],courses:[],assessments:[]};S.meta.lastDailySnapshotDate=S.meta.lastDailySnapshotDate||'';S.meta.lastWeeklySnapshotKey=S.meta.lastWeeklySnapshotKey||'';S.meta.lastMonthlySnapshotKey=S.meta.lastMonthlySnapshotKey||'';S.meta.version=26}if((+S.meta.version||0)<27){S.dayClosures=Array.isArray(S.dayClosures)?S.dayClosures:[];S.settings.autoDayClosure=S.settings.autoDayClosure!==false;S.settings.smartNotifications=S.settings.smartNotifications!==false;S.meta.lastAutoClosureDate=S.meta.lastAutoClosureDate||'';S.meta.shareTargetHandled=S.meta.shareTargetHandled||'';S.meta.version=27}if((+S.meta.version||0)<28){S.books=S.books||{items:[],sessions:[],annualTarget:24,defaultFinishDays:30};S.decisions=Array.isArray(S.decisions)?S.decisions:[];S.plans=Array.isArray(S.plans)?S.plans:[];S.meta.onboardingDone=!!(S.tasks.length||S.activities.length||S.projects.length||S.goals.length);S.meta.version=28}if((+S.meta.version||0)<29){S.changeLog=Array.isArray(S.changeLog)?S.changeLog:[];S.offlineQueue=Array.isArray(S.offlineQueue)?S.offlineQueue:[];S.settings.digestMode=S.settings.digestMode!==false;S.settings.reduceMotion=!!S.settings.reduceMotion;S.settings.copilotEndpoint=S.settings.copilotEndpoint||'';S.meta.version=29}if((+S.meta.version||0)<30){S.meta.lastWeeklyReset=S.meta.lastWeeklyReset||'';S.meta.version=30}if((+S.meta.version||0)<31){installDescaGoalBaseline();S.meta.version=31}if((+S.meta.version||0)<32){installCalendarBaseline();S.meta.version=32}if((+S.meta.version||0)<33){S.ibadah={prayers:{},extras:{},prayerCity:'Semarang',prayerCountry:'Indonesia',prayerTimesCache:{},...(S.ibadah||{})};S.meta.version=33}if((+S.meta.version||0)<34){S.work=S.work||{jobs:[],payments:[],sessions:[]};S.work.jobs=Array.isArray(S.work.jobs)?S.work.jobs:[];S.work.payments=Array.isArray(S.work.payments)?S.work.payments:[];S.work.sessions=Array.isArray(S.work.sessions)?S.work.sessions:[];S.meta.version=34}if((+S.meta.version||0)<35){S.runs=(Array.isArray(S.runs)?S.runs:[]).map(r=>({...r,sport:r.sport||'running'}));S.meta.version=35}if((+S.meta.version||0)<36){S.ibadah=S.ibadah||{prayers:{},extras:{},prayerCity:'Semarang',prayerCountry:'Indonesia',prayerTimesCache:{}};S.ibadah.prayers=S.ibadah.prayers||{};S.ibadah.prayers['2026-10-06']={...(S.ibadah.prayers['2026-10-06']||{}),maghrib:true,isha:true};S.meta.version=36}if((+S.meta.version||0)<37){S.ibadah=S.ibadah||{prayers:{},extras:{},prayerCity:'Semarang',prayerCountry:'Indonesia',prayerTimesCache:{}};S.ibadah.prayers=S.ibadah.prayers||{};S.ibadah.prayers['2026-10-09']={...(S.ibadah.prayers['2026-10-09']||{}),isha:true};S.meta.version=37}if((+S.meta.version||0)<38){S.english=S.english&&typeof S.english==='object'?S.english:seed().english;S.english.sites=Array.isArray(S.english.sites)?S.english.sites:englishWebsitePresets();S.english.sessions=Array.isArray(S.english.sessions)?S.english.sessions:[];S.meta.version=38}if((+S.meta.version||0)<39){S.english=S.english&&typeof S.english==='object'?S.english:seed().english;S.english.sites=upgradeEnglishCatalog(S.english.sites);S.meta.version=39}S.meta.recoveryDays=Array.isArray(S.meta.recoveryDays)?S.meta.recoveryDays:[];S.meta.nowNextSnoozes=S.meta.nowNextSnoozes||{};S.meta.highestDiligenceRankIndex=+S.meta.highestDiligenceRankIndex||0;S.meta.questAwards=S.meta.questAwards||{};S.tasks=S.tasks.map(t=>{const rawTags=Array.isArray(t.tags)?t.tags:[],legacyAutomationTag=rawTags.find(v=>typeof v==='string'&&v.startsWith('automation:'));return{...t,status:t.status==='todo'?'planned':(t.status||'planned'),subtasks:Array.isArray(t.subtasks)?t.subtasks:[],automationKey:t.automationKey||(legacyAutomationTag?legacyAutomationTag.slice('automation:'.length):''),tags:rawTags.filter(v=>v!=='automation'&&!(typeof v==='string'&&v.startsWith('automation:'))),recurrence:t.recurrence||'none',projectId:t.projectId||null,studyTopicId:t.studyTopicId||null}});
 let route=(location.hash||'#today').slice(1);if(!R[route])route='today';let todayMoreOpen=false;try{todayMoreOpen=sessionStorage.getItem('desca-os-today-more-open')==='1'}catch{}let calendarCursor={year:+today().slice(0,4),month:+today().slice(5,7)-1};let calendarAnchor=today(),calendarView=S.settings.calendarView||'month';
 const localTime=()=>new Intl.DateTimeFormat('en-GB',{timeZone:S.profile.timezone,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()).replace('.',':');
 const dateFromTs=ts=>{const p=new Intl.DateTimeFormat('en-US',{timeZone:S.profile.timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(ts)),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+'-'+o.month+'-'+o.day};
@@ -1467,7 +1983,7 @@ function queueGoogleCalendarRefresh(){if(!googleReady()||G.busy)return;const las
 function importCalendarSnapshotData(pack){const rows=Array.isArray(pack)?pack:Array.isArray(pack?.events)?pack.events:null;if(!rows)throw new Error('Format snapshot tidak valid');S.googleEvents=rows.map(e=>({id:String(e.id||uid('gcal')),title:String(e.title||e.summary||'(Tanpa judul)'),description:String(e.description||''),date:String(e.date||''),time:String(e.time||''),duration:Math.max(0,+e.duration||0),allDay:!!e.allDay,status:e.status||'confirmed',htmlLink:String(e.htmlLink||e.url||''),updated:e.updated||'',descaTaskId:e.descaTaskId||''})).filter(e=>e.date);S.settings.googleLastSync=new Date().toISOString();save('Import Google Calendar snapshot');toast(S.googleEvents.length+' event Google Calendar diimpor');render()}
 function importGoogleEvent(id){const e=S.googleEvents.find(x=>x.id===id);if(!e)return;if(S.tasks.some(t=>t.googleCalendarEventId===e.id)){toast('Event ini sudah terhubung ke task');return}const t={id:uid('t'),title:e.title,date:e.date||today(),deadline:e.date||'',status:'planned',priority:'medium',category:'personal',goalId:null,estimate:e.duration||60,startTime:e.time||'',notes:e.description||'',inbox:false,subtasks:[],tags:['google-calendar'],recurrence:'none',dependsOn:null,googleCalendarSync:true,googleCalendarEventId:e.id};S.tasks.push(t);save();close();toast('Google Calendar event diimpor sebagai task');render()}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-const BUILD_NUMBER=84;
+const BUILD_NUMBER=85;
 let vaultUnlockedSession=false;
 function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
 function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -1793,7 +2309,7 @@ const PAGE_GUIDES={
   ]},
   english:{title:'English Learning',intro:'Kumpulkan website latihan, buka pelajaran, dan catat sesi belajar aktual dalam satu tempat.',steps:[
     {selector:'.english-command',title:'Learning Overview',desc:'Pantau menit belajar hari ini, target, level CEFR, dan konsistensi.'},
-    {selector:'.english-website-library',title:'Website Library',desc:'Simpan situs, tautan login, kategori skill, catatan, dan progres. Buka melalui tombol Open Website.'},
+    {selector:'.english-criteria-overview',title:'7 Kriteria',desc:'Website dikelompokkan sesuai daftar sumber: utama, speaking, dictation, writing, tes, akademik, dan alternatif berbayar.'},{selector:'.english-website-library',title:'Website Library',desc:'Filter website berdasarkan kelompok, prioritas rutin/pendukung/referensi, kegunaan, atau nama. Semua metadata bisa diedit.'},
     {selector:'.english-session-history',title:'Session Log',desc:'Catat durasi, topik, sumber belajar, dan latihan yang dilakukan agar statistiknya akurat.'},
     {selector:'.english-trend-card',title:'Learning Trend',desc:'Grafik 14 hari yang bisa dipilih titiknya untuk membaca durasi pada tanggal tertentu.'}
   ]},
@@ -2218,7 +2734,7 @@ function studyTestPct(x){return clamp((+x.score||0)/Math.max(1,+x.maxScore||100)
 const ENGLISH_SKILLS=['General','Listening','Speaking','Reading','Writing','Grammar','Vocabulary','Pronunciation','Exam Prep'];
 const ENGLISH_LEVELS=['Not assessed','A1','A2','B1','B2','C1','C2'];
 const ENGLISH_STATUSES={active:'Active',planned:'Planned',paused:'Paused',completed:'Completed'};
-let englishSkillFilter='All';
+let englishSkillFilter='All',englishCriteriaFilter='core',englishSearchQuery='';
 function englishLink(raw){
   const u=String(raw||'').trim();
   if(!u)return '';
@@ -2235,8 +2751,9 @@ function englishStreak(){
 }
 function englishSiteForm(x={}){
   const options=ENGLISH_SKILLS.map(v=>'<option '+((x.skill||'General')===v?'selected':'')+'>'+esc(v)+'</option>').join('');
-  return'<form id="englishSiteForm"><div class="form-grid"><div class="field full"><label>Nama website / platform</label><input name="title" required maxlength="90" placeholder="Contoh: Volingo" value="'+esc(x.title||'')+'"></div><div class="field full"><label>Link website / halaman belajar (opsional)</label><input name="url" type="url" placeholder="https://..." value="'+esc(x.url||'')+'"></div><div class="field"><label>Skill utama</label><select name="skill">'+options+'</select></div><div class="field"><label>Status</label><select name="status">'+Object.entries(ENGLISH_STATUSES).map(([k,v])=>'<option value="'+k+'" '+((x.status||'active')===k?'selected':'')+'>'+v+'</option>').join('')+'</select></div><div class="field"><label>Jenis akses</label><select name="access">'+[['free','Free'],['freemium','Freemium'],['paid','Paid']].map(([k,v])=>'<option value="'+k+'" '+((x.access||'free')===k?'selected':'')+'>'+v+'</option>').join('')+'</select></div><div class="field"><label>Prioritas (1 = utama)</label><input name="priority" type="number" min="1" max="99" value="'+(+x.priority||5)+'"></div><div class="field full"><label>Progres materi (%)</label><input name="progress" type="number" min="0" max="100" value="'+(+x.progress||0)+'"></div><div class="field full"><label>Catatan belajar / next lesson</label><textarea name="description" rows="3" placeholder="Materi yang akan dipelajari, URL login, target...">'+esc(x.description||'')+'</textarea></div></div><input type="hidden" name="id" value="'+esc(x.id||'')+'"><button class="btn btn-primary" style="width:100%;margin-top:14px">Simpan Website</button></form>'
+  return'<form id="englishSiteForm"><div class="form-grid"><div class="field full"><label>Nama website / platform</label><input name="title" required maxlength="90" placeholder="Contoh: Volingo" value="'+esc(x.title||'')+'"></div><div class="field full"><label>Link website / halaman belajar (opsional)</label><input name="url" type="url" placeholder="https://..." value="'+esc(x.url||'')+'"></div><div class="field"><label>Kriteria / kategori website</label><select name="criteria">'+Object.entries(ENGLISH_CRITERIA).map(([k,v])=>'<option value="'+k+'" '+((x.criteria||'main')===k?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></div><div class="field"><label>Skill utama</label><select name="skill">'+options+'</select></div><div class="field"><label>Prioritas penggunaan</label><select name="tier">'+[['core','Rutin utama'],['recommended','Pendukung'],['reference','Referensi / nanti']].map(([k,v])=>'<option value="'+k+'" '+((x.tier||'recommended')===k?'selected':'')+'>'+v+'</option>').join('')+'</select></div><div class="field"><label>Status</label><select name="status">'+Object.entries(ENGLISH_STATUSES).map(([k,v])=>'<option value="'+k+'" '+((x.status||'active')===k?'selected':'')+'>'+v+'</option>').join('')+'</select></div><div class="field"><label>Jenis akses</label><select name="access">'+[['unknown','Belum dicek'],['free','Free'],['freemium','Freemium'],['paid','Paid']].map(([k,v])=>'<option value="'+k+'" '+((x.access||'unknown')===k?'selected':'')+'>'+v+'</option>').join('')+'</select></div><div class="field"><label>Urutan personal (angka lebih kecil lebih atas)</label><input name="priority" type="number" min="1" max="99" value="'+(+x.priority||5)+'"></div><div class="field full"><label>Kegunaan / multi-kriteria (pisahkan dengan koma)</label><input name="useCases" value="'+esc((x.useCases||[]).join(', '))+'" placeholder="Listening, Vocabulary, Dictation"></div><div class="field full"><label>Progres materi (%)</label><input name="progress" type="number" min="0" max="100" value="'+(+x.progress||0)+'"></div><div class="field full"><label>Catatan belajar / next lesson</label><textarea name="description" rows="3" placeholder="Materi, target, catatan...">'+esc(x.description||'')+'</textarea></div></div><input type="hidden" name="id" value="'+esc(x.id||'')+'"><button class="btn btn-primary" style="width:100%;margin-top:14px">Simpan Website</button></form>'
 }
+
 function openEnglishSite(x=null){open('<div class="modal-head"><div><div class="eyebrow">ENGLISH LIBRARY</div><h2 id="modalTitle">'+(x?'Edit Website':'Tambah Website')+'</h2></div><button class="icon-btn" data-act="close">×</button></div>'+englishSiteForm(x||{}))}
 function englishSessionForm(x={},siteId=''){
   const chosen=x.siteId||siteId||'';
@@ -2248,19 +2765,27 @@ function englishSettingsForm(){
 }
 function openEnglishSettings(){open('<div class="modal-head"><div><div class="eyebrow">ENGLISH LEARNING</div><h2 id="modalTitle">Target & CEFR</h2></div><button class="icon-btn" data-act="close">×</button></div>'+englishSettingsForm())}
 function englishSiteCard(site){
-  const url=englishLink(site.url),total=englishSiteDuration(site.id),last=englishSiteLastUsed(site.id);
-  const host=url?new URL(url).hostname:'URL not set';
-  const progress=clamp(+site.progress||0,0,100);
-  return'<article class="english-site-card"><div class="english-site-card-top"><div class="english-site-monogram">'+esc((site.title||'EN').slice(0,2).toUpperCase())+'</div><span class="pill '+(site.status==='active'?'green':site.status==='planned'?'blue':'')+'">'+esc(ENGLISH_STATUSES[site.status]||'Active')+'</span></div><div class="english-site-skill">'+esc(site.skill||'General')+' · '+esc(site.access||'free')+'</div><h3>'+esc(site.title)+'</h3><p class="english-site-host">'+esc(host)+'</p><p class="english-site-note">'+esc(site.description||'Belum ada catatan.')+'</p><div class="english-site-progress"><div><span>Course progress (manual)</span><b>'+progress+'%</b></div>'+prog(progress)+'</div><div class="english-site-stats"><span>'+mins(total)+' logged</span><span>'+(last?'Last '+fmt(last,{day:'numeric',month:'short'}):'Not started')+'</span></div><div class="english-site-actions"><button class="mini-btn primary-mini" data-act="'+(url?'openEnglishWebsite':'editEnglishWebsite')+'" data-id="'+esc(site.id)+'">'+(url?'Open Website ↗':'Set Link')+'</button><button class="mini-btn" data-act="newEnglishSession" data-site-id="'+esc(site.id)+'">+ Session</button><button class="mini-btn" data-act="editEnglishWebsite" data-id="'+esc(site.id)+'">Edit</button><button class="mini-btn" data-act="deleteEnglishWebsite" data-id="'+esc(site.id)+'" title="Hapus website dari library">×</button></div></article>'
+  const url=englishLink(site.url),total=englishSiteDuration(site.id),last=englishSiteLastUsed(site.id),host=url?new URL(url).hostname:'URL belum tersedia',progress=clamp(+site.progress||0,0,100);
+  const tier=site.tier||'reference',priorityLabel={core:'Rutin utama',recommended:'Pendukung',reference:'Referensi'}[tier]||'Referensi',label=ENGLISH_CRITERIA[site.criteria]||'Kategori lain';
+  return'<article class="english-site-card"><div class="english-site-card-top"><div class="english-site-monogram">'+esc((site.title||'EN').slice(0,2).toUpperCase())+'</div><span class="pill '+(site.status==='active'?'green':site.status==='planned'?'blue':'')+'">'+esc(ENGLISH_STATUSES[site.status]||'Active')+'</span></div><div class="english-criteria-line"><span class="english-priority-tag '+esc(tier)+'">'+esc(priorityLabel)+'</span><span class="english-criteria-tag">'+esc(site.skill||'General')+'</span></div><h3>'+esc(site.title)+'</h3><p class="english-site-host">'+esc(host)+'</p><p class="english-site-note">'+esc(site.description||'Belum ada catatan.')+'</p><div class="english-usecases">'+(site.useCases||[]).slice(0,5).map(v=>'<span>'+esc(v)+'</span>').join('')+'</div><div class="english-site-progress"><div><span>Course progress (manual)</span><b>'+progress+'%</b></div>'+prog(progress)+'</div><div class="english-site-stats"><span>'+mins(total)+' logged</span><span>'+(last?'Last '+fmt(last,{day:'numeric',month:'short'}):'Not started')+'</span></div><div class="english-site-actions"><button class="mini-btn primary-mini" data-act="'+(url?'openEnglishWebsite':'editEnglishWebsite')+'" data-id="'+esc(site.id)+'">'+(url?'Open Website ↗':'Set Link')+'</button><button class="mini-btn" data-act="newEnglishSession" data-site-id="'+esc(site.id)+'">+ Session</button><button class="mini-btn" data-act="editEnglishWebsite" data-id="'+esc(site.id)+'">Edit</button><button class="mini-btn" data-act="deleteEnglishWebsite" data-id="'+esc(site.id)+'" aria-label="Hapus '+esc(site.title)+'">×</button></div></article>'
 }
+
 function englishPage(){
-  const d=today(),target=Math.max(1,+S.english.dailyTargetMin||360),current=englishMinutesOn(d),past=S.english.sessions,week=Array.from({length:7},(_,i)=>add(d,-i)),weekMinutes=week.reduce((n,date)=>n+englishMinutesOn(date),0),weekDays=week.filter(date=>englishMinutesOn(date)>0).length,sites=S.english.sites.slice().sort((a,b)=>(+a.priority||99)-(+b.priority||99)||a.title.localeCompare(b.title)),filtered=englishSkillFilter==='All'?sites:sites.filter(x=>x.skill===englishSkillFilter),entries=englishRecordedSessions().slice(0,12),trend=trendSeries(14,'english');
-  $('#page').innerHTML=head('English Learning','Pusat belajar bahasa Inggris: website, rencana, sesi, dan progres dalam satu workspace.','<button class="btn btn-secondary" data-act="englishSettings">⚙ Target</button><button class="btn btn-secondary" data-act="newEnglishSession">+ Log Session</button><button class="btn btn-primary" data-act="newEnglishWebsite">+ Website</button>')
-  +'<section class="english-command"><div><div class="eyebrow">YOUR ENGLISH WORKSPACE</div><h1>One hub. Many learning sources.</h1><p>Masuk ke website favoritmu dari sini, lalu catat durasi belajar nyata agar semua progress terkumpul.</p><div class="english-command-tags"><span>CEFR '+esc(S.english.currentLevel)+' → '+esc(S.english.targetLevel)+'</span><span>'+sites.length+' websites saved</span><span>'+englishStreak()+'-day streak</span></div></div><div class="english-today-progress"><span>Today’s learning</span><b>'+mins(current)+' <small>/ '+mins(target)+'</small></b>'+prog(current/target*100)+'<small>'+Math.round(current/target*100)+'% of daily target</small></div></section>'
-  +'<section class="grid metric-grid compact-metrics">'+metric('Today',mins(current),mins(Math.max(0,target-current))+' to target','◷')+metric('This Week',mins(weekMinutes),weekDays+' active days','▤')+metric('Study Sessions',past.length,'Logged sessions','◎')+metric('Websites',sites.length,'Personal learning library','▣')+'</section>'
-  +'<article class="card english-website-library"><div class="card-head"><div><h2>Website Library</h2><p>Simpan website sebanyak yang kamu perlukan. Link dibuka di tab baru.</p></div><button class="mini-btn" data-act="newEnglishWebsite">+ Website</button></div><div class="english-skill-filters">'+['All',...ENGLISH_SKILLS].map(skill=>'<button class="mini-btn '+(englishSkillFilter===skill?'primary-mini':'')+'" data-act="englishSkillFilter" data-skill="'+esc(skill)+'">'+esc(skill)+'</button>').join('')+'</div><div class="english-site-grid">'+(filtered.length?filtered.map(englishSiteCard).join(''):'<div class="empty">Belum ada website dalam kategori ini. Klik + Website untuk menambahkan.</div>')+'</div></article>'
-  +'<div class="grid two-col section-gap"><article class="card english-trend-card chart-card"><div class="card-head"><div><h2>14-Day English Trend</h2><p>Menit latihan bahasa Inggris yang dicatat, termasuk sesi dari berbagai website.</p></div><span class="pill blue">'+mins(trend.values.reduce((n,x)=>n+x,0))+'</span></div>'+lineChart(trend.values,trend.labels,{suffix:'menit'})+'</article><article class="card english-session-history"><div class="card-head"><div><h2>Recent Sessions</h2><p>Riwayat waktu belajar aktual.</p></div><button class="mini-btn" data-act="newEnglishSession">+ Session</button></div><div class="simple-list">'+(entries.length?entries.map(s=>{const site=S.english.sites.find(x=>x.id===s.siteId);return'<div class="list-row"><span class="work-list-icon">EN</span><div class="item-main"><div class="item-title">'+esc(s.title||'English practice')+'</div><div class="item-meta">'+fmt(s.date,{day:'numeric',month:'short'})+' · '+esc(s.skill||'General')+' · '+esc(site?.title||s.siteName||'Self Study')+' · '+mins(s.duration)+'</div></div><button class="mini-btn" data-act="editEnglishSession" data-id="'+esc(s.id)+'">Edit</button><button class="mini-btn" data-act="deleteEnglishSession" data-id="'+esc(s.id)+'" title="Hapus sesi">×</button></div>'}).join(''):'<div class="empty">Belum ada sesi. Setelah belajar di website, klik + Log Session.</div>')+'</div></article></div>'
+  const d=today(),target=Math.max(1,+S.english.dailyTargetMin||360),current=englishMinutesOn(d),past=S.english.sessions,week=Array.from({length:7},(_,i)=>add(d,-i)),weekMinutes=week.reduce((n,date)=>n+englishMinutesOn(date),0),weekDays=week.filter(date=>englishMinutesOn(date)>0).length,sites=S.english.sites.slice().sort((a,b)=>(+a.priority||99)-(+b.priority||99)||a.title.localeCompare(b.title)),entries=englishRecordedSessions().slice(0,12),trend=trendSeries(14,'english');
+  const counts=Object.keys(ENGLISH_CRITERIA).map(k=>({key:k,label:ENGLISH_CRITERIA[k],total:sites.filter(s=>s.criteria===k).length}));
+  const filterGroups=[['core','Rutin utama'],['recommended','Pendukung'],['reference','Referensi'],['all','Semua website'],...counts.map(x=>[x.key,x.label])];
+  const matched=sites.filter(s=>(englishCriteriaFilter==='all'||s.criteria===englishCriteriaFilter||s.tier===englishCriteriaFilter)&&(englishSkillFilter==='All'||s.skill===englishSkillFilter||(s.useCases||[]).some(u=>u.toLowerCase()===englishSkillFilter.toLowerCase()))&&(!englishSearchQuery||[s.title,s.url,s.description,s.skill,s.criteria,...(s.useCases||[])].join(' ').toLowerCase().includes(englishSearchQuery.toLowerCase())));
+  const groups=Object.entries(ENGLISH_CRITERIA).map(([key,title])=>({key,title,items:matched.filter(s=>s.criteria===key)})).filter(g=>g.items.length);
+  $('#page').innerHTML=head('English Learning','37 referensi awal, dikelompokkan berdasarkan kriteria dan tujuan belajarnya.','<button class="btn btn-secondary" data-act="englishSettings">⚙ Target</button><button class="btn btn-secondary" data-act="newEnglishSession">+ Log Session</button><button class="btn btn-primary" data-act="newEnglishWebsite">+ Website</button>')
+  +'<section class="english-command"><div><div class="eyebrow">YOUR ENGLISH WORKSPACE</div><h1>Learn by purpose, not by tab overload.</h1><p>Semua website disimpan sebagai referensi. Gunakan beberapa platform utama secara konsisten; sisanya dapat diakses ketika dibutuhkan.</p><div class="english-command-tags"><span>CEFR '+esc(S.english.currentLevel)+' → '+esc(S.english.targetLevel)+'</span><span>'+sites.length+' websites saved</span><span>'+englishStreak()+'-day streak</span></div></div><div class="english-today-progress"><span>Today’s learning</span><b>'+mins(current)+' <small>/ '+mins(target)+'</small></b>'+prog(current/target*100)+'<small>'+Math.round(current/target*100)+'% of daily target</small></div></section>'
+  +'<section class="grid metric-grid compact-metrics">'+metric('Today',mins(current),mins(Math.max(0,target-current))+' to target','◷')+metric('This Week',mins(weekMinutes),weekDays+' active days','▤')+metric('Core Websites',sites.filter(s=>s.tier==='core').length,'Daily essentials','◎')+metric('Website Library',sites.length,'7 categories in your reference','▣')+'</section>'
+  +'<article class="card english-criteria-overview"><div class="card-head"><div><h2>7 Kriteria Website</h2><p>Kelompok utama dari daftar referensimu. Klik salah satu untuk melihat website di kelompok tersebut.</p></div></div><div class="english-criteria-grid">'+counts.map(g=>'<button class="english-criteria-card '+(englishCriteriaFilter===g.key?'active':'')+'" data-act="englishCriteriaFilter" data-criteria="'+g.key+'"><span>'+esc(g.label)+'</span><b>'+g.total+'</b><small>website</small></button>').join('')+'</div></article>'
+  +'<article class="card english-website-library section-gap"><div class="card-head"><div><h2>Website Library</h2><p>Tampilkan sumber sesuai kriteria, skill, dan prioritas. '+matched.length+' dari '+sites.length+' website.</p></div><button class="mini-btn" data-act="newEnglishWebsite">+ Website</button></div>'
+  +'<div class="english-library-controls"><div class="field"><label>Kriteria / prioritas</label><select id="englishCriteriaSelect" aria-label="Filter kriteria dan prioritas">'+filterGroups.map(([key,label])=>'<option value="'+key+'" '+(englishCriteriaFilter===key?'selected':'')+'>'+esc(label)+'</option>').join('')+'</select></div><div class="field"><label>Skill / kegunaan</label><select id="englishSkillSelect" aria-label="Filter skill">'+['All',...ENGLISH_SKILLS,'Dictation','IELTS','TOEFL','Academic','Conversation','CEFR'].map(skill=>'<option value="'+esc(skill)+'" '+(englishSkillFilter===skill?'selected':'')+'>'+esc(skill==='All'?'Semua skill':skill)+'</option>').join('')+'</select></div><form id="englishSearchForm" class="english-search-field"><label for="englishSearchInput">Cari website</label><div><input id="englishSearchInput" name="q" value="'+esc(englishSearchQuery)+'" placeholder="Nama, materi, atau URL"><button class="mini-btn" type="submit">Cari</button></div></form><button class="mini-btn english-clear-filter" data-act="englishClearFilters">Reset filter</button></div>'
+  +'<div class="english-library-results">'+(groups.length?groups.map(g=>'<section class="english-criteria-section"><div class="english-criteria-heading"><div><h3>'+esc(g.title)+'</h3><p>'+g.items.length+' website · '+g.items.filter(x=>x.tier==='core').length+' prioritas rutin</p></div></div><div class="english-site-grid">'+g.items.map(englishSiteCard).join('')+'</div></section>').join(''):'<div class="empty">Tidak ada website yang cocok. Reset filter atau tambah website baru.</div>')+'</div></article>'
+  +'<div class="grid two-col section-gap"><article class="card english-trend-card chart-card"><div class="card-head"><div><h2>14-Day English Trend</h2><p>Menit latihan bahasa Inggris berdasarkan sesi yang dicatat.</p></div><span class="pill blue">'+mins(trend.values.reduce((n,x)=>n+x,0))+'</span></div>'+lineChart(trend.values,trend.labels,{suffix:'menit'})+'</article><article class="card english-session-history"><div class="card-head"><div><h2>Recent Sessions</h2><p>Riwayat waktu belajar aktual.</p></div><button class="mini-btn" data-act="newEnglishSession">+ Session</button></div><div class="simple-list">'+(entries.length?entries.map(s=>{const site=S.english.sites.find(x=>x.id===s.siteId);return'<div class="list-row"><span class="work-list-icon">EN</span><div class="item-main"><div class="item-title">'+esc(s.title||'English practice')+'</div><div class="item-meta">'+fmt(s.date,{day:'numeric',month:'short'})+' · '+esc(s.skill||'General')+' · '+esc(site?.title||s.siteName||'Self Study')+' · '+mins(s.duration)+'</div></div><button class="mini-btn" data-act="editEnglishSession" data-id="'+esc(s.id)+'">Edit</button><button class="mini-btn" data-act="deleteEnglishSession" data-id="'+esc(s.id)+'" title="Hapus sesi">×</button></div>'}).join(''):'<div class="empty">Belum ada sesi. Setelah belajar di website, klik + Log Session.</div>')+'</div></article></div>'
 }
+
 
 function studyPage(){const a=S.activities.filter(x=>x.category==='study').slice().reverse(),all=a.reduce((s,x)=>s+(+x.duration||0),0),i=studyInsights(),pomos=S.activities.filter(x=>x.source==='pomodoro'&&x.category==='study'&&x.completed!==false).length,tr=trendSeries(14,'study'),topics=S.studyTopics.slice().sort((x,y)=>(+x.mastery||0)-(+y.mastery||0)),tests=S.studyTests.slice().sort((x,y)=>(y.date||'').localeCompare(x.date||'')),avgMastery=topics.length?Math.round(topics.reduce((n,x)=>n+(+x.mastery||0),0)/topics.length):0,avgTest=tests.length?Math.round(tests.slice(0,5).reduce((n,x)=>n+studyTestPct(x),0)/Math.min(5,tests.length)):0;$('#page').innerHTML=head('Study','Mastery per topik, mock test, waktu belajar, dan pola sesi dalam satu workspace.','<button class="btn btn-secondary" data-act="newStudyTest">+ Mock Test</button><button class="btn btn-secondary" data-act="newStudyTopic">+ Topik</button><button class="btn btn-primary" data-act="addActivity" data-cat="study">+ Log Study</button>')+'<section class="grid metric-grid">'+metric('Total Study',mins(all),'All-time','◷')+metric('This Week',mins(catMin('study',7)),'Current week','▤')+metric('Topic Mastery',topics.length?avgMastery+'%':'—',topics.length+' topik','◎')+metric('Recent Test Avg',tests.length?avgTest+'%':'—',Math.min(5,tests.length)+' tes terakhir','↗')+metric('Pomodoros',pomos,'Completed','✦')+'</section>'+consistencyCompact('study')+masteryTreeCard()+'<div class="grid two-col"><article class="card"><div class="card-head"><div><h2>Topic Mastery</h2><p>Topik terlemah otomatis berada di atas.</p></div><span class="pill '+(topics.length&&topics[0].mastery<50?'orange':'blue')+'">'+(topics.length?'Weakest '+topics[0].mastery+'%':'Belum ada')+'</span></div><div class="growth-list">'+(topics.length?topics.map(x=>'<div class="growth-row"><div class="growth-main"><div class="item-title">'+esc(x.title)+'</div><div class="item-meta">'+esc(x.subject)+' • '+x.questionsDone+(x.questionsTotal?'/'+x.questionsTotal:'')+' soal'+(x.targetDate?' • target '+fmt(x.targetDate,{day:'numeric',month:'short'}):'')+'</div>'+prog(x.mastery)+'</div><strong>'+x.mastery+'%</strong><button class="mini-btn" data-act="editStudyTopic" data-id="'+x.id+'">Edit</button></div>').join(''):'<div class="empty">Tambahkan topik untuk mulai melacak mastery.</div>')+'</div></article><article class="card"><div class="card-head"><div><h2>Mock Test & Assessment</h2><p>Skor terbaru untuk melihat perkembangan nyata.</p></div></div><div class="growth-list">'+(tests.length?tests.slice(0,10).map(x=>{const t=S.studyTopics.find(v=>v.id===x.topicId);return'<div class="growth-row"><div class="growth-main"><div class="item-title">'+esc(x.title)+'</div><div class="item-meta">'+(x.date?fmt(x.date,{day:'numeric',month:'short'}):'Tanpa tanggal')+(t?' • '+esc(t.title):'')+'</div></div><strong>'+Math.round(studyTestPct(x))+'%</strong><button class="mini-btn" data-act="editStudyTest" data-id="'+x.id+'">Edit</button></div>'}).join(''):'<div class="empty">Belum ada hasil mock test.</div>')+'</div></article></div><article class="card chart-card section-gap"><div class="card-head"><div><h2>14-Day Study Trend</h2><p>Akumulasi waktu belajar aktual per hari, termasuk Pomodoro yang dihentikan sebelum selesai.</p></div><span class="pill blue">'+mins(tr.values.reduce((n,v)=>n+v,0))+'</span></div>'+lineChart(tr.values,tr.labels,{suffix:'menit'})+'</article><div class="grid two-col section-gap">'+recommendationCard()+'<article class="card"><div class="card-head"><div><h2>Evaluasi Belajar 90 Hari</h2><p>Belajar, riset, dan English yang memiliki jam mulai.</p></div></div><div class="simple-list"><div class="list-row"><div class="item-main"><div class="item-title">Hari terkuat</div><div class="item-meta">'+i.strongDay+'</div></div></div><div class="list-row"><div class="item-main"><div class="item-title">Rata-rata durasi sesi</div><div class="item-meta">'+(i.count?mins(i.avg):'Belum cukup data')+'</div></div></div><div class="list-row"><div class="item-main"><div class="item-title">Confidence rekomendasi</div><div class="item-meta">'+i.confidence+' • '+i.count+' sesi bertimestamp</div></div></div></div></article></div><div class="grid two-col" style="margin-top:16px"><article class="card"><div class="card-head"><h2>Time-of-Day Performance</h2></div><div class="simple-list">'+(i.slots.length?i.slots.slice(0,6).map((s,idx)=>'<div class="study-slot"><div class="goal-top"><span><b>#'+(idx+1)+'</b> '+s.label+'</span><b>'+mins(s.avg)+'/sesi</b></div>'+prog(Math.min(100,s.score))+'<div class="item-meta">'+s.sessions+' sesi • '+mins(s.minutes)+' total</div></div>').join(''):'<div class="empty">Mulai Pomodoro atau log study dengan jam mulai untuk membentuk pola.</div>')+'</div></article><article class="card"><div class="card-head"><h2>Recent Study</h2></div><div class="timeline">'+(a.length?a.slice(0,12).map(x=>'<div class="timeline-item"><div class="item-main"><div class="item-title">'+esc(x.title)+'</div><div class="item-meta">'+fmt(x.date,{day:'numeric',month:'short'})+(x.startTime?' • '+x.startTime:'')+' • '+mins(x.duration)+' <span class="xp-pop">+'+activityXP(x)+' XP</span></div></div></div>').join(''):'<div class="empty">Belum ada sesi belajar.</div>')+'</div></article></div>'}
 function projectHealth(p){
@@ -2733,7 +3258,7 @@ function settingsPage(){
   const notif=notificationSupported()?Notification.permission:'unsupported';
   $('#page').innerHTML=head('Settings','Desca OS bekerja tanpa login. Koneksi eksternal hanya tambahan jika kamu membutuhkannya.')+localFirstStatusCard()+'<div class="grid two-col"><article class="card"><div class="card-head"><h2>Profile & Targets</h2></div><div class="form-grid"><div class="field"><label>Nama</label><input id="sn" value="'+esc(S.profile.name)+'"></div><div class="field"><label>Daily target (menit)</label><input id="sd" type="number" min="1" value="'+S.profile.dailyFocusTarget+'"></div><div class="field"><label>Weekly target (menit)</label><input id="sw" type="number" min="1" value="'+S.profile.weeklyTarget+'"></div><div class="field"><label>Planner mulai</label><input id="splanstart" type="time" value="'+S.settings.plannerStart+'"></div><div class="field"><label>Planner selesai</label><input id="splanend" type="time" value="'+S.settings.plannerEnd+'"></div><div class="field"><label>Auto Replanning</label><select id="sautoreplan"><option value="false" '+(!S.settings.autoReplan?'selected':'')+'>Manual</option><option value="true" '+(S.settings.autoReplan?'selected':'')+'>Otomatis saat jadwal tertinggal</option></select></div></div><button class="btn btn-primary" style="margin-top:12px" data-act="saveSettings">Simpan</button></article>'+aiSettingsCard()+experienceSettingsCard()+pwaInstallCard()+offlineQueueCard()+dataConfidenceCard()+automationSettingsCard()+googleSettingsCard()+'<article class="card"><div class="card-head"><div><h2>Pomodoro Engine</h2><p>Preset dapat dipilih langsung dari Today.</p></div><span class="pill blue">'+S.settings.pomodoroPreset+'</span></div><div class="form-grid"><div class="field"><label>Focus (menit)</label><input id="spf" type="number" min="5" max="180" value="'+S.settings.pomodoroFocus+'"></div><div class="field"><label>Short break</label><input id="sps" type="number" min="1" max="60" value="'+S.settings.pomodoroShortBreak+'"></div><div class="field"><label>Long break</label><input id="spl" type="number" min="1" max="90" value="'+S.settings.pomodoroLongBreak+'"></div><div class="field"><label>Sesi sebelum long break</label><input id="spc" type="number" min="1" max="12" value="'+S.settings.pomodoroCycles+'"></div></div></article><article class="card"><div class="card-head"><div><h2>Notifications & Reminders</h2><p>Reminder lokal tanpa akun.</p></div><span class="pill '+(notif==='granted'?'green':'orange')+'">'+esc(notif)+'</span></div><div class="field"><label>Reminder lead (menit)</label><input id="slead" type="number" min="0" max="180" value="'+S.settings.reminderLead+'"></div><div class="callout" style="margin-top:10px">Background status: <b>'+backgroundNotificationStatus()+'</b>.</div><button class="btn btn-primary" style="margin-top:12px" data-act="requestNotifications">'+(notif==='granted'?'Notification Aktif':'Aktifkan Notification')+'</button></article><article class="card"><div class="card-head"><h2>Data & Privacy</h2></div><div class="callout">Default-nya data tetap di browser ini. Google dan cloud hanya bekerja kalau kamu memilih untuk menghubungkannya.</div><div class="simple-list" style="margin-top:12px"><button class="btn btn-secondary" data-act="theme">Toggle dark mode</button><button class="btn btn-secondary" data-act="export">Export JSON</button><button class="btn btn-secondary" data-route="recovery">Recovery Center</button><button class="btn btn-secondary" data-act="resetData">Reset semua data</button></div></article>'+cloudBackupCard()+advancedSystemSettingsCard()+'</div>'
 }
-function render(){if(guideRoute&&guideRoute!==route)closePageGuide();nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;document.documentElement.dataset.reduceMotion=S.settings.reduceMotion?'true':'false';const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,english:englishPage,research:researchPage,projects:projectsPage,dmath:dmathPage,work:workPage,vault:vaultPage,quran:quranPage,books:booksPage,running:sportsPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v84'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v84.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
+function render(){if(guideRoute&&guideRoute!==route)closePageGuide();nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;document.documentElement.dataset.reduceMotion=S.settings.reduceMotion?'true':'false';const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,english:englishPage,research:researchPage,projects:projectsPage,dmath:dmathPage,work:workPage,vault:vaultPage,quran:quranPage,books:booksPage,running:sportsPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v85'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v85.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
 function contextualCategory(r=route){return{study:'study',research:'research',projects:'project',dmath:'dmath',quran:'quran',books:'reading',running:'health',health:'health',finance:'finance',work:'work'}[r]||'personal'}
 function applyAutoDefaults(root=$('#modal')){if(!root)return;root.querySelectorAll('input[type="date"]').forEach(el=>{if(!el.value&&['date','startDate'].includes(el.name))el.value=today()});root.querySelectorAll('input[type="month"]').forEach(el=>{if(!el.value)el.value=today().slice(0,7)});const form=root.querySelector('form');if(form&&['activityForm','runningForm','quranSessionForm'].includes(form.id)){const tm=form.querySelector('[name="startTime"]');if(tm&&!tm.value)tm.value=localTime()}const catSel=form?.querySelector('[name="category"]');if(catSel&&!catSel.value)catSel.value=contextualCategory()}
 function open(html){$('#modal').innerHTML=html;$('#modalBackdrop').hidden=false;document.body.classList.add('modal-open');requestAnimationFrame(()=>{applyAutoDefaults();$('#modal input:not([disabled]),#modal textarea,#modal select')?.focus()})}
@@ -3167,6 +3692,8 @@ document.addEventListener('click',e=>{
   if(a==='deleteEnglishWebsite'){const site=S.english.sites.find(v=>v.id===id);if(site&&confirm('Hapus '+site.title+' dari Website Library? Log sesi sebelumnya tetap disimpan.')){S.english.sites=S.english.sites.filter(v=>v.id!==id);save('Delete English website');render()}}
   if(a==='openEnglishWebsite'){const site=S.english.sites.find(v=>v.id===id),url=englishLink(site?.url);if(site&&url){site.visits=(+site.visits||0)+1;site.lastOpened=today();save('Open English website');window.open(url,'_blank','noopener,noreferrer')}else if(site)openEnglishSite(site)}
   if(a==='englishSkillFilter'){englishSkillFilter=x.dataset.skill||'All';render()}
+  if(a==='englishCriteriaFilter'){englishCriteriaFilter=x.dataset.criteria||'core';englishSkillFilter='All';englishSearchQuery='';render()}
+  if(a==='englishClearFilters'){englishCriteriaFilter='all';englishSkillFilter='All';englishSearchQuery='';render()}
   if(a==='newEnglishSession')openEnglishSession(null,x.dataset.siteId||'');
   if(a==='editEnglishSession'){const sess=S.english.sessions.find(v=>v.id===id);if(sess)openEnglishSession(sess)}
   if(a==='deleteEnglishSession'){const sess=S.english.sessions.find(v=>v.id===id);if(sess&&confirm('Hapus sesi belajar ini dari histori?')){S.english.sessions=S.english.sessions.filter(v=>v.id!==id);S.activities=S.activities.filter(v=>v.englishSessionId!==id);save('Delete English session');render()}}
@@ -3286,6 +3813,10 @@ document.addEventListener('change',e=>{
   }
 });
 
+document.addEventListener('change',e=>{
+  if(e.target?.id==='englishCriteriaSelect'){englishCriteriaFilter=e.target.value||'all';render()}
+  if(e.target?.id==='englishSkillSelect'){englishSkillFilter=e.target.value||'All';render()}
+});
 document.addEventListener('submit',async e=>{
   e.preventDefault();let f=e.target,fd=new FormData(f),d=Object.fromEntries(fd);
 
@@ -3334,11 +3865,12 @@ document.addEventListener('submit',async e=>{
 
   if(f.id==='goalForm'){let old=S.goals.find(x=>x.id===d.id),title=d.title.trim(),milestones=(d.milestones||'').split(/\n+/).map(x=>x.trim()).filter(Boolean),done=[];if(old){const oldDone=old.milestoneDone||[];milestones.forEach((m,i)=>{const oi=(old.milestones||[]).indexOf(m);if(oi>=0&&oldDone.includes(oi))done.push(i)})}let g={id:d.id||uid('g'),title,area:(d.area||inferArea(title,'Academic')).trim(),deadline:d.deadline||(old?'':add(today(),30)),progress:clamp(+d.progress||0,0,100),status:d.status||'active',milestones,milestoneDone:done,autoProgress:d.autoProgress!=='false',createdAt:old?.createdAt||new Date().toISOString()};old?Object.assign(old,g):S.goals.push(g);refreshGoalProgress();save();close();toast(old?'Goal diperbarui':'Goal dibuat otomatis di '+g.area);render()}
 
+  if(f.id==='englishSearchForm'){englishSearchQuery=(d.q||'').trim();render();return}
   if(f.id==='englishSiteForm'){
     const title=(d.title||'').trim(),rawUrl=(d.url||'').trim(),url=englishLink(rawUrl);
     if(!title){toast('Nama website wajib diisi');return}
     if(rawUrl&&!url){toast('Link website harus HTTP atau HTTPS yang valid');return}
-    const old=S.english.sites.find(v=>v.id===d.id),site={id:old?.id||uid('engweb'),title,url,skill:ENGLISH_SKILLS.includes(d.skill)?d.skill:'General',status:ENGLISH_STATUSES[d.status]?d.status:'active',access:['free','freemium','paid'].includes(d.access)?d.access:'free',priority:clamp(+d.priority||5,1,99),progress:clamp(+d.progress||0,0,100),description:(d.description||'').trim(),createdAt:old?.createdAt||today(),visits:old?.visits||0,lastOpened:old?.lastOpened||''};
+    const old=S.english.sites.find(v=>v.id===d.id),site={id:old?.id||uid('engweb'),title,url,skill:ENGLISH_SKILLS.includes(d.skill)?d.skill:'General',criteria:ENGLISH_CRITERIA[d.criteria]?d.criteria:'main',tier:['core','recommended','reference'].includes(d.tier)?d.tier:'recommended',useCases:String(d.useCases||'').split(',').map(x=>x.trim()).filter(Boolean).slice(0,12),status:ENGLISH_STATUSES[d.status]?d.status:'active',access:['unknown','free','freemium','paid'].includes(d.access)?d.access:'unknown',priority:clamp(+d.priority||5,1,99),progress:clamp(+d.progress||0,0,100),description:(d.description||'').trim(),sourcePosition:old?.sourcePosition||0,createdAt:old?.createdAt||today(),visits:old?.visits||0,lastOpened:old?.lastOpened||''};
     if(old)Object.assign(old,site);else S.english.sites.push(site);
     save(old?'Edit English website':'Add English website');close();toast('Website tersimpan');render();return
   }

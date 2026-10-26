@@ -77,6 +77,17 @@ function run(route,state){
 for(const route of routes){run(route,null);run(route,richState())}
 const navigation=run('planner',richState()).document.querySelector('#sideNav').innerHTML;
 if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
+
+const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
+if(!taskUI.includes('id="osTaskSearchForm"')||!taskUI.includes('data-view="today"')||!taskUI.includes('data-view="done"'))throw new Error('Task quick filters missing');
+const studyUI=run('study',richState()).document.querySelector('#page').innerHTML;
+if(!studyUI.includes('Analisis Belajar')||!studyUI.includes('os-advanced-disclosure')||!studyUI.includes('Topic Mastery'))throw new Error('Study core/advanced layout missing');
+const researchUI=run('research',richState()).document.querySelector('#page').innerHTML;
+if(!researchUI.includes('Graf &amp; Analisis Riset')&&!researchUI.includes('Graf & Analisis Riset'))throw new Error('Research graph disclosure missing');
+const englishUI=run('english',richState()).document.querySelector('#page').innerHTML;
+if(!englishUI.includes('https://app.volingo.my.id/')||!englishUI.includes('Jelajahi 7 Kategori'))throw new Error('English quick-start/disclosure missing');
+const financeUI=run('finance',richState()).document.querySelector('#page').innerHTML;
+if(!financeUI.includes('data-act="osExpenseQuick"')||!financeUI.includes('data-act="osIncomeQuick"')||!financeUI.includes('Laporan Keuangan Lengkap'))throw new Error('Finance quick workflow missing');
 const academicTabs=run('academic',richState()).document.querySelector('#page').innerHTML;
 if(academicTabs.includes('data-route="vault"')||academicTabs.includes('>Library</button>'))throw new Error('Library must not appear in Academic tabs');
 if(!academicTabs.includes('data-route="books"')||!academicTabs.includes('>Reading</button>'))throw new Error('Reading tab must remain available');

@@ -80,6 +80,13 @@ if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Prima
 
 const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
 if(!taskUI.includes('id="osTaskSearchForm"')||!taskUI.includes('data-view="active"')||!taskUI.includes('data-view="done"')||!taskUI.includes('data-view="all"')||taskUI.includes('data-view="overdue"'))throw new Error('Simplified task filters missing');
+const taskRouteUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
+if(!taskRouteUI.includes('goals-layout')||taskRouteUI.includes('os-task-workspace'))throw new Error('Legacy Tasks route must redirect to Goals');
+const goalsUI=run('goals',richState()).document.querySelector('#page').innerHTML;
+if(!goalsUI.includes('Buat Goal')&&!goalsUI.includes('Goal Baru'))throw new Error('Goals create action missing');
+if(goalsUI.includes('goal-linked-tasks')||goalsUI.includes('LINKED TASKS'))throw new Error('Task list must not appear within Goals');
+const homeNavigation=run('today',richState()).document.querySelector('#sideNav').innerHTML;
+if(homeNavigation.includes('data-route="tasks"')||!homeNavigation.includes('data-route="goals"'))throw new Error('Primary navigation must replace Tasks with Goals');
 const studyUI=run('study',richState()).document.querySelector('#page').innerHTML;
 if(!studyUI.includes('Analisis Belajar')||!studyUI.includes('os-advanced-disclosure')||!studyUI.includes('Topic Mastery'))throw new Error('Study core/advanced layout missing');
 const researchUI=run('research',richState()).document.querySelector('#page').innerHTML;
@@ -94,7 +101,7 @@ if(!academicTabs.includes('data-route="books"')||!academicTabs.includes('>Readin
 const academicNavigation=run('english',richState()).document.querySelector('#sideNav').innerHTML;
 if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
 const cal=run('calendar',richState()).document.querySelector('#page').innerHTML;
-if(!cal.includes('Daftar pekerjaan sederhana tanpa kalender maupun deadline.')||cal.includes('month-calendar-card'))throw new Error('Legacy Calendar route must redirect to Tasks');
+if(!cal.includes('goals-layout')||cal.includes('month-calendar-card'))throw new Error('Legacy Calendar route must redirect to Goals');
 
 const freshEnglish=run('english',richState()).__DESCA_TEST__.S.english.sites.find(site=>site.id==='english_volingo');
 if(freshEnglish?.url!=='https://app.volingo.my.id/')throw new Error('Volingo preset URL regression');
@@ -104,8 +111,8 @@ const migratedEnglish=run('english',legacyEnglish).__DESCA_TEST__.S.english.site
 if(migratedEnglish.url!=='https://app.volingo.my.id/'||migratedEnglish.progress!==75||migratedEnglish.visits!==12||migratedEnglish.description!=='My private notes')throw new Error('Volingo saved-link migration regression');
 
 const homeUI=run('today',richState()).document.querySelector('#page').innerHTML;
-if(!homeUI.includes('os-click-home')||!homeUI.includes('data-act="osFastStudy"')||!homeUI.includes('data-act="osFastSport"')||homeUI.includes('daily-timeline-card'))throw new Error('Click-first Home must have no Daily Timeline');
-const quickForms=run('tasks',richState()).__DESCA_TEST__;
+if(!homeUI.includes('os-click-home')||!homeUI.includes('data-act="osFastStudy"')||!homeUI.includes('data-act="osFastSport"')||!homeUI.includes('os-goal-spotlight')||homeUI.includes('home-command-center')||homeUI.includes('PRIORITAS TUGAS')||homeUI.includes('daily-timeline-card'))throw new Error('Home must show Goals and quick actions, not tasks or timelines');
+const quickForms=run('goals',richState()).__DESCA_TEST__;
 if(!quickForms.taskForm().includes('data-field="title"')||quickForms.taskForm().includes('data-field="date"')||quickForms.taskForm().includes('type="date"'))throw new Error('Task capture must use title presets without scheduling');
 if(!quickForms.activityForm('study').includes('data-field="duration"'))throw new Error('Activity duration chips missing');
 if(!quickForms.financeForm().includes('data-act="osFinancePreset"')||!quickForms.financeForm().includes('data-field="amount"'))throw new Error('Finance no-type amount presets missing');

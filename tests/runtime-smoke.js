@@ -16,7 +16,7 @@ function element(){
     setAttribute(){},getAttribute(){return null},removeAttribute(){},
     querySelector(){return element()},querySelectorAll(){return []},
     addEventListener(){},removeEventListener(){},focus(){},closest(){return null},
-    appendChild(){},remove(){},click(){},scrollIntoView(){},getContext(){return null}
+    appendChild(){},append(){},remove(){},click(){},scrollIntoView(){},getContext(){return null}
   };
 }
 function richState(){

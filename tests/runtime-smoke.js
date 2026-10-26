@@ -79,7 +79,7 @@ const navigation=run('planner',richState()).document.querySelector('#sideNav').i
 if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
 
 const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
-if(!taskUI.includes('id="osTaskSearchForm"')||!taskUI.includes('data-view="active"')||!taskUI.includes('data-view="done"')||!taskUI.includes('data-view="all"')||taskUI.includes('data-view="overdue"'))throw new Error('Simplified task filters missing');
+if(!taskUI.includes('goals-layout')||taskUI.includes('os-task-workspace')||taskUI.includes('data-view="active"'))throw new Error('Tasks route should render Goals instead of task filters');
 const taskRouteUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
 if(!taskRouteUI.includes('goals-layout')||taskRouteUI.includes('os-task-workspace'))throw new Error('Legacy Tasks route must redirect to Goals');
 const goalsUI=run('goals',richState()).document.querySelector('#page').innerHTML;

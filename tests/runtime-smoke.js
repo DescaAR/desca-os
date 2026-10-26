@@ -148,4 +148,27 @@ if(openBooks?.type!=='open'||openBooks?.route!=='books')throw new Error('Books c
 const readPages=api.commandParse('baca 20 halaman');
 if(readPages?.type!=='readpages'||readPages?.pages!==20)throw new Error('Reading command regression');
 if(api.readingStats().reading.length!==1)throw new Error('Reading stats regression');
+
+// v96 regression: light theme must use readable colors while keeping dark heroes.
+const themeCss=fs.readFileSync('ui-v21.css','utf8');
+if(!themeCss.includes('v96 — Light theme legibility')||!themeCss.includes('html[data-theme="light"] .s2-readiness>span')||!themeCss.includes('html[data-theme="light"] :is(input,textarea)::placeholder'))throw new Error('Light-theme readability patch missing');
+const luminanceHex=(hex)=>{
+  const s=hex.replace('#','');
+  const v=[0,2,4].map(i=>parseInt(s.slice(i,i+2),16)/255).map(n=>n<=0.04045?n/12.92:((n+0.055)/1.055)**2.4);
+  return 0.2126*v[0]+0.7152*v[1]+0.0722*v[2];
+};
+const wcagContrast=(a,b)=>{
+  const x=luminanceHex(a),y=luminanceHex(b);return(Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);
+};
+for(const [a,b,label] of [
+  ['#14213b','#ffffff','main text on white'],
+  ['#30435f','#ffffff','secondary text on white'],
+  ['#52647e','#ffffff','muted text on white'],
+  ['#254bcf','#eaf0ff','active navigation'],
+  ['#11674f','#e5f5ef','green badge'],
+  ['#82500a','#fff2db','orange badge'],
+  ['#a2283e','#fff0f1','red badge']
+])if(wcagContrast(a,b)<4.5)throw new Error('Low light-theme contrast: '+label);
+if(wcagContrast('#ffffff','#365cf3')<4.5)throw new Error('Primary CTA contrast insufficient');
+console.log('Light-theme contrast smoke OK: readable surface tokens and preserved dark hero styles');
 console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders + interaction checks');

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#F5F7FB" />
-  <meta name="description" content="Desca OS — personal productivity operating system untuk merencanakan, mencatat, dan memahami perkembangan diri." />
+  <meta name="description" content="Desca OS — personal productivity operating system untuk mencatat aktivitas, memantau Goals, dan mengembangkan kebiasaan." />
   <title>Desca OS — Track. Improve. Grow.</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="ui-v21.css?v=92" />
+  <link rel="stylesheet" href="ui-v21.css?v=94" />
 </head>
 <body>
   <div class="app-shell" id="appShell">
@@ -44,13 +44,13 @@
           <button class="search-btn" id="searchOpen"><span>⌕</span><span class="search-label">Cari apa pun</span><kbd>⌘ K</kbd></button>
           <button class="icon-btn notification-bell" id="notificationBell" aria-label="Notifications" title="Notifications"><span aria-hidden="true">◦</span><b id="notificationBadge" hidden></b></button>
           <button class="icon-btn" id="themeToggle" aria-label="Ubah tema" title="Ubah tema">☾</button>
-          <button class="btn btn-primary" id="quickAdd">＋ Quick Add</button>
+          <button class="btn btn-primary" id="quickAdd">＋ Catat Aktivitas</button>
         </div>
       </header>
       <div class="page" id="page"></div>
     </main>
     <nav class="bottom-nav" id="bottomNav" aria-label="Navigasi mobile"></nav>
-    <button class="mobile-fab" id="mobileFab" aria-label="Quick Add">＋</button>
+    <button class="mobile-fab" id="mobileFab" aria-label="Catat Aktivitas">＋</button>
   </div>
   <div class="modal-backdrop" id="modalBackdrop" hidden>
     <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></section>
@@ -60,6 +60,6 @@
   <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
   <script src="runtime-guard.js?v=86" defer></script>
   <script src="modules/growth-utils.js?v=72" defer></script>
-  <script src="app.js?v=93" defer></script>
+  <script src="app.js?v=94" defer></script>
 </body>
 </html>

@@ -171,4 +171,19 @@ for(const [a,b,label] of [
 ])if(wcagContrast(a,b)<4.5)throw new Error('Low light-theme contrast: '+label);
 if(wcagContrast('#ffffff','#365cf3')<4.5)throw new Error('Primary CTA contrast insufficient');
 console.log('Light-theme contrast smoke OK: readable surface tokens and preserved dark hero styles');
+
+// v97 regression: Review hero must not inherit white .card background,
+// and Daily Score must use a contrasting dark centre under the numeric label.
+const lightReview=run('reviews',richState()).document.querySelector('#page').innerHTML;
+if(!lightReview.includes('class="card review-hero"')||!lightReview.includes('class="review-number"')||!lightReview.includes('Aktivitas dicatat')||!lightReview.includes('Sesi belajar & English'))throw new Error('Review must show a legible activity-first weekly summary');
+if(lightReview.includes('+ Planning Horizon')||lightReview.includes('routine adherence')||lightReview.includes('tasks completed'))throw new Error('Review header must not surface removed task/planning controls');
+const ringHome=run('today',richState()).document.querySelector('#page').innerHTML;
+if(!ringHome.includes('class="score-ring"')||!ringHome.includes('class="score-copy"'))throw new Error('Home Daily Score widget missing');
+for(const label of ['.review-hero.card{','.review-hero.card .review-number{','.review-hero.card .stat-chip b,','.hero-greeting.dashboard-hero .score-ring::after{','.hero-greeting.dashboard-hero .score-ring b{']){
+  if(!themeCss.includes(label))throw new Error('Screenshot contrast fix selector missing: '+label);
+}
+if(!themeCss.includes('background:#1b3569!important')||!themeCss.includes('color:#ffffff!important'))throw new Error('Daily Score central contrast is missing');
+if(wcagContrast('#ffffff','#1b3569')<4.5||wcagContrast('#dbe9ff','#1e437d')<4.5)throw new Error('Review or Daily Score hero text fails AA contrast');
+console.log('Review hero and Daily Score contrast checks OK');
+
 console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders + interaction checks');

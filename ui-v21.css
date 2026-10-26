@@ -6214,3 +6214,290 @@ input,textarea,select{accent-color:var(--app-blue)}
 @media(prefers-reduced-motion:reduce){
   .os-s2-home-card:hover{transform:none}
 }
+
+
+/* ================================================================
+   v96 — Light theme legibility and readable UI
+   Light surfaces use ink colors; navy/gradient hero panels keep their
+   intentional inverse (white-on-dark) typography unchanged.
+   ================================================================ */
+html[data-theme="light"]{
+  --app-text:#14213b;
+  --app-text-2:#30435f;
+  --app-muted:#52647e;
+  --app-border:#d8e1ef;
+  --app-border-strong:#b9c9df;
+  --app-blue:#254bcf;
+  --app-blue-strong:#193fac;
+  --app-blue-soft:#eaf0ff;
+  --app-green:#12755e;
+  --app-amber:#946013;
+  --app-red:#b02f43;
+  --text:var(--app-text);
+  --muted:var(--app-muted);
+  --line:var(--app-border);
+}
+html[data-theme="light"] body,
+html[data-theme="light"] .main,
+html[data-theme="light"] .page{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .sidebar,
+html[data-theme="light"] .topbar{
+  background:var(--app-surface)!important;
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .crumb,
+html[data-theme="light"] .brand-copy strong,
+html[data-theme="light"] .nav-item:not(.active),
+html[data-theme="light"] .bottom-item,
+html[data-theme="light"] .profile-chip b,
+html[data-theme="light"] .mini-level,
+html[data-theme="light"] .search-btn,
+html[data-theme="light"] .guide-top-btn,
+html[data-theme="light"] .top-actions>.icon-btn{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .brand-copy small,
+html[data-theme="light"] .nav-label,
+html[data-theme="light"] .profile-chip small{
+  color:var(--app-muted)!important;
+}
+html[data-theme="light"] .nav-item.active,
+html[data-theme="light"] .os-tab.active{
+  color:var(--app-blue)!important;
+  background:var(--app-blue-soft)!important;
+}
+html[data-theme="light"] .nav-item.active .nav-text,
+html[data-theme="light"] .nav-item.active .nav-icon{
+  color:var(--app-blue)!important;
+}
+html[data-theme="light"] .page-head h1,
+html[data-theme="light"] .page-head h2,
+html[data-theme="light"] .os-section-heading h2,
+html[data-theme="light"] .card-head h2,
+html[data-theme="light"] .metric-value,
+html[data-theme="light"] .metric-label,
+html[data-theme="light"] .goal-title,
+html[data-theme="light"] .item-title,
+html[data-theme="light"] .list-row .item-title,
+html[data-theme="light"] .modal-head h2,
+html[data-theme="light"] .search-result-copy b,
+html[data-theme="light"] .os-advanced-disclosure>summary b{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .page-head p,
+html[data-theme="light"] .os-section-heading p,
+html[data-theme="light"] .card-head p,
+html[data-theme="light"] .metric-meta,
+html[data-theme="light"] .item-meta,
+html[data-theme="light"] .goal-sub,
+html[data-theme="light"] .routine-meta,
+html[data-theme="light"] .history-date small,
+html[data-theme="light"] .search-result-copy small,
+html[data-theme="light"] .modal-subtitle,
+html[data-theme="light"] .empty,
+html[data-theme="light"] .empty small,
+html[data-theme="light"] .callout,
+html[data-theme="light"] .os-advanced-disclosure>summary small{
+  color:var(--app-muted)!important;
+}
+html[data-theme="light"] .metric-meta,
+html[data-theme="light"] .card-head p,
+html[data-theme="light"] .page-head p{
+  font-size:max(12px,var(--type-caption,12px))!important;
+  line-height:1.55!important;
+}
+html[data-theme="light"] .pill:not(.blue):not(.green):not(.orange):not(.red),
+html[data-theme="light"] .task-status,
+html[data-theme="light"] .optional-badge{
+  color:var(--app-text-2)!important;
+  border-color:var(--app-border-strong)!important;
+  background:var(--app-surface-2)!important;
+}
+html[data-theme="light"] .pill.blue{
+  background:var(--app-blue-soft)!important;
+  color:var(--app-blue)!important;
+}
+html[data-theme="light"] .pill.green{
+  background:#e5f5ef!important;
+  color:#11674f!important;
+}
+html[data-theme="light"] .pill.orange{
+  background:#fff2db!important;
+  color:#82500a!important;
+}
+html[data-theme="light"] .pill.red{
+  background:#fff0f1!important;
+  color:#a2283e!important;
+}
+html[data-theme="light"] .pill{
+  font-size:11px!important;
+  font-weight:750!important;
+  line-height:1.35!important;
+}
+html[data-theme="light"] .mini-btn:not(.primary-mini),
+html[data-theme="light"] .os-tab:not(.active),
+html[data-theme="light"] .os-choice:not(.active),
+html[data-theme="light"] .os-filter-chip:not(.active){
+  color:var(--app-text-2)!important;
+  background:var(--app-surface-2)!important;
+  border-color:var(--app-border-strong)!important;
+}
+html[data-theme="light"] .mini-btn:not(.primary-mini):hover,
+html[data-theme="light"] .os-tab:not(.active):hover,
+html[data-theme="light"] .os-choice:not(.active):hover{
+  color:var(--app-blue)!important;
+  background:var(--app-blue-soft)!important;
+  border-color:var(--app-blue)!important;
+}
+html[data-theme="light"] :is(input,textarea,select){
+  background:var(--app-surface)!important;
+  color:var(--app-text)!important;
+  border-color:var(--app-border-strong)!important;
+  caret-color:var(--app-blue);
+}
+html[data-theme="light"] :is(input,textarea)::placeholder{
+  color:#596b82!important;
+  opacity:1!important;
+}
+html[data-theme="light"] :is(.field,label,.smart-core-grid) label,
+html[data-theme="light"] .os-advanced-content label,
+html[data-theme="light"] .os-task-search label{
+  color:var(--app-text-2)!important;
+  font-size:max(11.5px,var(--type-caption,11.5px))!important;
+}
+html[data-theme="light"] .field-auto,
+html[data-theme="light"] .smart-form-summary,
+html[data-theme="light"] .smart-form-summary span,
+html[data-theme="light"] .os-one-tap-note{
+  color:var(--app-muted)!important;
+}
+html[data-theme="light"] .os-click-grid button{
+  color:var(--app-text)!important;
+  background:var(--app-surface-2)!important;
+  border-color:var(--app-border-strong)!important;
+}
+html[data-theme="light"] .os-click-grid button b,
+html[data-theme="light"] .os-goal-mini-copy b,
+html[data-theme="light"] .os-s2-home-copy b{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .os-click-grid button>span,
+html[data-theme="light"] .os-goal-mini-copy small,
+html[data-theme="light"] .os-s2-home-copy small,
+html[data-theme="light"] .os-s2-home-foot{
+  color:var(--app-muted)!important;
+  font-size:11.5px!important;
+  line-height:1.55!important;
+}
+html[data-theme="light"] .os-s2-home-card>strong,
+html[data-theme="light"] .os-section-heading .eyebrow{
+  color:var(--app-blue)!important;
+}
+html[data-theme="light"] .s2-prep-card,
+html[data-theme="light"] .s2-readiness,
+html[data-theme="light"] .s2-profile,
+html[data-theme="light"] .s2-next,
+html[data-theme="light"] .s2-document-group,
+html[data-theme="light"] .s2-pipeline-card,
+html[data-theme="light"] .s2-check-group{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .s2-prep-card h2,
+html[data-theme="light"] .s2-prep-card h3,
+html[data-theme="light"] .s2-prep-card h4,
+html[data-theme="light"] .s2-profile b,
+html[data-theme="light"] .s2-next b,
+html[data-theme="light"] .s2-readiness strong,
+html[data-theme="light"] .s2-readiness-strip b,
+html[data-theme="light"] .s2-section-title b,
+html[data-theme="light"] .s2-check b,
+html[data-theme="light"] .s2-doc-row b,
+html[data-theme="light"] .s2-pipeline-top h4,
+html[data-theme="light"] .s2-pipeline-meta b{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .s2-prep-card .eyebrow{
+  color:var(--app-blue)!important;
+}
+html[data-theme="light"] .s2-readiness>span,
+html[data-theme="light"] .s2-profile>span,
+html[data-theme="light"] .s2-next>span,
+html[data-theme="light"] .s2-readiness small,
+html[data-theme="light"] .s2-next small,
+html[data-theme="light"] .s2-readiness-strip span,
+html[data-theme="light"] .s2-section-title span,
+html[data-theme="light"] .s2-documents-head p,
+html[data-theme="light"] .s2-doc-row small,
+html[data-theme="light"] .s2-pipeline-top small,
+html[data-theme="light"] .s2-pipeline-meta span,
+html[data-theme="light"] .s2-pipeline-card p,
+html[data-theme="light"] .s2-check small{
+  color:var(--app-muted)!important;
+  font-size:11.5px!important;
+  line-height:1.55!important;
+}
+html[data-theme="light"] .s2-pipeline-meta b,
+html[data-theme="light"] .s2-doc-row b,
+html[data-theme="light"] .s2-check b{
+  font-size:12px!important;
+  line-height:1.55!important;
+}
+html[data-theme="light"] .s2-doc-row:not(.done) .s2-doc-check{
+  color:var(--app-text-2)!important;
+  background:var(--app-surface)!important;
+  border-color:var(--app-border-strong)!important;
+}
+html[data-theme="light"] .s2-doc-row.done .s2-doc-check{
+  color:#ffffff!important;
+  background:var(--app-green)!important;
+}
+html[data-theme="light"] .s2-check:not(.done){
+  background:var(--app-surface)!important;
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .s2-check.done b,
+html[data-theme="light"] .s2-doc-row.done b{
+  color:#485b71!important;
+}
+html[data-theme="light"] .search-modal-box,
+html[data-theme="light"] .search-result,
+html[data-theme="light"] .command-result,
+html[data-theme="light"] .modal,
+html[data-theme="light"] .page-guide-drawer,
+html[data-theme="light"] .guide-step,
+html[data-theme="light"] .os-advanced-disclosure{
+  color:var(--app-text)!important;
+  background:var(--app-surface)!important;
+  border-color:var(--app-border)!important;
+}
+html[data-theme="light"] .guide-step-copy b,
+html[data-theme="light"] .search-result b,
+html[data-theme="light"] .guide-drawer-head h2{
+  color:var(--app-text)!important;
+}
+html[data-theme="light"] .guide-step-copy small,
+html[data-theme="light"] .guide-progress small,
+html[data-theme="light"] .search-hint,
+html[data-theme="light"] .search-result small{
+  color:var(--app-muted)!important;
+}
+/* Intentionally exclude dark-gradient Home and English hero text. */
+html[data-theme="light"] .hero-greeting.dashboard-hero h1,
+html[data-theme="light"] .english-command h1{
+  color:#ffffff!important;
+}
+html[data-theme="light"] .hero-greeting.dashboard-hero p{
+  color:#d9e7ff!important;
+}
+html[data-theme="light"] .english-command p{
+  color:#d4e4f8!important;
+}
+@media(max-width:600px){
+  html[data-theme="light"] .s2-prep-card .s2-pipeline-meta span,
+  html[data-theme="light"] .s2-prep-card .s2-pipeline-meta b,
+  html[data-theme="light"] .s2-prep-card .s2-doc-row small{
+    font-size:11px!important;
+  }
+}

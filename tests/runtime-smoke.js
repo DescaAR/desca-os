@@ -1,12 +1,12 @@
 const fs=require('fs');
 const vm=require('vm');
-const app=fs.readFileSync('app.js','utf8');
+const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
 if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Error('Google Calendar OAuth scope must be removed');
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
 const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm};})();`);
-const routes=['today','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
+const routes=['today','math','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
   return {
@@ -204,5 +204,28 @@ if(noDateUI.s2DocumentSection().includes('Belum diberi target tanggal')||noDateU
 const noDateGoals=run('goals',richState()).document.querySelector('#page').innerHTML;
 if(noDateGoals.includes('Target tanggal')||noDateGoals.includes('Belum diberi target tanggal'))throw new Error('S2 Goals still displays target date labels');
 console.log('Target tanggal removal smoke OK: S2, books, study and finance');
+
+
+// v99 Mathematics Hub: all 22 provided websites + 10 essential sources + complete S1–S3 path.
+const mathApp=run('math',richState());
+const mathHtml=mathApp.document.querySelector('#page').innerHTML;
+if(!mathHtml.includes('Matematika')||!mathHtml.includes('math-hero')||!mathHtml.includes('math-filter-bar')||!mathHtml.includes('math-learning-path'))throw new Error('Matematika workspace missing');
+if((mathHtml.match(/class="math-resource-card"/g)||[]).length!==10)throw new Error('Matematika must default to 10 recommended references');
+if(!mathHtml.includes('href="https://ocw.mit.edu/"')||!mathHtml.includes('href="https://arxiv.org/archive/math"')||!mathHtml.includes('href="https://sagecell.sagemath.org/"'))throw new Error('Reference links not rendered');
+if(!mathHtml.includes('target="_blank" rel="noopener noreferrer"'))throw new Error('External reference links need safe new-tab attributes');
+if(!mathHtml.includes('data-act="mathStar"')||!mathHtml.includes('data-act="mathFilter"'))throw new Error('Matematika favorite/filter controls missing');
+const mathLib=mathApp.DescaMathHub;
+if(!mathLib||mathLib.resources.length!==22||mathLib.resources.filter(x=>x.featured).length!==10||mathLib.roadmap.length!==5||mathLib.groups.length!==8)throw new Error('Matematika catalog or learning path incomplete');
+if(mathLib.resources.some(x=>!x.name||!/^https:\/\//.test(x.url)||!x.desc))throw new Error('Math catalog item missing title, HTTPS link or description');
+if(new Set(mathLib.resources.map(x=>x.id)).size!==22)throw new Error('Duplicated Math resource identifiers');
+for(const id of ['mit','libretexts','openlogic','aim','proofwiki','3b1b','hatcher','spielman','stacks','nlab','lean','arxiv','zbmath','mathoverflow','mathse','openalex','sagecell','sagemath','networkx','mathlib','chatgpt','gemini']){
+  if(!mathLib.resources.some(x=>x.id===id))throw new Error('Required mathematics source missing: '+id);
+}
+const mathCss=fs.readFileSync('math-hub.css','utf8');
+for(const selector of ['.math-hero{','.math-resource-grid{','.math-star{','.math-learning-path{','.math-filter{']){
+  if(!mathCss.includes(selector))throw new Error('Matematika responsive stylesheet missing '+selector);
+}
+if(mathApp.__DESCA_TEST__.commandParse('buka matematika')?.route!=='math')throw new Error('Matematika command route missing');
+console.log('Matematika Hub verified: 22 sources, 10 featured, 5 roadmap stages, filters, favorites, accessibility');
 
 console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders + interaction checks');

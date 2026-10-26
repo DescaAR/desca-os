@@ -83,8 +83,14 @@ if(!taskUI.includes('goals-layout')||taskUI.includes('os-task-workspace')||taskU
 const taskRouteUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
 if(!taskRouteUI.includes('goals-layout')||taskRouteUI.includes('os-task-workspace'))throw new Error('Legacy Tasks route must redirect to Goals');
 const goalsUI=run('goals',richState()).document.querySelector('#page').innerHTML;
-if(!goalsUI.includes('Buat Goal')&&!goalsUI.includes('Goal Baru'))throw new Error('Goals create action missing');
+if(!goalsUI.includes('Persiapan S2')||!goalsUI.includes('s2-prep-card')||!goalsUI.includes('s2-document')||!goalsUI.includes('s2-pipeline')||goalsUI.includes('Goal Baru')||goalsUI.includes('goal-detail'))throw new Error('Goals must only contain S2 preparation');
 if(goalsUI.includes('goal-linked-tasks')||goalsUI.includes('LINKED TASKS'))throw new Error('Task list must not appear within Goals');
+const focusedS2=run('goals',richState()).__DESCA_TEST__.S;
+if(focusedS2.goals.some(g=>!(/\\bS2\\b|pascasarjana|master|magister/i.test(g.title)||g.baselineKey==='s2')))throw new Error('Non-S2 goals must no longer be active');
+if(!focusedS2.goals.some(g=>g.baselineKey==='s2'))throw new Error('S2 preparation baseline must remain');
+if(!Array.isArray(focusedS2.archivedGoalsOutsideS2)||!focusedS2.archivedGoalsOutsideS2.some(g=>g.title==='Selesaikan Skripsi'))throw new Error('Non-S2 goals should be backed up for recovery');
+const s2Spotlight=run('today',richState()).document.querySelector('#page').innerHTML;
+if(!s2Spotlight.includes('os-s2-home-card')||s2Spotlight.includes('Goals in progress')||s2Spotlight.includes('Goal Baru'))throw new Error('Home must show only S2 goal summary');
 const homeNavigation=run('today',richState()).document.querySelector('#sideNav').innerHTML;
 if(homeNavigation.includes('data-route="tasks"')||!homeNavigation.includes('data-route="goals"'))throw new Error('Primary navigation must replace Tasks with Goals');
 const studyUI=run('study',richState()).document.querySelector('#page').innerHTML;

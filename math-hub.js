@@ -42,7 +42,7 @@ const MATH_RESOURCES=[
 ];
 let mathFilter='featured';
 
-function mathPage(){
+function renderMathHub({S,esc,head,mathFilter}){
   const saved=new Set(Array.isArray(S.settings.mathFavorites)?S.settings.mathFavorites:[]);
   const groups=MATH_RESOURCE_GROUPS;
   const selected=groups.some(x=>x.id===mathFilter)?mathFilter:'featured';
@@ -52,7 +52,7 @@ function mathPage(){
     const category=groups.find(y=>y.id===x.group)?.label||x.group,star=saved.has(x.id);
     return'<article class="math-resource-card"><div class="math-resource-top"><span class="math-resource-mark" aria-hidden="true">'+esc(x.name.slice(0,1))+'</span><button type="button" class="math-star '+(star?'active':'')+'" data-act="mathStar" data-id="'+esc(x.id)+'" aria-label="'+(star?'Hapus '+esc(x.name)+' dari favorit':'Simpan '+esc(x.name)+' ke favorit')+'" aria-pressed="'+(star?'true':'false')+'" title="'+(star?'Hapus favorit':'Tambah favorit')+'">'+(star?'★':'☆')+'</button></div><h3>'+esc(x.name)+'</h3><div class="math-resource-tags"><span>'+esc(category)+'</span><span>'+esc(x.level)+'</span></div><p>'+esc(x.desc)+'</p><div class="math-resource-foot"><span>'+esc(x.tag)+'</span><a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer" aria-label="Buka '+esc(x.name)+' di tab baru">Buka situs <span aria-hidden="true">↗</span></a></div></article>'
   }).join(''):'<div class="math-empty"><div class="math-empty-icon">☆</div><h3>Belum ada website favorit</h3><p>Klik ikon bintang pada website yang ingin kamu akses lebih cepat.</p><button type="button" class="btn btn-secondary" data-act="mathFilter" data-filter="featured">Lihat Pilihan Utama</button></div>';
-  $('#page').innerHTML=head('Matematika','Pusat referensi gratis dari S1 hingga riset S3. Cukup pilih kategori lalu buka sumbernya.','<button class="btn btn-secondary" data-route="study">▣ Catat Belajar</button>')
+  return head('Matematika','Pusat referensi gratis dari S1 hingga riset S3. Cukup pilih kategori lalu buka sumbernya.','<button class="btn btn-secondary" data-route="study">▣ Catat Belajar</button>')
     +'<section class="math-hero"><div class="math-hero-main"><div class="math-eyebrow">MATHEMATICS · LEARNING & RESEARCH</div><h2>Dari konsep menuju pembuktian.</h2><p>Perkuliahan, buku, teorema, publikasi, dan komputasi dalam satu halaman. Referensi untuk membangun fondasi dan membaca matematika tingkat lanjut.</p><div class="math-hero-note">Teori <span>→</span> Problem Solving <span>→</span> Penelitian</div></div><div class="math-hero-stats"><div><strong>'+MATH_RESOURCES.length+'</strong><span>Website & tools</span></div><div><strong>'+MATH_RESOURCES.filter(x=>x.featured).length+'</strong><span>Referensi utama</span></div><div><strong>'+saved.size+'</strong><span>Favoritmu</span></div></div></section>'
     +'<section class="math-library" aria-label="Sumber matematika"><div class="math-section-head"><div><div class="math-eyebrow">YOUR MATH LIBRARY</div><h2>Jelajahi Referensi</h2><p>Pilihan Utama berisi 10 website rekomendasi. Semua referensi akademik terbuka, dengan batas penggunaan tertentu pada layanan AI.</p></div></div>'
     +'<div class="math-filter-bar" aria-label="Filter referensi matematika">'+groups.map(g=>'<button type="button" class="math-filter '+(g.id===selected?'active':'')+'" data-act="mathFilter" data-filter="'+g.id+'" aria-pressed="'+(g.id===selected?'true':'false')+'">'+esc(g.label)+(g.id==='all'?' <span>'+MATH_RESOURCES.length+'</span>':g.id==='saved'?' <span>'+saved.size+'</span>':'')+'</button>').join('')+'</div>'
@@ -60,3 +60,6 @@ function mathPage(){
     +'<details class="math-learning-path" id="mathLearningPath"><summary><span><span class="math-eyebrow">LEARNING ROADMAP</span><b>Jalur Belajar S1 → S2 → S3</b><small>Lima tahap penguasaan materi, bukan batas kaku jenjang kuliah</small></span><span class="math-disclosure-icon" aria-hidden="true">⌄</span></summary><div class="math-path-body">'+MATH_LEARNING_PATH.map((step,i)=>'<div class="math-path-step"><span class="math-path-index">0'+(i+1)+'</span><div><h3>'+esc(step.title)+'</h3><p>'+esc(step.focus)+'</p><small>'+esc(step.sources)+'</small></div><button type="button" data-act="mathFilter" data-filter="'+step.filter+'" class="math-path-open">Lihat sumber ↗</button></div>').join('')+'</div></details>'
     +'<div class="math-disclaimer"><span aria-hidden="true">ⓘ</span><p><b>Catatan riset:</b> preprint arXiv belum tentu melalui peer review. AI dapat keliru meskipun jawabannya sama. Verifikasi teorema dan bukti melalui sumber primer, penelaahan mandiri, dan bila perlu Lean atau komputasi kasus khusus.</p></div>';
 }
+
+/* Content renderer receives app state instead of referencing private app scope. */
+globalThis.DescaMathHub={render:renderMathHub,resources:MATH_RESOURCES,groups:MATH_RESOURCE_GROUPS,roadmap:MATH_LEARNING_PATH};

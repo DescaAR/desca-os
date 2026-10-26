@@ -79,9 +79,9 @@ const navigation=run('planner',richState()).document.querySelector('#sideNav').i
 if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
 
 const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
-if(!taskUI.includes('goals-layout')||taskUI.includes('os-task-workspace')||taskUI.includes('data-view="active"'))throw new Error('Tasks route should render Goals instead of task filters');
+if(!taskUI.includes('s2-prep-card')||taskUI.includes('os-task-workspace')||taskUI.includes('data-view="active"'))throw new Error('Tasks route should render Goals instead of task filters');
 const taskRouteUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
-if(!taskRouteUI.includes('goals-layout')||taskRouteUI.includes('os-task-workspace'))throw new Error('Legacy Tasks route must redirect to Goals');
+if(!taskRouteUI.includes('s2-prep-card')||taskRouteUI.includes('os-task-workspace'))throw new Error('Legacy Tasks route must redirect to Goals');
 const goalsUI=run('goals',richState()).document.querySelector('#page').innerHTML;
 if(!goalsUI.includes('Persiapan S2')||!goalsUI.includes('s2-prep-card')||!goalsUI.includes('s2-document')||!goalsUI.includes('s2-pipeline')||goalsUI.includes('Goal Baru')||goalsUI.includes('goal-detail'))throw new Error('Goals must only contain S2 preparation');
 if(goalsUI.includes('goal-linked-tasks')||goalsUI.includes('LINKED TASKS'))throw new Error('Task list must not appear within Goals');
@@ -107,7 +107,7 @@ if(!academicTabs.includes('data-route="books"')||!academicTabs.includes('>Readin
 const academicNavigation=run('english',richState()).document.querySelector('#sideNav').innerHTML;
 if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
 const cal=run('calendar',richState()).document.querySelector('#page').innerHTML;
-if(!cal.includes('goals-layout')||cal.includes('month-calendar-card'))throw new Error('Legacy Calendar route must redirect to Goals');
+if(!cal.includes('s2-prep-card')||cal.includes('month-calendar-card'))throw new Error('Legacy Calendar route must redirect to Goals');
 
 const freshEnglish=run('english',richState()).__DESCA_TEST__.S.english.sites.find(site=>site.id==='english_volingo');
 if(freshEnglish?.url!=='https://app.volingo.my.id/')throw new Error('Volingo preset URL regression');

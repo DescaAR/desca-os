@@ -5,7 +5,7 @@ if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Err
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
-const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm};})();`);
+const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm};})();`);
 const routes=['today','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
@@ -185,5 +185,24 @@ for(const label of ['.review-hero.card{','.review-hero.card .review-number{','.r
 if(!themeCss.includes('background:#1b3569!important')||!themeCss.includes('color:#ffffff!important'))throw new Error('Daily Score central contrast is missing');
 if(wcagContrast('#ffffff','#1b3569')<4.5||wcagContrast('#dbe9ff','#1e437d')<4.5)throw new Error('Review or Daily Score hero text fails AA contrast');
 console.log('Review hero and Daily Score contrast checks OK');
+
+
+// v98: explicit "Target tanggal" inputs must be gone in every exposed workspace.
+const noDateUI=run('goals',richState()).__DESCA_TEST__;
+const targetForms=[
+  ['S2 checklist',noDateUI.s2ItemForm()],
+  ['S2 document',noDateUI.s2DocumentForm()],
+  ['Reading',noDateUI.bookForm()],
+  ['Study topic',noDateUI.studyTopicForm()],
+  ['Financial Goal',noDateUI.financeGoalForm()]
+];
+for(const [label,markup] of targetForms){
+  if(markup.includes('Target tanggal')||/name="(?:due|targetDate)"\s+type="date"/i.test(markup)||/type="date"\s+name="(?:due|targetDate)"/i.test(markup))throw new Error(label+' still exposes Target tanggal');
+}
+if(!targetForms[2][1].includes('name="targetDays"')||!targetForms[2][1].includes('Selesai dalam (hari)'))throw new Error('Reading must still support a days-based goal');
+if(noDateUI.s2DocumentSection().includes('Belum diberi target tanggal')||noDateUI.s2DocumentSection().includes('linked task'))throw new Error('S2 documents should have no date or task schedule information');
+const noDateGoals=run('goals',richState()).document.querySelector('#page').innerHTML;
+if(noDateGoals.includes('Target tanggal')||noDateGoals.includes('Belum diberi target tanggal'))throw new Error('S2 Goals still displays target date labels');
+console.log('Target tanggal removal smoke OK: S2, books, study and finance');
 
 console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders + interaction checks');

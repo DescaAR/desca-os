@@ -6159,3 +6159,58 @@ input,textarea,select{accent-color:var(--app-blue)}
   .os-goal-mini,.os-click-grid button,.btn,.metric-card{transition:none!important}
   .os-goal-mini:hover,.os-click-grid button:hover,.btn:hover,.metric-card:hover{transform:none!important}
 }
+
+
+/* v95 — One destination for Goals: S2 preparation */
+.os-s2-spotlight .os-s2-home-card{
+  width:100%;display:flex;align-items:center;gap:20px;text-align:left;
+  padding:23px 25px;min-height:137px;
+  background:linear-gradient(115deg,var(--app-surface),color-mix(in srgb,var(--app-blue) 5%,var(--app-surface)));
+  color:var(--app-text);border:1px solid var(--app-border);
+  box-shadow:var(--app-shadow-sm);border-radius:22px;
+  font:inherit;cursor:pointer;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.os-s2-home-card:hover{transform:translateY(-2px);border-color:var(--app-blue);box-shadow:var(--app-shadow)}
+.os-s2-home-card:focus-visible{outline:3px solid var(--app-cyan);outline-offset:3px}
+.os-s2-home-icon{
+  flex:none;display:grid;place-items:center;width:64px;height:64px;
+  border:1px solid var(--app-border);border-radius:17px;
+  background:var(--app-blue-soft);font-size:31px;
+}
+.os-s2-home-copy{flex:1;min-width:0}
+.os-s2-home-copy b{
+  display:block;color:var(--app-text);font-size:17px;
+  letter-spacing:-.035em;font-weight:850;line-height:1.35
+}
+.os-s2-home-copy small{display:block;color:var(--app-muted);font-size:12px;margin:5px 0 12px}
+.os-s2-home-copy .os-goal-mini-track{height:8px;max-width:800px}
+.os-s2-home-foot{display:block;margin-top:11px;color:var(--app-muted);font-size:11px;font-weight:600;line-height:1.6}
+.os-s2-home-card>strong{
+  align-self:center;flex:none;min-width:78px;text-align:right;
+  color:var(--app-blue);font-weight:850;font-size:clamp(26px,2.9vw,40px);
+  letter-spacing:-.055em;font-variant-numeric:tabular-nums;
+}
+.os-s2-metrics{margin:4px 0 22px!important}
+.s2-prep-card{border-radius:22px!important}
+.s2-prep-card .s2-overview{gap:14px}
+.s2-prep-card .s2-readiness,.s2-prep-card .s2-profile,.s2-prep-card .s2-next{
+  border-radius:17px!important;
+}
+@media(max-width:620px){
+  .os-s2-home-card{padding:18px!important;gap:12px!important;align-items:flex-start!important}
+  .os-s2-home-icon{width:48px;height:48px;font-size:25px;border-radius:13px}
+  .os-s2-home-copy b{font-size:14px}
+  .os-s2-home-copy small{font-size:11px}
+  .os-s2-home-foot{font-size:10px}
+  .os-s2-home-card>strong{font-size:26px;min-width:50px}
+}
+@media(max-width:420px){
+  .os-s2-home-card{flex-wrap:wrap!important}
+  .os-s2-home-icon{width:43px;height:43px;font-size:22px}
+  .os-s2-home-card>strong{margin-left:auto}
+  .os-s2-home-copy{flex-basis:calc(100% - 118px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .os-s2-home-card:hover{transform:none}
+}

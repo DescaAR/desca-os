@@ -5,7 +5,7 @@ if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Err
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
-const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats};})();`);
+const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm};})();`);
 const routes=['today','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
@@ -16,7 +16,7 @@ function element(){
     setAttribute(){},getAttribute(){return null},removeAttribute(){},
     querySelector(){return element()},querySelectorAll(){return []},
     addEventListener(){},removeEventListener(){},focus(){},closest(){return null},
-    appendChild(){},remove(){},click(){},scrollIntoView(){},getContext(){return null}
+    appendChild(){},append(){},remove(){},click(){},scrollIntoView(){},getContext(){return null}
   };
 }
 function richState(){
@@ -102,6 +102,28 @@ const legacyEnglish=richState();
 legacyEnglish.english={sites:[{id:'english_volingo',title:'Volingo',url:'https://volingo.my.id/',progress:75,visits:12,description:'My private notes',status:'active'}],sessions:[]};
 const migratedEnglish=run('english',legacyEnglish).__DESCA_TEST__.S.english.sites[0];
 if(migratedEnglish.url!=='https://app.volingo.my.id/'||migratedEnglish.progress!==75||migratedEnglish.visits!==12||migratedEnglish.description!=='My private notes')throw new Error('Volingo saved-link migration regression');
+
+const homeUI=run('today',richState()).document.querySelector('#page').innerHTML;
+if(!homeUI.includes('os-click-home')||!homeUI.includes('data-act="osFastStudy"')||!homeUI.includes('data-act="osFastSport"'))throw new Error('Click-first Home is missing');
+const quickForms=run('tasks',richState()).__DESCA_TEST__;
+if(!quickForms.taskForm().includes('data-field="title"')||!quickForms.taskForm().includes('data-field="date"'))throw new Error('Task tap presets are missing');
+if(!quickForms.activityForm('study').includes('data-field="duration"'))throw new Error('Activity duration chips missing');
+if(!quickForms.financeForm().includes('data-act="osFinancePreset"')||!quickForms.financeForm().includes('data-field="amount"'))throw new Error('Finance no-type amount presets missing');
+if(!quickForms.englishSessionForm().includes('data-field="skill"'))throw new Error('English skill chips missing');
+const quickStudy=run('study',richState()).__DESCA_TEST__;
+const studyBefore=quickStudy.S.activities.length;
+if(!quickStudy.osFastStudy(60)||quickStudy.S.activities.length!==studyBefore+1||quickStudy.S.activities.at(-1).duration!==60||quickStudy.S.activities.at(-1).category!=='study')throw new Error('Study one-tap logging failed');
+const quickEnglish=run('english',richState()).__DESCA_TEST__;
+const englishBefore=quickEnglish.S.english.sessions.length;
+if(!quickEnglish.osFastEnglish(30)||quickEnglish.S.english.sessions.length!==englishBefore+1||quickEnglish.S.activities.at(-1).englishSessionId!==quickEnglish.S.english.sessions.at(-1).id)throw new Error('English one-tap log must mirror activity');
+const quickSport=run('running',richState()).__DESCA_TEST__;
+const sportBefore=quickSport.S.runs.length;
+if(!quickSport.osFastSport('walking',30)||quickSport.S.runs.length!==sportBefore+1||quickSport.S.runs.at(-1).distanceKm!==0||quickSport.S.activities.at(-1).runId!==quickSport.S.runs.at(-1).id)throw new Error('Sport one-tap log invalid');
+const workData=richState();
+workData.work={jobs:[{id:'jobclick',title:'Tutor Kalkulus',status:'active',payModel:'session',rate:150000,defaultDuration:60}],payments:[],sessions:[]};
+const quickWork=run('work',workData).__DESCA_TEST__;
+if(!quickWork.osFastWork('jobclick',60)||quickWork.S.work.sessions.length!==1||quickWork.S.work.sessions[0].units!==0||quickWork.S.activities.at(-1).workSessionId!==quickWork.S.work.sessions[0].id)throw new Error('Work one-tap log should not invent units');
+if(quickWork.osFastWork('invalid',60)!==false||quickStudy.osFastStudy(123)!==false||quickSport.osFastSport('invalid',30)!==false)throw new Error('Quick log whitelist guard regression');
 const ctx=run('books',richState()),api=ctx.__DESCA_TEST__;
 if(!api)throw new Error('Test API was not exposed');
 const parsed=api.parseSmartCapture('belajar Analisis Real 3 hari lagi jam 9 90 menit');

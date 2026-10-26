@@ -3644,6 +3644,53 @@ function routineForm(r={}){const days=(r.days||[1,2,3,4,5]).map(Number);return'<
 function openRoutine(r=null){open('<div class="modal-head"><div><div class="eyebrow">LIFE LOG</div><h2 id="modalTitle">'+(r?'Edit Routine':'Routine Baru')+'</h2></div><button class="icon-btn" data-act="close">×</button></div>'+routineForm(r||{})+trashDeleteButton('routine',r,r?.title))}
 function customPomodoroForm(){return'<form id="customPomodoroForm"><div class="custom-pomo-intro"><span>◷</span><div><b>Custom Pomodoro</b><small>Tentukan ritme fokus yang paling cocok untukmu.</small></div></div><div class="form-grid"><div class="field"><label>Focus (menit)</label><input name="focus" type="number" inputmode="numeric" min="5" max="180" step="1" required value="'+S.settings.pomodoroFocus+'"></div><div class="field"><label>Short break (menit)</label><input name="short" type="number" inputmode="numeric" min="1" max="60" step="1" required value="'+S.settings.pomodoroShortBreak+'"></div><div class="field"><label>Long break (menit)</label><input name="long" type="number" inputmode="numeric" min="1" max="90" step="1" required value="'+S.settings.pomodoroLongBreak+'"></div><div class="field"><label>Siklus sebelum long break</label><input name="cycles" type="number" inputmode="numeric" min="1" max="12" step="1" required value="'+S.settings.pomodoroCycles+'"></div></div><div class="custom-pomo-preview"><span>Contoh ritme</span><b>'+S.settings.pomodoroFocus+' fokus / '+S.settings.pomodoroShortBreak+' istirahat • long break '+S.settings.pomodoroLongBreak+' menit</b></div><button class="btn btn-primary" style="margin-top:14px;width:100%">Gunakan Custom Timer</button></form>'}
 function openCustomPomodoro(){if(focus.running){toast('Pause atau akhiri timer dulu untuk mengubah durasi');return}open('<div class="modal-head"><div><div class="eyebrow">POMODORO</div><h2 id="modalTitle">Atur Custom Timer</h2></div><button class="icon-btn" data-act="close">×</button></div>'+customPomodoroForm())}
+
+/* v92 — Click-first input: explicit one-tap logs and tap-to-fill presets. */
+function osQuickChips(label,field,items){
+  return '<div class="os-choice-block"><div class="os-choice-label">'+esc(label)+'</div><div class="os-choice-row">'+items.map(v=>'<button type="button" class="os-choice" data-act="osFormChoice" data-field="'+esc(field)+'" data-value="'+esc(String(v[1]))+'">'+esc(String(v[0]))+'</button>').join('')+'</div></div>'
+}
+function osQuickCard(title,desc,items){
+  return '<article class="card os-one-tap-card"><div class="card-head"><div><div class="eyebrow">KLIK UNTUK MENCATAT</div><h2>'+esc(title)+'</h2><p>'+esc(desc)+'</p></div></div><div class="os-one-tap-list">'+items+'</div><p class="os-one-tap-note">Klik hanya untuk aktivitas yang sudah dilakukan. Setiap klik langsung tersimpan dan dapat dibatalkan dengan Undo.</p></article>'
+}
+function osFastStudy(minutes){
+  const m=Number(minutes);if(![30,60,90].includes(m))return false;
+  const a={id:uid('a'),date:today(),startTime:localTime(),title:'Belajar mandiri',category:'study',duration:m,source:'quick-click',completed:true,planned:false,rhythm:'nonroutine',obligation:'important',notes:'Dicatat melalui pilihan cepat'};
+  S.activities.push(a);save('Quick study '+m+'m');toast('Belajar '+m+' menit tercatat');render();return true
+}
+function osFastEnglish(minutes){
+  const m=Number(minutes);if(![15,30,60].includes(m))return false;
+  const site=S.english.sites.find(x=>x.id==='english_volingo')||S.english.sites.find(x=>/^volingo$/i.test(x.title||''));
+  const id=uid('engsess'),now=localTime(),title=site?'Volingo practice':'English practice';
+  S.english.sessions.push({id,date:today(),time:now,duration:m,siteId:site?.id||'',siteName:site?.title||'',skill:'General',title,notes:'Dicatat melalui pilihan cepat',createdAt:new Date().toISOString()});
+  S.activities.push({id:uid('a'),date:today(),startTime:now,title:'English · '+title,category:'english',duration:m,source:'english',completed:true,englishSessionId:id,rhythm:'nonroutine',obligation:'important',planned:false,notes:'Quick log'});
+  save('Quick English '+m+'m');toast('English '+m+' menit tercatat');render();return true
+}
+function osFastSport(sport,minutes){
+  const m=Number(minutes);
+  if(!['walking','running','workout','gym','cycling','yoga'].includes(sport)||![20,30,45,60].includes(m))return false;
+  const id=uid('sport'),title=sportLabel(sport),now=localTime(),at=new Date().toISOString();
+  S.runs.push({id,title,sport,date:today(),startTime:now,type:sport==='running'?'easy':'other',distanceKm:0,durationSec:m*60,avgHR:0,maxHR:0,cadence:0,strideCm:0,elevationGain:0,elevationLoss:0,powerW:0,calories:0,rpe:5,surface:'',shoe:'',temperatureC:null,weather:'',splits:[],notes:'Quick log, jarak belum dicatat',createdAt:at,updatedAt:at});
+  S.activities.push({id:uid('a'),date:today(),startTime:now,title:'Olahraga · '+title,category:'health',duration:m,source:'sport',completed:true,runId:id,sport,rhythm:'nonroutine',obligation:'important',planned:false,notes:'Durasi '+m+' menit · jarak tidak dicatat'});
+  save('Quick sport '+sport);toast(title+' '+m+' menit tercatat');render();return true
+}
+function osFastWork(workId,minutes){
+  const job=workJob(workId),m=Number(minutes);
+  if(!job||job.status!=='active'||![30,60,90].includes(m))return false;
+  const id=uid('ws'),at=new Date().toISOString();
+  S.work.sessions.push({id,workId:job.id,date:today(),duration:m,units:0,title:job.title,notes:'Quick log · sesuaikan unit melalui Edit jika perlu',createdAt:at,updatedAt:at});
+  S.activities.push({id:uid('a'),date:today(),startTime:localTime(),title:'Work · '+job.title,category:'work',duration:m,goalId:null,source:'work',completed:true,workSessionId:id,workId:job.id,rhythm:'nonroutine',obligation:'important',planned:false,notes:'Quick log'});
+  save('Quick work '+job.title);toast(job.title+' · '+m+' menit tercatat');render();return true
+}
+function osQuickHomeActions(){
+  return '<article class="card os-click-home"><div class="card-head"><div><div class="eyebrow">CLICK-FIRST MODE</div><h2>Catat aktivitas tanpa mengetik</h2><p>Pilih kegiatan yang sudah selesai. Desca OS langsung mengisi tanggal, kategori dan durasi.</p></div></div><div class="os-click-grid">'
+    +'<button data-act="osFastStudy" data-minutes="60"><b>📚 Belajar</b><span>+60 menit</span></button>'
+    +'<button data-act="osFastEnglish" data-minutes="30"><b>🌍 English</b><span>+30 menit</span></button>'
+    +'<button data-act="osFastSport" data-sport="walking" data-minutes="30"><b>🚶 Jalan kaki</b><span>+30 menit</span></button>'
+    +'<button data-act="osExpenseQuick"><b>↘ Pengeluaran</b><span>Pilih nominal</span></button>'
+    +'<button data-act="addTask"><b>＋ Task</b><span>Pilih template</span></button>'
+    +'</div><p class="os-one-tap-note">Aktivitas dicatat saat diklik, bukan dianggap berjalan otomatis.</p></article>'
+}
+
 function quick(type='task',c=contextualCategory()){open('<div class="modal-head"><div><div class="eyebrow">UNIVERSAL CAPTURE</div><h2>Quick Add</h2><p class="modal-subtitle">One input first. Detailed forms remain available below.</p></div><button class="icon-btn" data-act="close">×</button></div>'+universalCaptureBox()+'<div class="tabs"><button class="tab '+(type==='task'?'active':'')+'" data-act="qtab" data-tab="task">Task</button><button class="tab '+(type==='activity'?'active':'')+'" data-act="qtab" data-tab="activity">Activity</button><button class="tab '+(type==='routine'?'active':'')+'" data-act="qtab" data-tab="routine">Routine</button></div><div id="qform">'+(type==='task'?taskForm({category:c,date:today()}):type==='routine'?routineForm({category:c}):activityForm(c))+'</div>')}
 function toggle(id){let x=S.tasks.find(t=>t.id===id);if(!x)return;if(x.status==='done'){x.status='planned';x.recurringSpawned=false}else{x.status='done';spawnRecurringTask(x)}const s2=[...(S.s2Prep?.checklist||[]),...(S.s2Prep?.documents||[])].find(v=>v.taskId===id);if(s2)s2.done=x.status==='done';refreshGoalProgress();save();if(googleReady()&&x.googleTaskSync)syncTaskGoogle(x);toast(x.status==='done'?'Task selesai · +'+taskXP(x)+' XP otomatis':'Task dibuka kembali · XP disesuaikan otomatis');render()}
 function setPomodoroPreset(p){if(focus.running)return;if(route==='today')todayMoreOpen=true;if(focus.phase==='focus'&&focus.startedAt&&focus.left<focus.total)closePomodoroDraft({completed:false,saveReason:'Save partial Pomodoro'});focus.startedAt=null;focus.activityId=null;focus.lastDraftMinute=-1;if(p==='custom'){openCustomPomodoro();return}S.settings.pomodoroPreset=p;if(p==='classic'){S.settings.pomodoroFocus=25;S.settings.pomodoroShortBreak=5;S.settings.pomodoroLongBreak=15}else if(p==='deep'){S.settings.pomodoroFocus=50;S.settings.pomodoroShortBreak=10;S.settings.pomodoroLongBreak=20}syncPomodoro();focus.phase='focus';focus.cycle=1;focus.startedAt=null;focus.total=phaseMinutes()*60;focus.left=focus.total;save();render()}
@@ -3712,6 +3759,22 @@ document.addEventListener('click',e=>{
   if(a==='deleteEnglishSession'){const sess=S.english.sessions.find(v=>v.id===id);if(sess&&confirm('Hapus sesi belajar ini dari histori?')){S.english.sessions=S.english.sessions.filter(v=>v.id!==id);S.activities=S.activities.filter(v=>v.englishSessionId!==id);save('Delete English session');render()}}
   if(a==='englishSettings')openEnglishSettings();
   if(a==='newWorkJob')openWorkJob();if(a==='editWorkJob'){const v=workJob(id);if(v)openWorkJob(v)}if(a==='workTemplate'){const t=WORK_TEMPLATES.find(v=>v.key===x.dataset.template);if(t)openWorkJob(null,{...t,startDate:today(),status:'active',defaultDuration:60})}if(a==='workPayment')openWorkPayment(null,x.dataset.workId||'');if(a==='editWorkPayment'){const v=S.work.payments.find(z=>z.id===id);if(v)openWorkPayment(v)}if(a==='workSession')openWorkSession(null,x.dataset.workId||'');if(a==='editWorkSession'){const v=S.work.sessions.find(z=>z.id===id);if(v)openWorkSession(v)}if(a==='addWorkTask'){quick('task');requestAnimationFrame(()=>{const f=$('#taskForm');if(f)f.elements.category.value='work'})}
+  if(a==='osFormChoice'){
+    const field=x.dataset.field,value=x.dataset.value;
+    if(['title','duration','estimate','date','skill','amount','units'].includes(field)){
+      const form=x.closest('form'),el=form?.elements?.namedItem?.(field)||form?.querySelector?.('[name="'+field+'"]');
+      if(el){el.value=value;form.querySelectorAll('.os-choice[data-field="'+field+'"]').forEach(b=>b.classList.toggle('active',b===x));el.dispatchEvent?.(new Event('input',{bubbles:true}));}
+    }
+    return
+  }
+  if(a==='osFinancePreset'){
+    const cfg={makan:{title:'Makan',type:'expense',category:'Makanan',bucket:'needs'},transport:{title:'Transportasi',type:'expense',category:'Transportasi',bucket:'needs'},belanja:{title:'Belanja',type:'expense',category:'Belanja',bucket:'wants'},honor:{title:'Honor pekerjaan',type:'income',category:'Pekerjaan',bucket:'savings'},transfer:{title:'Transfer masuk',type:'income',category:'Transfer',bucket:'savings'}}[x.dataset.preset];
+    const form=x.closest('form');if(cfg&&form){for(const [key,val] of Object.entries(cfg)){const el=form.elements?.namedItem?.(key)||form.querySelector('[name="'+key+'"]');if(el)el.value=val}form.querySelectorAll('[data-act="osFinancePreset"]').forEach(b=>b.classList.toggle('active',b===x));}return
+  }
+  if(a==='osFastStudy'){osFastStudy(x.dataset.minutes);return}
+  if(a==='osFastEnglish'){osFastEnglish(x.dataset.minutes);return}
+  if(a==='osFastSport'){osFastSport(x.dataset.sport,x.dataset.minutes);return}
+  if(a==='osFastWork'){osFastWork(x.dataset.workId,x.dataset.minutes);return}
   if(a==='osExpenseQuick')openFinance({type:'expense'});if(a==='osIncomeQuick')openFinance({type:'income'});if(a==='newFinance')openFinance();
   if(a==='editFinance'){let v=S.finance.find(z=>z.id===id);if(v)openFinance(v)}
   if(a==='newBudget')openBudget();

@@ -6501,3 +6501,174 @@ html[data-theme="light"] .english-command p{
     font-size:11px!important;
   }
 }
+
+
+/* ================================================================
+   v97 — Contrast corrections from real light-mode screenshots.
+   The Review summary is intentionally a dark panel (not the
+   generic .card white background) and score-ring text must sit
+   on a dark centre, rather than disappearing against white.
+   ================================================================ */
+.review-hero.card{
+  background:
+    radial-gradient(circle at 88% 10%,rgba(84,155,255,.24),transparent 37%),
+    linear-gradient(120deg,#112953 0%,#1e437d 60%,#285da1 100%)!important;
+  color:#ffffff!important;
+  border:1px solid #2e5797!important;
+  border-radius:24px!important;
+  box-shadow:0 15px 36px rgba(16,43,94,.16)!important;
+  overflow:hidden;
+  padding:clamp(23px,2.6vw,34px)!important;
+}
+.review-hero.card .grid.two-col{
+  align-items:center!important;
+  grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)!important;
+  gap:26px!important;
+}
+.review-hero.card .eyebrow,
+.review-hero.card .eyebrow[style]{
+  color:#a1eaff!important;
+  font-size:11px!important;
+  font-weight:850!important;
+  letter-spacing:.12em!important;
+}
+.review-hero.card .review-number{
+  color:#ffffff!important;
+  font-size:clamp(30px,3.3vw,48px)!important;
+  line-height:1.14!important;
+  letter-spacing:-.05em!important;
+  margin:10px 0 8px!important;
+  font-weight:850!important;
+}
+.review-hero.card .muted{
+  color:#d5e5ff!important;
+  font-size:12.5px!important;
+  font-weight:600!important;
+  line-height:1.6!important;
+}
+.review-hero.card .stat-strip{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:11px!important;
+  width:100%;
+  overflow:visible!important;
+  align-items:stretch!important;
+}
+.review-hero.card .stat-chip{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  gap:6px!important;
+  min-width:0!important;
+  min-height:81px!important;
+  padding:15px 17px!important;
+  border:1px solid rgba(255,255,255,.21)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.095)!important;
+  color:#ffffff!important;
+}
+.review-hero.card .stat-chip b,
+.review-hero.card .stat-chip strong{
+  color:#ffffff!important;
+  font-size:clamp(19px,2vw,25px)!important;
+  line-height:1.12!important;
+  font-weight:850!important;
+  letter-spacing:-.035em!important;
+  font-variant-numeric:tabular-nums;
+}
+.review-hero.card .stat-chip span,
+.review-hero.card .stat-chip small{
+  display:block!important;
+  margin:0!important;
+  color:#dbe9ff!important;
+  font-size:11.5px!important;
+  line-height:1.5!important;
+  font-weight:620!important;
+}
+.hero-greeting.dashboard-hero .score-ring{
+  flex:0 0 58px!important;
+  width:58px!important;
+  height:58px!important;
+  background:conic-gradient(#84e7fb var(--score),rgba(255,255,255,.25) 0)!important;
+  color:#fff!important;
+  isolation:isolate;
+}
+.hero-greeting.dashboard-hero .score-ring::after{
+  background:#1b3569!important;
+  inset:6px!important;
+  z-index:0!important;
+}
+.hero-greeting.dashboard-hero .score-ring b{
+  display:grid!important;
+  place-items:center!important;
+  position:relative!important;
+  z-index:2!important;
+  color:#ffffff!important;
+  font-size:19px!important;
+  font-weight:850!important;
+  letter-spacing:-.045em!important;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 1px 3px rgba(0,0,0,.14);
+}
+.hero-greeting.dashboard-hero .daily-score{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  min-width:214px!important;
+  flex-shrink:0!important;
+  background:rgba(255,255,255,.10)!important;
+  color:#ffffff!important;
+}
+.hero-greeting.dashboard-hero .score-copy{
+  flex:1;min-width:0;
+}
+.hero-greeting.dashboard-hero .score-copy b{
+  display:block!important;
+  color:#ffffff!important;
+  font-size:12px!important;
+}
+.hero-greeting.dashboard-hero .score-copy span{
+  color:#deebff!important;
+  font-size:11px!important;
+  line-height:1.55!important;
+}
+.hero-greeting.dashboard-hero .dashboard-customize{
+  position:absolute!important;
+  top:19px!important;
+  right:19px!important;
+  z-index:4!important;
+  align-self:auto!important;
+  min-height:36px!important;
+  padding:8px 12px!important;
+  border:1px solid rgba(255,255,255,.27)!important;
+  background:rgba(255,255,255,.13)!important;
+  color:#ffffff!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(8px);
+  font-size:11.5px!important;
+}
+.hero-greeting.dashboard-hero .dashboard-customize:hover{
+  color:#fff!important;
+  background:rgba(255,255,255,.23)!important;
+  border-color:rgba(255,255,255,.45)!important;
+}
+@media(max-width:1100px){
+  .review-hero.card .grid.two-col{grid-template-columns:1fr!important;gap:20px!important}
+  .hero-greeting.dashboard-hero{padding-right:24px!important;padding-top:67px!important}
+}
+@media(max-width:600px){
+  .review-hero.card{padding:21px!important;border-radius:19px!important}
+  .review-hero.card .stat-strip{gap:8px!important}
+  .review-hero.card .stat-chip{min-height:75px!important;padding:12px!important}
+  .review-hero.card .stat-chip b{font-size:20px!important}
+  .review-hero.card .stat-chip span{font-size:11px!important}
+  .hero-greeting.dashboard-hero .daily-score{
+    width:100%!important;
+    min-width:0!important;
+    justify-content:flex-start!important;
+  }
+  .hero-greeting.dashboard-hero .dashboard-customize{
+    right:15px!important;
+    top:15px!important;
+  }
+}

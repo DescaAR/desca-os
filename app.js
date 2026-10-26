@@ -1115,7 +1115,11 @@ function autoOrganizeInbox(){
   if(moved){save('Smart Inbox Zero');replanRemainingDay(true)}toast(moved?moved+' inbox item(s) organized':'No high-confidence inbox items yet');render()
 }
 function dayClosureData(d=today()){
-  const tasks=S.tasks.filter(t=>!t.inbox&&(t.completedDate===d||(!t.completedDate&&t.date===d))),done=tasks.filter(t=>t.status==='done'),open=tasks.filter(t=>t.status!=='done'),acts=S.activities.filter(a=>a.date===d),productive=acts.reduce((n,a)=>n+(+a.duration||0),0),cats=Object.keys(C).map(k=>({k,m:acts.filter(a=>a.category===k).reduce((n,a)=>n+(+a.duration||0)})).sort((a,b)=>b.m-a.m);
+  const tasks=S.tasks.filter(t=>!t.inbox&&(t.completedDate===d||(!t.completedDate&&t.date===d)));
+  const done=tasks.filter(t=>t.status==='done'),open=tasks.filter(t=>t.status!=='done');
+  const acts=S.activities.filter(a=>a.date===d);
+  const productive=acts.reduce((n,a)=>n+(+a.duration||0),0);
+  const cats=Object.keys(C).map(k=>({k,m:acts.filter(a=>a.category===k).reduce((n,a)=>n+(+a.duration||0),0)})).sort((a,b)=>b.m-a.m);
   return{d,tasks,done,open,productive,top:cats[0],next:[],score:stats(d).score}
 }
 
@@ -2154,7 +2158,17 @@ function minimizeFocus(){focus.zen=false;updateFocusOverlay();exitNativeFullscre
 function phaseMinutes(){return focus.phase==='focus'?focus.work:focus.phase==='longBreak'?focus.long:focus.short}
 function syncPomodoro(){focus.work=clamp(+S.settings.pomodoroFocus||25,5,180);focus.short=clamp(+S.settings.pomodoroShortBreak||5,1,60);focus.long=clamp(+S.settings.pomodoroLongBreak||15,1,90);if(!focus.running){focus.total=phaseMinutes()*60;focus.left=focus.total}}
 
-function stats(d=today()){const A=S.activities.filter(x=>x.date===d),T=S.tasks.filter(x=>x.completedDate===d||(!x.completedDate&&x.date===d)),D=T.filter(x=>x.status==='done'),productive=A.reduce((a,x)=>a+(+x.duration||0),completion=T.length?Math.round(D.length/T.length*100):0,focusRatio=clamp(productive/S.profile.dailyFocusTarget,0,1),taskRatio=T.length?D.length/T.length:null,score=Math.round((taskRatio===null?focusRatio:(taskRatio*.5+focusRatio*.5))*100);return{A,T,D,productive,completion,score,xp:A.reduce((a,x)=>a+activityXP(x),0)+D.reduce((a,x)=>a+taskXP(x),0)}}
+function stats(d=today()){
+  const A=S.activities.filter(x=>x.date===d);
+  const T=S.tasks.filter(x=>x.completedDate===d||(!x.completedDate&&x.date===d));
+  const D=T.filter(x=>x.status==='done');
+  const productive=A.reduce((a,x)=>a+(+x.duration||0),0);
+  const completion=T.length?Math.round(D.length/T.length*100):0;
+  const focusRatio=clamp(productive/S.profile.dailyFocusTarget,0,1);
+  const taskRatio=T.length?D.length/T.length:null;
+  const score=Math.round((taskRatio===null?focusRatio:(taskRatio*.5+focusRatio*.5))*100);
+  return{A,T,D,productive,completion,score,xp:A.reduce((a,x)=>a+activityXP(x),0)+D.reduce((a,x)=>a+taskXP(x),0)}
+}
 
 function streak(){let n=0;for(let i=0;i<365;i++){let s=stats(add(today(),-i));if(s.productive||s.D.length)n++;else break}return n}
 function learningActivities(){return S.activities.filter(x=>['study','research','english'].includes(x.category)&&/^\d{2}:\d{2}$/.test(x.startTime||'')&&x.date>=add(today(),-89))}

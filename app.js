@@ -2444,7 +2444,7 @@ function renderFocusCockpit(){
 function homeGoalsSpotlight(){
   const p=S.s2Prep||seed().s2Prep,pr=s2Progress(),doc=s2DocumentProgress();
   return'<section class="os-goal-spotlight os-s2-spotlight"><div class="os-section-heading"><div><div class="eyebrow">MASTER\'S PREPARATION</div><h2>Postgraduate Preparation</h2><p>One clear objective: pursuing a postgraduate degree.</p></div><button type="button" class="btn btn-secondary" data-route="goals">View Postgraduate Preparation ↗</button></div>'
-    +'<button type="button" class="os-s2-home-card" data-route="goals"><span class="os-s2-home-icon">🎓</span><span class="os-s2-home-copy"><b>Preparing for a Mathematics Master's</b><small>Research focus: '+esc(p.focus||'Define your intended field of study')+'</small><span class="os-goal-mini-track"><i style="width:'+pr.pct+'%"></i></span><span class="os-s2-home-foot">Documents '+doc.done+'/'+doc.total+' ready · '+(p.universities||[]).length+' universities · '+(p.scholarships||[]).length+' scholarships</span></span><strong>'+pr.pct+'%</strong></button></section>'
+    +'<button type="button" class="os-s2-home-card" data-route="goals"><span class="os-s2-home-icon">🎓</span><span class="os-s2-home-copy"><b>Preparing for a Mathematics Master’s</b><small>Research focus: '+esc(p.focus||'Define your intended field of study')+'</small><span class="os-goal-mini-track"><i style="width:'+pr.pct+'%"></i></span><span class="os-s2-home-foot">Documents '+doc.done+'/'+doc.total+' ready · '+(p.universities||[]).length+' universities · '+(p.scholarships||[]).length+' scholarships</span></span><strong>'+pr.pct+'%</strong></button></section>'
 }
 function todayPage(){
   syncGameRewards();

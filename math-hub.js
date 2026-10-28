@@ -43,7 +43,7 @@ const MATH_RESOURCES=[
 let mathFilter='featured';
 
 function renderMathHub({S,esc,head,mathFilter}){
-  const saved=new Set(Array.isArray(S.settings.mathFavouriteses)?S.settings.mathFavouriteses:[]);
+  const saved=new Set(Array.isArray(S.settings.mathFavorites)?S.settings.mathFavorites:[]);
   const groups=MATH_RESOURCE_GROUPS;
   const selected=groups.some(x=>x.id===mathFilter)?mathFilter:'featured';
   const shown=MATH_RESOURCES.filter(x=>selected==='featured'?x.featured:selected==='all'?true:selected==='saved'?saved.has(x.id):x.group===selected);

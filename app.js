@@ -1962,7 +1962,7 @@ async function googleSyncAll({silent=false}={}){
 function googleStatusLabel(){return googleReady()?(G.busy?'SYNCING':'CONNECTED'):'NOT CONNECTED'}
 function googleTaskListOptions(){return G.taskLists.length?G.taskLists.map(x=>'<option value="'+esc(x.id)+'" '+(S.settings.googleTaskListId===x.id?'selected':'')+'>'+esc(x.title||'Untitled')+'</option>').join(''):'<option value="'+esc(S.settings.googleTaskListId||'')+'">'+esc(S.settings.googleTaskListTitle||'Connect Google first')+'</option>'}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-const BUILD_NUMBER=104;
+const BUILD_NUMBER=105;
 let vaultUnlockedSession=false;
 function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
 function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}

@@ -108,6 +108,18 @@ const libList=hub.catalog(libraryCtx.__DESCA_TEST__.S);
 if(libList.length<40)throw Error('Unified catalog did not include enough existing sources');
 if(!libList.some(x=>x.category==='research')||!libList.some(x=>x.category==='english'))throw Error('Research and English categories missing');
 if(hub.filtered(libraryCtx.__DESCA_TEST__.S,libList,'math').length<6)throw Error('Math filter missing content');
+
+if(!libraryHtml.includes('ll-pathway-grid')||!libraryHtml.includes('data-sort="alphabetical"'))throw Error('Academic pathways and sorting controls must be visible');
+const postgraduate=hub.filtered(libraryCtx.__DESCA_TEST__.S,libList,'advanced');
+if(!postgraduate.some(x=>x.id==='math:hatcher')||!postgraduate.some(x=>x.category==='research'))throw Error('Advanced Study must include postgraduate mathematics and research');
+const alphabetic=hub.filtered(libraryCtx.__DESCA_TEST__.S,libList,'all','','alphabetical');
+if(alphabetic.some((x,i)=>i>0&&alphabetic[i-1].title.localeCompare(x.title,'en',{sensitivity:'base'})>0))throw Error('Alphabetical sorting is inconsistent');
+const recentLibraryState=richState();
+recentLibraryState.settings.quickResourceRecent=['sat:khan'];
+if(hub.filtered(recentLibraryState,hub.catalog(recentLibraryState),'recent').some(x=>x.id!=='sat:khan'))throw Error('Recently Opened must show only accessed resources');
+if(!hub.categories.some(c=>c.id==='advanced')||!hub.categories.some(c=>c.id==='recent'))throw Error('Advanced and recent filters missing');
+const workerScript=fs.readFileSync('sw.js','utf8');
+if(!workerScript.includes("url.origin!==self.location.origin")||!workerScript.includes("if(navigation)return")||!workerScript.includes("x.startsWith('desca-os-v')"))throw Error('Service worker security and offline fallback safeguards missing');
 if(!hub.filtered(libraryCtx.__DESCA_TEST__.S,libList,'all','Kraepelin').length)throw Error('Library search should find psychometric topics');
 const one=libList.find(x=>x.id==='sat:khan');
 if(!one)throw Error('Khan Academy is missing');

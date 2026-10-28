@@ -54,6 +54,7 @@ try{
   await visit('today');
   await page.locator('.os-shortcut-library').waitFor();
   await noRenderError();
+  await page.waitForTimeout(450); // Allow any legacy entrance animation to settle before measuring layout.
   const bounds=await page.evaluate(()=>({viewport:document.documentElement.clientWidth,full:document.documentElement.scrollWidth}));
   if(bounds.full>bounds.viewport+5){
     const offenders=await page.evaluate(()=>Array.from(document.querySelectorAll('body *')).map(el=>({tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,105):'',width:Math.round(el.getBoundingClientRect().width),right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left)})).filter(x=>x.right>document.documentElement.clientWidth+10&&x.left>=0).sort((a,b)=>b.right-a.right).slice(0,16));

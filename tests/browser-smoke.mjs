@@ -18,6 +18,27 @@ try{
   assert.ok((await page.locator('#page').innerText()).includes('Postgraduate Preparation'),'Home must retain the S2 goal');
   await noRenderError();
 
+  await visit('goals');
+  const metricTitles=await page.locator('.os-s2-metrics').innerText();
+  for(const label of ['Postgraduate Readiness','Documents prepared','Prospective Universities','Programmes under consideration','Scholarships','Funding opportunities under review']){
+    assert.ok(metricTitles.includes(label),'Untranslated Goals metric or description: '+label);
+  }
+  for(const leftover of ['Kesiapan S2','Dokumen ready','Program ditinjau','Pendanaan ditinjau']){
+    assert.ok(!metricTitles.includes(leftover),'Legacy Indonesian Goals copy is still visible: '+leftover);
+  }
+  assert.equal(await page.locator('.os-s2-metrics').count(),1,'The postgraduate overview must remain visible');
+  for(const [action,expected] of [
+    ['newS2University','University / Programme'],
+    ['newS2Scholarship','Scholarship'],
+    ['editS2Prep','Research Specialisation'],
+    ['newS2Document','Identification']
+  ]){
+    await page.evaluate(name=>{const trigger=document.createElement('button');trigger.dataset.act=name;document.body.appendChild(trigger);trigger.click();trigger.remove()},action);
+    const copy=await page.locator('#modal').textContent();
+    assert.ok(copy.includes(expected),'Postgraduate form is not consistently English: '+action+' '+JSON.stringify(copy?.slice(0,450)));
+    await page.evaluate(()=>document.querySelector('#modal [data-act="close"]')?.click());
+  }
+
   await visit('library');
   await page.locator('.ll-hero').waitFor();
   const libraryCount=await page.locator('.ll-resource-card').count();
@@ -111,14 +132,19 @@ try{
 
   // Language-quality audit of actually rendered UI; do not alter user-generated data.
   await page.setViewportSize({width:1280,height:800});
-  const languageRoutes=['today','goals','library','math','english','sat','psikotes','academic','study','research','projects','dmath','books','life','quran','running','health','work','finance','journal','settings','reviews','progress'];
-  const indoUI=/\b(?:belajar|sumber|halaman|semua|tambah|simpan|hapus|pilih|buka|latihan|pembahasan|lanjutkan|mulai|selesai|belum|sudah|rencana|persiapan|tugas|kegiatan|berkas|waktu|hari|bulan|minggu|nilai|catatan|keuangan|penghasilan|pemasukan|pengeluaran|tercatat|kembali|ketika|dengan|untuk|yang|dari|tanpa|atau|juga|jika|bukan|dalam|hanya|sekarang|kamu|kalian|sebaiknya|membaca|tidak|kebutuhan|diisi|berikutnya|diperbarui|tersimpan|kosong|lokasi|kota|wajib|sholat|ibadah)\b/i;
+  const languageRoutes=['today','goals','library','math','english','sat','psikotes','academic','study','research','projects','dmath','books','life','quran','running','health','work','finance','journal','settings','reviews','progress','timeline','analytics','notifications','recovery','vault'];
+  const indoUI=/\b(?:belajar|sumber|halaman|semua|tambah|simpan|hapus|pilih|buka|latihan|pembahasan|lanjutkan|mulai|selesai|belum|sudah|rencana|persiapan|tugas|kegiatan|berkas|waktu|hari|bulan|minggu|nilai|catatan|keuangan|penghasilan|pemasukan|pengeluaran|tercatat|kembali|ketika|dengan|untuk|yang|dari|tanpa|atau|juga|jika|bukan|dalam|hanya|sekarang|kamu|kalian|sebaiknya|membaca|tidak|kebutuhan|diisi|berikutnya|diperbarui|tersimpan|kosong|lokasi|kota|wajib|sholat|ibadah|kesiapan|kampus|ditinjau|pendanaan|dokumen|kerjakan|terkumpul|contoh|perencanaan|penting|istirahat|pembayaran|keberhasilan|kegagalan|langkah|mendukung|pemulihan|notifikasi|terbaru|pencatatan|pembaruan|berikutnya|pengaturan|menyimpan|memuat|menghapus|penelitian|universitas|persyaratan|pendaftaran|menggunakan|dihitung|dibutuhkan|dijadwalkan|spontan|berdasarkan|manfaat)\b/i;
   let languageFindings=0;
   for(const pageRoute of languageRoutes){
     await visit(pageRoute);
     const screen=await page.locator('#page').innerText();
     const lines=screen.split('\n').map(v=>v.trim()).filter(Boolean);
-    const matches=lines.filter(v=>indoUI.test(v)&&!(/^https?:\/\//.test(v))&&v.length<260);
+    const metadata=await page.locator('#page').evaluate(root=>Array.from(root.querySelectorAll('[aria-label],[title],[placeholder],option')).flatMap(el=>[
+      el.getAttribute('aria-label'),el.getAttribute('title'),el.getAttribute('placeholder'),
+      el.tagName==='OPTION'?el.textContent:null
+    ].filter(Boolean).map(v=>v.trim())).filter(Boolean));
+    const properNames=new Set(['Beasiswa Unggulan','Penyisihan Calculus Competition - GAMES UHO 2026','Kementerian Agama Republik Indonesia']);
+    const matches=[...lines,...metadata].filter(v=>indoUI.test(v)&&!properNames.has(v)&&!(/^https?:\/\//.test(v))&&v.length<260);
     if(matches.length){
       languageFindings+=matches.length;
       console.log('LANGUAGE_AUDIT '+pageRoute+' '+matches.length+' matches: '+JSON.stringify([...new Set(matches)].slice(0,22)));
@@ -136,7 +162,7 @@ try{
     ['quran',['newQuranEntry','logQuranSession']],
     ['running',['newSport','sportsSettings','newRun']],
     ['work',['newWorkJob','workSession','workPayment']],
-    ['finance',['newFinance','newBudget','newDebt','newFinanceGoal']],
+    ['finance',['newFinance','newBudget','newDebt','newFinanceGoal','newInvestment']],
     ['dmath',['newDMathContent']],
     ['settings',['customPomodoro']]
   ];
@@ -145,7 +171,7 @@ try{
     await visit(pageRoute);
     for(const action of actions){
       await page.evaluate(name=>{const trigger=document.createElement('button');trigger.dataset.act=name;document.body.appendChild(trigger);trigger.click();trigger.remove()},action);
-      const copy=await page.locator('#modal').evaluate(el=>[el.innerText,...Array.from(el.querySelectorAll('input,textarea,select')).map(x=>x.getAttribute('placeholder')||'')].join('\n')).catch(()=>'');
+      const copy=await page.locator('#modal').evaluate(el=>[el.innerText,...Array.from(el.querySelectorAll('input,textarea,select,option,button,[title],[aria-label]')).flatMap(x=>[x.getAttribute('placeholder'),x.getAttribute('title'),x.getAttribute('aria-label'),x.tagName==='OPTION'?x.textContent:null].filter(Boolean))].join('\n')).catch(()=>'');
       const matched=copy.split('\n').map(v=>v.trim()).filter(v=>indoUI.test(v) && v.length<260);
       if(matched.length){modalLanguageFindings+=matched.length;console.log('MODAL_LANGUAGE_AUDIT '+pageRoute+'/'+action+' '+JSON.stringify([...new Set(matched)].slice(0,18)))}
       await page.evaluate(()=>{const backdrop=document.querySelector('#modalBackdrop');if(backdrop&&!backdrop.hidden){const close=document.querySelector('#modal [data-act="close"]');if(close)close.click();else backdrop.click();}});

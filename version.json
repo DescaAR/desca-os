@@ -1,7 +1,7 @@
 {
   "app": "Desca OS",
-  "build": 107,
-  "version": "107",
+  "build": 108,
+  "version": "108",
   "released": "2026-10-28",
-  "notes": "Learning pathways and resource sorting, accessible interface refinements, English UI improvements, clearer documentation, and safer offline caching"
+  "notes": "Comprehensive English interface audit across Goals, Home, Forms, Focus, Finance and Work; accessibility copy and UI language regression safeguards"
 }

@@ -2,7 +2,21 @@
 
 **Track. Improve. Grow.**
 
-Desca OS adalah personal productivity operating system yang menghubungkan tujuan, task, focus session, activity log, progress, review, dan analytics dalam satu alur data.
+**Desca OS adalah Learning Library dan personal workspace**: kumpulan sumber belajar, latihan, serta referensi riset di satu tempat, dilengkapi persiapan S2, pencatatan aktivitas, dan analisis progres.
+
+## Learning Library (v103)
+
+Buka `/#library` untuk mengakses sumber yang sebelumnya tersebar di Math, English, SAT, dan Psikotes. Navigasi utama tetap lima hub: Home, Goals, Learning, Lifestyle, Finance & Work. Di dalam Learning tersedia kategori Matematika, Bahasa Inggris, SAT, Psikotes, serta Riset & AI.
+
+- Sumber bawaan disusun otomatis dari katalog tiap bidang, bukan input manual berulang.
+- Cari materi langsung atau filter kategori sekali klik.
+- Favorit dari Math, SAT, dan Psikotes tetap terhubung ke Learning Library.
+- Riwayat tautan yang dibuka terhubung ke Quick Access di Home.
+- Pengguna dapat menyimpan dan menghapus tautan pribadi; data disimpan bersama state Desca OS.
+- Halaman khusus University, Study, Research, Projects, DMath, English, Math, SAT, Psikotes, dan Reading tetap tersedia tanpa menambah menu utama.
+- Tidak ada kewajiban membuat tugas, kalender, jadwal, atau target tanggal.
+
+Fitur lama yang masih dijelaskan di bagian dokumentasi berikut merupakan informasi implementasi sebelumnya; sejumlah entry point legacy sudah tidak ada pada navigasi utama.
 
 ## Fitur Utama
 

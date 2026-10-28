@@ -37,8 +37,8 @@ function surface(record){
     const row=document.createElement('div');row.className='desca-runtime-guard__row';
     const icon=document.createElement('span');icon.className='desca-runtime-guard__icon';icon.setAttribute('aria-hidden','true');icon.textContent='!';
     const copy=document.createElement('div');copy.className='desca-runtime-guard__copy';
-    const title=document.createElement('b');title.textContent='Desca OS mendeteksi error yang tidak terduga.';
-    const hint=document.createElement('small');hint.textContent='Data lokal tidak dihapus. Kamu bisa membuka Recovery atau memuat ulang aplikasi.';
+    const title=document.createElement('b');title.textContent='Desca OS encountered an unexpected error.';
+    const hint=document.createElement('small');hint.textContent='Your local records remain intact. Open Recovery or reload the application.';
     const details=document.createElement('details'),summary=document.createElement('summary'),code=document.createElement('code');summary.textContent='Detail teknis';code.textContent=record.message;details.append(summary,code);copy.append(title,hint,details);
     row.append(icon,copy);el.append(row);
     const actions=document.createElement('div');actions.className='desca-runtime-guard__actions';

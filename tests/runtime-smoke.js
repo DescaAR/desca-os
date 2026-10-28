@@ -1,12 +1,12 @@
 const fs=require('fs');
 const vm=require('vm');
-const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('sat-hub.js','utf8')+'\n'+fs.readFileSync('psikotes-hub.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
+const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('sat-hub.js','utf8')+'\n'+fs.readFileSync('psikotes-hub.js','utf8')+'\n'+fs.readFileSync('learning-library.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
 if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Error('Google Calendar OAuth scope must be removed');
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
 const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm,descaScoreData,osQuickResourceLinks,osQuickResourceCatalog,OS_ACADEMIC_GROUPS};})();`);
-const routes=['today','math','sat','psikotes','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
+const routes=['today','library','math','sat','psikotes','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
   return {
@@ -66,7 +66,7 @@ function run(route,state){
     navigator:{onLine:true},location:{hash:'#'+route,search:'',pathname:'/desca-os/',protocol:'https:',origin:'https://descaar.github.io',reload(){},assign(){}},
     history:{replaceState(){},pushState(){}},Notification:{permission:'default'},confirm:()=>true,alert(){},prompt:()=>null,
     requestAnimationFrame:fn=>{try{fn()}catch(e){errors.push(String(e))}},cancelAnimationFrame(){},setTimeout(){return 0},clearTimeout(){},setInterval(){return 0},clearInterval(){},
-    caches:{keys:async()=>[],delete:async()=>true},URLSearchParams,Intl,Date,Math,JSON,Array,Object,String,Number,Boolean,RegExp,Map,Set,Promise,Blob,FormData,
+    caches:{keys:async()=>[],delete:async()=>true},URL,URLSearchParams,Intl,Date,Math,JSON,Array,Object,String,Number,Boolean,RegExp,Map,Set,Promise,Blob,FormData,
     fetch:async()=>({ok:false,json:async()=>({})}),matchMedia:()=>({matches:false}),addEventListener(){},removeEventListener(){}
   };
   ctx.window=ctx;ctx.globalThis=ctx;
@@ -101,6 +101,26 @@ if(!psyHtml('all',{psikotesStepsDone:['orientasi','penalaran']}).includes('2/4')
 
 
 
+const libraryCtx=run('library',richState()),hub=libraryCtx.DescaLearningLibrary,libraryHtml=libraryCtx.document.querySelector('#page').innerHTML;
+if(!libraryHtml.includes('Learning Library')||!libraryHtml.includes('ll-resource-card'))throw Error('Learning Library route did not render');
+if(!libraryHtml.includes('MIT OpenCourseWare')||!libraryHtml.includes('Khan Academy')||!libraryHtml.includes('Sikotesku'))throw Error('Existing resources missing from library');
+const libList=hub.catalog(libraryCtx.__DESCA_TEST__.S);
+if(libList.length<40)throw Error('Unified catalog did not include enough existing sources');
+if(!libList.some(x=>x.category==='research')||!libList.some(x=>x.category==='english'))throw Error('Research and English categories missing');
+if(hub.filtered(libraryCtx.__DESCA_TEST__.S,libList,'math').length<6)throw Error('Math filter missing content');
+if(!hub.filtered(libraryCtx.__DESCA_TEST__.S,libList,'all','Kraepelin').length)throw Error('Library search should find psychometric topics');
+const one=libList.find(x=>x.id==='sat:khan');
+if(!one)throw Error('Khan Academy is missing');
+hub.toggleFavorite(libraryCtx.__DESCA_TEST__.S,one);
+if(!hub.isFavorite(libraryCtx.__DESCA_TEST__.S,one))throw Error('SAT favorite must sync with Library');
+if(!hub.normalizeUrl('https://example.com/abc'))throw Error('Valid personal URL rejected');
+if(hub.normalizeUrl('javascript:alert(1)')||hub.normalizeUrl('data:text/html,foo'))throw Error('Unsafe URL accepted');
+const afterCustom=richState();
+afterCustom.settings.learningCustomResources=[{id:'x1',title:'Catatan Pribadi',url:'https://example.org/notes',category:'research'}];
+const own=hub.catalog(afterCustom);
+if(!own.some(x=>x.id==='custom:x1'))throw Error('Personal study resources not listed');
+if(!hub.filtered(afterCustom,own,'mine').some(x=>x.id==='custom:x1'))throw Error('Personal filter not functional');
+
 const academicOptimized=run('academic',richState()).document.querySelector('#page').innerHTML;
 if(!academicOptimized.includes('Learning &amp; Tests')&&!academicOptimized.includes('Learning & Tests'))throw new Error('Academic Learning group missing');
 if(!academicOptimized.includes('Academic &amp; Research')&&!academicOptimized.includes('Academic & Research'))throw new Error('Academic Research group missing');
@@ -118,7 +138,7 @@ if(scoreData.totalTasks!==0||scoreData.completedActivities!==24)throw new Error(
 const shortcutsWithFavorites=run('today',{...richState(),settings:{...richState().settings,satFavorites:['bluebook'],psikotesFavorites:['sikotesku'],quickResourceRecent:['sat:bluebook']}}).__DESCA_TEST__.osQuickResourceLinks();
 if(!shortcutsWithFavorites.includes('SAT Bluebook')||!shortcutsWithFavorites.includes('Sikotesku'))throw new Error('Favorites and recent resources must be accessible on Home');
 const manifest=JSON.parse(fs.readFileSync('version.json','utf8'));
-if(manifest.build!==102)throw new Error('Version manifest must match build');
+if(manifest.build!==103)throw new Error('Version manifest must match build');
 if(!app.includes("fetch('./version.json?update-check='"))throw new Error('Update check must read version manifest rather than search app.js');
 if(app.includes('Build v96.'))throw new Error('Recovery page still shows an obsolete build');
 

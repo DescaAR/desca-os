@@ -1,0 +1,78 @@
+/* Desca OS — SAT Hub · responsive, accessible light/dark */
+.sat-overline{display:block;color:var(--app-blue,#3664e8);font-size:10px;font-weight:850;letter-spacing:.13em}
+.sat-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:center;gap:24px;overflow:hidden;border:1px solid #31558e;border-radius:23px;padding:clamp(24px,3.5vw,40px);background:radial-gradient(circle at 96% 6%,rgba(90,169,255,.3),transparent 39%),radial-gradient(circle at 8% 94%,rgba(65,201,224,.13),transparent 42%),linear-gradient(124deg,#0f2447,#193a6f 65%,#244d84);color:white;box-shadow:0 16px 32px rgba(16,39,78,.13)}
+.sat-hero:after{content:"1600";position:absolute;right:18%;top:-10px;font-size:clamp(100px,20vw,225px);font-weight:900;letter-spacing:-.09em;color:rgba(255,255,255,.045);pointer-events:none}
+.sat-hero>*{position:relative;z-index:1;min-width:0}
+.sat-hero .sat-overline{color:#a1e9ff}
+.sat-hero h2{color:#fff!important;font-size:clamp(26px,3vw,40px);font-weight:850;letter-spacing:-.052em;line-height:1.16;margin:10px 0 12px}
+.sat-hero p{color:#e0ebff!important;max-width:680px;font-size:13px;line-height:1.75;margin:0}
+.sat-hero-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.sat-hero-actions a{display:inline-flex;align-items:center;min-height:41px;padding:9px 15px;border-radius:11px;background:#eaf5ff;color:#15376c!important;font-size:12px;font-weight:820;text-decoration:none}
+.sat-hero-actions a+a{background:rgba(255,255,255,.1);color:#fff!important;border:1px solid rgba(255,255,255,.27)}
+.sat-hero-actions a:hover{background:#fff}
+.sat-hero-actions a+a:hover{background:rgba(255,255,255,.22)}
+.sat-hero-numbers{display:grid;gap:10px}
+.sat-hero-numbers>div{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.09);padding:12px 14px}
+.sat-hero-numbers strong{font-weight:900;font-size:27px;color:#fff;letter-spacing:-.045em}
+.sat-hero-numbers span{font-size:11px;color:#e0edff;font-weight:700;text-align:right}
+.sat-exam,.sat-library,.sat-roadmap{margin-top:30px}
+.sat-exam-heading,.sat-section-heading,.sat-roadmap-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:17px}
+.sat-exam-heading h2,.sat-section-heading h2,.sat-roadmap-head h2{font-size:clamp(19px,1.9vw,25px);font-weight:850;letter-spacing:-.045em;color:var(--app-text,var(--text))!important;margin:5px 0 3px}
+.sat-section-heading p,.sat-roadmap-head p{font-size:12px;line-height:1.65;color:var(--app-muted,var(--muted))!important;margin:4px 0 0}
+.sat-score{border:1px solid var(--app-border,var(--line));background:var(--app-surface-2,var(--soft));border-radius:10px;color:var(--app-text,var(--text));padding:8px 11px;font-size:11px;font-weight:770}
+.sat-exam-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.sat-exam-grid article{border:1px solid var(--app-border,var(--line));background:var(--app-surface,var(--card));padding:20px;border-radius:18px;min-width:0}
+.sat-exam-grid article>div{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.sat-exam-grid article>div span{font-size:10px;font-weight:850;letter-spacing:.1em;color:var(--app-blue,var(--blue))}
+.sat-exam-grid article>div b{font-size:13px;font-weight:830;color:var(--app-text,var(--text))}
+.sat-exam-grid article>strong{display:block;font-size:28px;letter-spacing:-.055em;color:var(--app-text,var(--text));margin:12px 0 2px}
+.sat-exam-grid article p{font-size:12px;font-weight:790;margin:0 0 11px;color:var(--app-text-2,var(--text))}
+.sat-exam-grid article small{display:block;line-height:1.7;font-size:11px;color:var(--app-muted,var(--muted))}
+.sat-filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:17px}
+.sat-chip{min-height:39px;display:inline-flex;align-items:center;gap:6px;justify-content:center;padding:8px 13px;border:1px solid var(--app-border-strong,var(--line));background:var(--app-surface,var(--card));color:var(--app-text-2,var(--text));border-radius:11px;cursor:pointer;font-family:inherit;font-weight:750;font-size:11.5px;transition:border-color .15s,transform .15s}
+.sat-chip:hover{border-color:var(--app-blue,var(--blue));transform:translateY(-1px)}
+.sat-chip.active{border-color:var(--app-blue,var(--blue));background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue))}
+.sat-chip small{font-size:10px;border-radius:6px;padding:2px 5px;background:var(--app-surface-3,var(--soft))}
+.sat-library-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--app-text,var(--text));margin:0 0 12px}
+.sat-library-meta strong{font-size:13px}
+.sat-library-meta span{font-size:11px;color:var(--app-muted,var(--muted))}
+.sat-site-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.sat-site-card{min-width:0;min-height:265px;display:flex;flex-direction:column;padding:19px;border:1px solid var(--app-border,var(--line));border-radius:19px;background:var(--app-surface,var(--card));box-shadow:var(--app-shadow-sm,0 5px 18px rgba(20,40,75,.05));transition:transform .16s,border-color .16s}
+.sat-site-card:hover{transform:translateY(-2px);border-color:var(--app-border-strong,var(--line))}
+.sat-site-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sat-site-avatar{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;border:1px solid color-mix(in srgb,var(--app-blue) 17%,var(--app-border));background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue));font-size:19px;font-weight:850}
+.sat-star{width:37px;height:37px;display:grid;place-items:center;border:1px solid var(--app-border,var(--line));background:var(--app-surface-2,var(--soft));border-radius:11px;color:var(--app-muted,var(--muted));font:23px/1 inherit;cursor:pointer}
+.sat-star.active{color:#95610a!important;background:#fff4d3!important;border-color:#ebd49a!important}
+.sat-site-card h3{margin:0 0 8px;color:var(--app-text,var(--text))!important;overflow-wrap:anywhere;font-size:15px;font-weight:850;line-height:1.35;letter-spacing:-.03em}
+.sat-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 11px}
+.sat-tags span{font-size:10px;font-weight:740;line-height:1.4;padding:4px 7px;border:1px solid var(--app-border,var(--line));background:var(--app-surface-2,var(--soft));color:var(--app-text-2,var(--text));border-radius:7px}
+.sat-tags .sat-official{color:var(--app-blue,var(--blue));background:var(--app-blue-soft,var(--soft))}
+.sat-site-card p{color:var(--app-muted,var(--muted))!important;font-size:12px!important;line-height:1.65!important;margin:0 0 12px;flex:1}
+.sat-skill{font-size:10px;font-weight:730;color:var(--app-text-2,var(--text));margin-bottom:13px}
+.sat-site-bottom{padding-top:13px;border-top:1px solid var(--app-border,var(--line));display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sat-site-bottom>span{min-width:0;font-size:10px;color:var(--app-muted,var(--muted));font-weight:700}
+.sat-site-bottom a{min-height:35px;flex:none;display:inline-flex;align-items:center;padding:8px 10px;border-radius:9px;background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue))!important;text-decoration:none;font-weight:820;font-size:11px}
+.sat-site-bottom a:hover{background:var(--app-blue,var(--blue));color:white!important}
+.sat-empty{grid-column:1/-1;text-align:center;background:var(--app-surface,var(--card));border:1px dashed var(--app-border-strong,var(--line));border-radius:17px;padding:34px}
+.sat-empty b{font-size:15px;color:var(--app-text,var(--text))}
+.sat-empty p{font-size:12px;color:var(--app-muted,var(--muted))}
+.sat-roadmap{border:1px solid var(--app-border,var(--line));background:var(--app-surface,var(--card));border-radius:21px;padding:23px}
+.sat-roadmap-progress{text-align:right;flex:none}
+.sat-roadmap-progress strong{display:block;color:var(--app-text,var(--text));font-size:23px;font-weight:850}
+.sat-roadmap-progress span{font-size:10px;color:var(--app-muted,var(--muted))}
+.sat-progress-track{height:7px;background:var(--app-surface-3,var(--soft));border-radius:99px;overflow:hidden;margin:3px 0 20px}
+.sat-progress-track span{height:100%;background:var(--app-blue,var(--blue));display:block;border-radius:99px;transition:width .2s}
+.sat-stages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sat-stage{display:flex;align-items:flex-start;gap:11px;border:1px solid var(--app-border,var(--line));border-radius:13px;padding:14px}
+.sat-stage.is-done{border-color:color-mix(in srgb,#24a489 40%,var(--app-border));background:color-mix(in srgb,#24a489 6%,var(--app-surface))}
+.sat-step-check{flex:none;width:33px;height:33px;border:1px solid var(--app-border-strong,var(--line));background:var(--app-surface-2,var(--soft));color:var(--app-text,var(--text));border-radius:10px;font-size:19px;cursor:pointer}
+.sat-stage.is-done .sat-step-check{color:#fff;background:#188b78;border-color:#188b78}
+.sat-stage-copy{min-width:0}
+.sat-stage-copy h3{color:var(--app-text,var(--text));font-size:13px;font-weight:830;margin:0 0 5px}
+.sat-stage-copy p{color:var(--app-muted,var(--muted))!important;font-size:11.5px;line-height:1.65;margin:0 0 8px}
+.sat-stage-copy a{font-size:11px;font-weight:830;color:var(--app-blue,var(--blue))!important;text-decoration:none}
+.sat-footnote{margin:18px 0 26px;padding:16px 18px;border-left:3px solid var(--app-blue,var(--blue));border-radius:0 12px 12px 0;background:var(--app-surface-2,var(--soft));color:var(--app-text-2,var(--text));font-size:11.5px;line-height:1.75}
+.sat-hero-actions a:focus-visible,.sat-chip:focus-visible,.sat-star:focus-visible,.sat-site-bottom a:focus-visible,.sat-step-check:focus-visible,.sat-stage a:focus-visible{outline:3px solid var(--app-cyan,#39cddc);outline-offset:3px}
+@media(max-width:1000px){.sat-site-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.sat-hero{grid-template-columns:1fr;gap:18px}.sat-hero-numbers{grid-template-columns:repeat(3,minmax(0,1fr))}.sat-hero-numbers>div{display:block;text-align:center;padding:10px 6px}.sat-hero-numbers span{display:block;text-align:center}.sat-exam-grid,.sat-stages{grid-template-columns:1fr}.sat-score{white-space:nowrap}}
+@media(max-width:540px){.sat-site-grid{grid-template-columns:1fr}.sat-hero{padding:23px}.sat-hero h2{font-size:29px}.sat-roadmap{padding:17px}.sat-exam-heading{align-items:flex-start;flex-direction:column}.sat-hero-numbers strong{font-size:24px}.sat-hero-numbers span{font-size:9px}}

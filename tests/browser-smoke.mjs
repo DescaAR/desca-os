@@ -37,7 +37,7 @@ try{
   await visit('psikotes');
   await page.locator('[data-act="psikotesFilter"][data-filter="all"]').click();
   assert.equal(await page.locator('.psy-site').count(),10,'Psychometric hub must retain all 10 sites');
-  await page.locator('[data-act="psikotesFilter"][data-filter="kraepelin"]').click();
+  await page.locator('.psy-filter-bar [data-act="psikotesFilter"][data-filter="kraepelin"]').click();
   assert.equal(await page.locator('.psy-site').count(),3,'Psychometric topic filter should work');
   await noRenderError();
 

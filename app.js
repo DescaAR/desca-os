@@ -993,13 +993,16 @@ function energyPlannerCard(){
 function descaScoreData(){
   const discipline=diligenceRankData().score,start=add(today(),-29),acts=S.activities.filter(a=>a.date>=start&&a.completed!==false),tasks=S.tasks.filter(t=>t.date&&t.date>=start&&!t.inbox),done=tasks.filter(t=>t.status==='done').length,activeDays=new Set([...acts.map(a=>a.date),...tasks.filter(t=>t.status==='done').map(t=>t.date)]).size;
   const know=acts.filter(a=>['study','research','reading','english'].includes(a.category)).reduce((n,a)=>n+(+a.duration||0),0),healthMin=acts.filter(a=>a.category==='health').reduce((n,a)=>n+(+a.duration||0),0),runDays=new Set((S.runs||[]).filter(r=>r.date>=start).map(r=>r.date)).size;
-  const dimensions={discipline,knowledge:clamp(Math.round(know/1800*100),0,100),health:clamp(Math.round(healthMin/600*80+Math.min(runDays,8)/8*20),0,100),execution:tasks.length?Math.round(done/tasks.length*100):0,consistency:clamp(Math.round(activeDays/24*100),0,100)};
+  // Score completed activities without depending on the removed Tasks workflow.
+  const activityExecution=clamp(Math.round(acts.length/24*100),0,100);
+  const optionalTaskExecution=tasks.length?Math.round(done/tasks.length*100):0;
+  const dimensions={discipline,knowledge:clamp(Math.round(know/1800*100),0,100),health:clamp(Math.round(healthMin/600*80+Math.min(runDays,8)/8*20),0,100),execution:Math.max(activityExecution,optionalTaskExecution),consistency:clamp(Math.round(activeDays/24*100),0,100)};
   const score=clamp(Math.round(dimensions.discipline*.24+dimensions.knowledge*.23+dimensions.health*.15+dimensions.execution*.23+dimensions.consistency*.15),0,100),rank=[...DILIGENCE_RANKS].reverse().find(r=>score>=r.min)||DILIGENCE_RANKS[0],idx=DILIGENCE_RANKS.indexOf(rank),next=DILIGENCE_RANKS[idx+1]||null,progress=next?clamp(Math.round((score-rank.min)/Math.max(1,next.min-rank.min)*100),0,100):100;
-  return{score,rank,next,progress,dimensions,activeDays,done,totalTasks:tasks.length}
+  return{score,rank,next,progress,dimensions,activeDays,done,totalTasks:tasks.length,completedActivities:acts.length}
 }
 function descaScoreCard(){
   const d=descaScoreData(),labels={discipline:'Discipline',knowledge:'Knowledge',health:'Health',execution:'Execution',consistency:'Consistency'};
-  return'<article class="desca-score-card rank-'+d.rank.key+'"><div class="desca-score-main"><div class="desca-score-crest"><span>✦</span><b>'+d.rank.mark+'</b></div><div><div class="eyebrow">MAIN DESCA SCORE</div><h2>'+esc(d.rank.name)+'</h2><p>One final rank synthesized from your work across the whole OS.</p></div><strong>'+d.score+'<small>/100</small></strong></div><div class="desca-dimensions">'+Object.entries(d.dimensions).map(([k,v])=>'<div><span>'+labels[k]+'</span><b>'+v+'</b>'+prog(v)+'</div>').join('')+'</div><div class="desca-score-footer"><span>'+(d.next?'Next '+d.next.name+' · '+Math.max(0,d.next.min-d.score)+' pts':'Highest tier reached')+'</span><span>'+d.activeDays+' active days · '+d.done+'/'+d.totalTasks+' tasks 30D</span></div></article>'
+  return'<article class="desca-score-card rank-'+d.rank.key+'"><div class="desca-score-main"><div class="desca-score-crest"><span>✦</span><b>'+d.rank.mark+'</b></div><div><div class="eyebrow">MAIN DESCA SCORE</div><h2>'+esc(d.rank.name)+'</h2><p>One final rank synthesized from your work across the whole OS.</p></div><strong>'+d.score+'<small>/100</small></strong></div><div class="desca-dimensions">'+Object.entries(d.dimensions).map(([k,v])=>'<div><span>'+labels[k]+'</span><b>'+v+'</b>'+prog(v)+'</div>').join('')+'</div><div class="desca-score-footer"><span>'+(d.next?'Next '+d.next.name+' · '+Math.max(0,d.next.min-d.score)+' pts':'Highest tier reached')+'</span><span>'+d.activeDays+' active days · '+d.completedActivities+' activities 30D</span></div></article>'
 }
 function homeCommandCenter(){
   const candidate=S.tasks.filter(t=>!t.inbox&&t.status!=='done').slice().sort((a,b)=>taskPriorityScore(b)-taskPriorityScore(a))[0]||null;
@@ -1959,7 +1962,7 @@ async function googleSyncAll({silent=false}={}){
 function googleStatusLabel(){return googleReady()?(G.busy?'SYNCING':'CONNECTED'):'NOT CONNECTED'}
 function googleTaskListOptions(){return G.taskLists.length?G.taskLists.map(x=>'<option value="'+esc(x.id)+'" '+(S.settings.googleTaskListId===x.id?'selected':'')+'>'+esc(x.title||'Untitled')+'</option>').join(''):'<option value="'+esc(S.settings.googleTaskListId||'')+'">'+esc(S.settings.googleTaskListTitle||'Connect Google first')+'</option>'}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-const BUILD_NUMBER=101;
+const BUILD_NUMBER=102;
 let vaultUnlockedSession=false;
 function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
 function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -2028,7 +2031,16 @@ async function maybeAutomaticSnapshots(){
   }finally{snapshotBusy=false}
 }
 async function checkForUpdates(silent=false){
-  try{const raw=await fetch('./app.js?update-check='+Date.now(),{cache:'no-store'}).then(r=>r.text()),m=raw.match(/Build v(\d+)/),latest=m?+m[1]:BUILD_NUMBER;S.settings.latestKnownBuild=Math.max(+S.settings.latestKnownBuild||0,latest);S.settings.lastUpdateCheck=new Date().toISOString();lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);if(!silent)toast(latest>BUILD_NUMBER?'Desca OS v'+latest+' available':'Desca OS is up to date');render();return latest}catch(e){if(!silent)toast('Update check failed');return BUILD_NUMBER}
+  try{
+    const response=await fetch('./version.json?update-check='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('Manifest versi tidak tersedia');
+    const manifest=await response.json(),latest=Number(manifest?.build);
+    if(!Number.isInteger(latest)||latest<1)throw new Error('Nomor versi tidak valid');
+    S.settings.latestKnownBuild=latest;S.settings.lastUpdateCheck=new Date().toISOString();
+    lastSavedJSON=JSON.stringify(S);localStorage.setItem(K,lastSavedJSON);
+    if(!silent)toast(latest>BUILD_NUMBER?'Desca OS v'+latest+' tersedia':'Desca OS sudah versi terbaru');
+    render();return latest
+  }catch(e){if(!silent)toast('Pengecekan pembaruan gagal: '+String(e?.message||e));return BUILD_NUMBER}
 }
 async function applyAppUpdate(){try{if('serviceWorker'in navigator){const reg=await navigator.serviceWorker.getRegistration();await reg?.update()}const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('desca-os-v')).map(k=>caches.delete(k)));location.reload()}catch{location.reload()}}
 function systemNotifications(){
@@ -2251,11 +2263,22 @@ function osSectionFor(r){
   for(const [key,sections] of Object.entries(OS_HUB_SECTIONS))if(sections.some(([id])=>id===r))return key;
   return null
 }
+const OS_ACADEMIC_GROUPS=[
+  {id:'learning',name:'Learning & Tests',items:['math','english','sat','psikotes']},
+  {id:'research',name:'Academic & Research',items:['academic','study','research']},
+  {id:'resources',name:'Other Resources',items:['projects','dmath','books']}
+];
 function osSectionTabs(){
   const parent=osSectionFor(route);
   if(!parent||route==='today'||OS_HUB_SECTIONS[parent].length<=1)return'';
   const sections=OS_HUB_SECTIONS[parent],title=OS_MAIN_NAV.find(([id])=>id===parent)?.[1]||'Workspace';
-  return'<section class="os-section-tabs" aria-label="Navigasi '+esc(title)+'"><div class="os-section-label">'+esc(title)+' <span>· All your tools in one place</span></div><div class="os-tab-row">'+sections.map(([key,label])=>'<button type="button" class="os-tab '+(route===key?'active':'')+'" data-route="'+key+'" aria-current="'+(route===key?'page':'false')+'">'+esc(label)+'</button>').join('')+'</div></section>'
+  const tabs=items=>items.map(([key,label])=>'<button type="button" class="os-tab '+(route===key?'active':'')+'" data-route="'+key+'" aria-current="'+(route===key?'page':'false')+'">'+esc(label)+'</button>').join('');
+  if(parent==='academic')return '<section class="os-section-tabs os-academic-tabs" aria-label="Navigasi Academic"><div class="os-section-label">ACADEMIC <span>· Pilih kelompok, lalu halaman</span></div><div class="os-academic-group-row">'
+    +OS_ACADEMIC_GROUPS.map(g=>{
+      const entries=sections.filter(([key])=>g.items.includes(key)),active=entries.some(([key])=>key===route);
+      return '<details class="os-academic-group" '+(active?'open':'')+'><summary aria-label="'+esc(g.name)+'"><span>'+esc(g.name)+'</span><small>'+entries.length+' tools</small><span class="os-academic-chevron" aria-hidden="true">⌄</span></summary><div class="os-tab-row">'+tabs(entries)+'</div></details>';
+    }).join('')+'</div></section>';
+  return'<section class="os-section-tabs" aria-label="Navigasi '+esc(title)+'"><div class="os-section-label">'+esc(title)+' <span>· All your tools in one place</span></div><div class="os-tab-row">'+tabs(sections)+'</div></section>'
 }
 function osHomeArchive(){
   const links=OS_HUB_SECTIONS.today.filter(([key])=>key!=='today');
@@ -2274,6 +2297,7 @@ const PAGE_GUIDES={
     {selector:'.desca-score-card',title:'Main Desca Score',desc:'Ringkasan rank utama dari Discipline, Knowledge, Health, Execution, dan Consistency.'},
     
     {selector:'.os-click-home',title:'Quick Actions',desc:'Klik aktivitas yang sudah dilakukan tanpa mengetik.'},
+    {selector:'.os-shortcut-library',title:'Website Belajar',desc:'Buka favorit dan website yang terakhir diakses dalam satu klik.'},
     {selector:'.os-click-grid',title:'One-tap Logging',desc:'Catat aktivitas, pengeluaran, atau buat goal baru tanpa mengisi banyak formulir.'}
   ]},
 
@@ -2532,7 +2556,7 @@ function todayPage(){
   syncGameRewards();
   const t=today(),st=stats(),hr=+new Intl.DateTimeFormat('en-US',{timeZone:S.profile.timezone,hour:'2-digit',hour12:false}).format(new Date());
   const greet=hr<11?'Selamat pagi':hr<15?'Selamat siang':hr<18?'Selamat sore':'Selamat malam';
-  $('#page').innerHTML=rankUpOverlayHtml()+starterCard()+'<section class="hero-greeting dashboard-hero"><div><div class="eyebrow">PERSONAL GROWTH HUB <span class="os-hero-dot">•</span> '+fmt(t)+'</div><h1>'+greet+', '+esc(S.profile.name)+'.</h1><p>Semua progres, satu tempat. Catat hal yang kamu lakukan dan bangun konsistensi setiap hari.</p></div><div class="daily-score"><div class="score-ring" style="--score:'+st.score+'%"><b>'+st.score+'</b></div><div class="score-copy"><b>Daily Score</b><span>'+(st.score>=70?'Great momentum':'Keep your momentum')+'</span></div></div></section>'+descaScoreCard()+homeGoalsSpotlight()+homeQuickCaptureCard()
+  $('#page').innerHTML=rankUpOverlayHtml()+starterCard()+'<section class="hero-greeting dashboard-hero"><div><div class="eyebrow">PERSONAL GROWTH HUB <span class="os-hero-dot">•</span> '+fmt(t)+'</div><h1>'+greet+', '+esc(S.profile.name)+'.</h1><p>Semua progres, satu tempat. Catat hal yang kamu lakukan dan bangun konsistensi setiap hari.</p></div><div class="daily-score"><div class="score-ring" style="--score:'+st.score+'%"><b>'+st.score+'</b></div><div class="score-copy"><b>Daily Score</b><span>'+(st.score>=70?'Great momentum':'Keep your momentum')+'</span></div></div></section>'+descaScoreCard()+homeGoalsSpotlight()+homeQuickCaptureCard()+osQuickResourceLinks()
 }
 function plannerPage(){
   const open=S.tasks.filter(t=>t.status!=='done'&&!t.inbox),due=open.slice().sort((a,b)=>(a.deadline||a.date||'9999-12-31').localeCompare(b.deadline||b.date||'9999-12-31')).slice(0,5);
@@ -3333,7 +3357,7 @@ function settingsPage(){
   const notif=notificationSupported()?Notification.permission:'unsupported';
   $('#page').innerHTML=head('Settings','Desca OS bekerja tanpa login. Koneksi eksternal hanya tambahan jika kamu membutuhkannya.')+localFirstStatusCard()+'<div class="grid two-col"><article class="card"><div class="card-head"><h2>Profile & Targets</h2></div><div class="form-grid"><div class="field"><label>Nama</label><input id="sn" value="'+esc(S.profile.name)+'"></div><div class="field"><label>Daily target (menit)</label><input id="sd" type="number" min="1" value="'+S.profile.dailyFocusTarget+'"></div><div class="field"><label>Weekly target (menit)</label><input id="sw" type="number" min="1" value="'+S.profile.weeklyTarget+'"></div></div><button class="btn btn-primary" style="margin-top:12px" data-act="saveSettings">Simpan</button></article>'+aiSettingsCard()+experienceSettingsCard()+pwaInstallCard()+offlineQueueCard()+dataConfidenceCard()+automationSettingsCard()+googleSettingsCard()+'<article class="card"><div class="card-head"><div><h2>Pomodoro Engine</h2><p>Preset dapat dipilih langsung dari Today.</p></div><span class="pill blue">'+S.settings.pomodoroPreset+'</span></div><div class="form-grid"><div class="field"><label>Focus (menit)</label><input id="spf" type="number" min="5" max="180" value="'+S.settings.pomodoroFocus+'"></div><div class="field"><label>Short break</label><input id="sps" type="number" min="1" max="60" value="'+S.settings.pomodoroShortBreak+'"></div><div class="field"><label>Long break</label><input id="spl" type="number" min="1" max="90" value="'+S.settings.pomodoroLongBreak+'"></div><div class="field"><label>Sesi sebelum long break</label><input id="spc" type="number" min="1" max="12" value="'+S.settings.pomodoroCycles+'"></div></div></article><article class="card"><div class="card-head"><div><h2>Notifications & Reminders</h2><p>Reminder lokal tanpa akun.</p></div><span class="pill '+(notif==='granted'?'green':'orange')+'">'+esc(notif)+'</span></div><div class="field"><label>Reminder lead (menit)</label><input id="slead" type="number" min="0" max="180" value="'+S.settings.reminderLead+'"></div><div class="callout" style="margin-top:10px">Background status: <b>'+backgroundNotificationStatus()+'</b>.</div><button class="btn btn-primary" style="margin-top:12px" data-act="requestNotifications">'+(notif==='granted'?'Notification Aktif':'Aktifkan Notification')+'</button></article><article class="card"><div class="card-head"><h2>Data & Privacy</h2></div><div class="callout">Default-nya data tetap di browser ini. Google dan cloud hanya bekerja kalau kamu memilih untuk menghubungkannya.</div><div class="simple-list" style="margin-top:12px"><button class="btn btn-secondary" data-act="theme">Toggle dark mode</button><button class="btn btn-secondary" data-act="export">Export JSON</button><button class="btn btn-secondary" data-route="recovery">Recovery Center</button><button class="btn btn-secondary" data-act="resetData">Reset semua data</button></div></article>'+cloudBackupCard()+advancedSystemSettingsCard()+'</div>'
 }
-function render(){if(['tasks','planner','calendar','deadlines','inbox'].includes(route))route='goals';if(guideRoute&&guideRoute!==route)closePageGuide();nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;document.documentElement.dataset.reduceMotion=S.settings.reduceMotion?'true':'false';const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,planner:plannerPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,math:mathPage,english:englishPage,sat:satPage,psikotes:psikotesPage,research:researchPage,projects:projectsPage,dmath:dmathPage,work:workPage,vault:vaultPage,quran:quranPage,books:booksPage,running:sportsPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();const sectionTabs=osSectionTabs();if(sectionTabs)$('#page').innerHTML=sectionTabs+$('#page').innerHTML;if(route==='today')$('#page').innerHTML+=osHomeArchive();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v96'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v96.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
+function render(){if(['tasks','planner','calendar','deadlines','inbox'].includes(route))route='goals';if(guideRoute&&guideRoute!==route)closePageGuide();nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;document.documentElement.dataset.reduceMotion=S.settings.reduceMotion?'true':'false';const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,planner:plannerPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,math:mathPage,english:englishPage,sat:satPage,psikotes:psikotesPage,research:researchPage,projects:projectsPage,dmath:dmathPage,work:workPage,vault:vaultPage,quran:quranPage,books:booksPage,running:sportsPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();const sectionTabs=osSectionTabs();if(sectionTabs)$('#page').innerHTML=sectionTabs+$('#page').innerHTML;if(route==='today')$('#page').innerHTML+=osHomeArchive();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v96'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v'+BUILD_NUMBER+'.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
 function contextualCategory(r=route){return{study:'study',research:'research',projects:'project',dmath:'dmath',quran:'quran',books:'reading',running:'health',health:'health',finance:'finance',work:'work'}[r]||'personal'}
 function applyAutoDefaults(root=$('#modal')){if(!root)return;root.querySelectorAll('input[type="date"]').forEach(el=>{if(!el.value&&['date','startDate'].includes(el.name))el.value=today()});root.querySelectorAll('input[type="month"]').forEach(el=>{if(!el.value)el.value=today().slice(0,7)});const form=root.querySelector('form');if(form&&['activityForm','runningForm','quranSessionForm'].includes(form.id)){const tm=form.querySelector('[name="startTime"]');if(tm&&!tm.value)tm.value=localTime()}const catSel=form?.querySelector('[name="category"]');if(catSel&&!catSel.value)catSel.value=contextualCategory()}
 function open(html){$('#modal').innerHTML=html;$('#modalBackdrop').hidden=false;document.body.classList.add('modal-open');requestAnimationFrame(()=>{applyAutoDefaults();$('#modal input:not([disabled]),#modal textarea,#modal select')?.focus()})}
@@ -3746,6 +3770,53 @@ function osFastWork(workId,minutes){
   S.activities.push({id:uid('a'),date:today(),startTime:'',title:'Work · '+job.title,category:'work',duration:m,goalId:null,source:'work',completed:true,workSessionId:id,workId:job.id,rhythm:'nonroutine',obligation:'important',planned:false,notes:'Quick log'});
   save('Quick work '+job.title);toast(job.title+' · '+m+' menit tercatat');render();return true
 }
+// Personal resource shortcuts derive from the catalog and recently opened websites.
+function osQuickResourceCatalog(){
+  const defaults=[
+    {id:'english:volingo',name:'Volingo',url:'https://app.volingo.my.id/',group:'English',mark:'EN'},
+    {id:'sat:khan',name:'Khan Academy',url:'https://www.khanacademy.org/digital-sat',group:'SAT',mark:'SAT'},
+    {id:'sat:bluebook',name:'SAT Bluebook',url:'https://bluebook.collegeboard.org/students/practice',group:'Simulasi',mark:'SAT'},
+    {id:'psikotes:sikotesku',name:'Sikotesku',url:'https://sikotesku.com/landing',group:'Psikotes',mark:'Ψ'}
+  ];
+  const extra=[
+    ...(globalThis.DescaMathHub?.resources||[]).map(x=>({id:'math:'+x.id,name:x.name,url:x.url,group:'Matematika',mark:'∑'})),
+    ...(globalThis.DescaSatHub?.sites||[]).map(x=>({id:'sat:'+x.id,name:x.name,url:x.url,group:'SAT',mark:'SAT'})),
+    ...(globalThis.DescaPsikotesHub?.sites||[]).map(x=>({id:'psikotes:'+x.id,name:x.name,url:x.url,group:'Psikotes',mark:'Ψ'})),
+    ...(S.english?.sites||[]).filter(x=>x.url).map(x=>({id:'english:'+x.id,name:x.title,url:x.url,group:'English',mark:'EN'}))
+  ];
+  const byUrl=new Map();
+  for(const x of [...defaults,...extra]){
+    if(!/^https:\/\//.test(x.url||''))continue;
+    const key=x.url.replace(/\/$/,'').toLowerCase();
+    if(!byUrl.has(key))byUrl.set(key,x);
+  }
+  return [...byUrl.values()]
+}
+function osQuickResourceLinks(){
+  const resources=osQuickResourceCatalog(),byId=new Map(resources.map(x=>[x.id,x])),selected=[];
+  const pick=x=>{if(x&&!selected.some(y=>y.url===x.url))selected.push(x)};
+  for(const id of (Array.isArray(S.settings.quickResourceRecent)?S.settings.quickResourceRecent:[]))pick(byId.get(id));
+  for(const x of resources)if(
+    (x.id.startsWith('sat:')&&(S.settings.satFavorites||[]).includes(x.id.slice(4)))||
+    (x.id.startsWith('psikotes:')&&(S.settings.psikotesFavorites||[]).includes(x.id.slice(9)))||
+    (x.id.startsWith('math:')&&(S.settings.mathFavorites||[]).includes(x.id.slice(5)))
+  )pick(x);
+  for(const id of ['english:volingo','sat:khan','sat:bluebook','psikotes:sikotesku'])pick(byId.get(id));
+  const modified=S.meta?.modifiedAt?new Date(S.meta.modifiedAt):null;
+  const status=modified&&!Number.isNaN(+modified)?'Tersimpan di perangkat · '+new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(modified):'Data disimpan di perangkat ini';
+  return '<section class="os-shortcut-library" aria-label="Website belajar favorit"><div class="os-shortcut-head"><div><div class="eyebrow">QUICK ACCESS</div><h2>Website Belajar</h2><p>Favorit dan website yang baru dibuka muncul lebih dulu.</p></div><span class="os-shortcut-saved" title="Penyimpanan lokal, bukan jaminan sinkronisasi cloud">✓ '+esc(status)+'</span></div><div class="os-shortcut-grid">'
+    +selected.slice(0,6).map(x=>'<a class="os-shortcut-link" href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer" data-os-resource="'+esc(x.id)+'"><span class="os-shortcut-mark">'+esc(x.mark)+'</span><span class="os-shortcut-copy"><b>'+esc(x.name)+'</b><small>'+esc(x.group)+'</small></span><span aria-hidden="true">↗</span></a>').join('')+'</div></section>'
+}
+function osRememberResourceLink(anchor){
+  if(!anchor||!anchor.getAttribute)return;
+  const href=anchor.getAttribute('href')||'',id=anchor.getAttribute('data-os-resource')||'';
+  const key=href.replace(/\/$/,'').toLowerCase();
+  const item=osQuickResourceCatalog().find(x=>x.id===id||x.url.replace(/\/$/,'').toLowerCase()===key);
+  if(!item)return;
+  const old=Array.isArray(S.settings.quickResourceRecent)?S.settings.quickResourceRecent:[];
+  S.settings.quickResourceRecent=[item.id,...old.filter(k=>k!==item.id)].slice(0,8);
+  save('Recent resource')
+}
 function osQuickHomeActions(){
   return '<article class="card os-click-home"><div class="card-head"><div><div class="eyebrow">QUICK ACTIONS</div><h2>Satu klik, progres tercatat</h2><p>Pilih aktivitas yang telah dilakukan atau buka tujuanmu. Tanpa menyusun jadwal dan daftar tugas.</p></div><button class="mini-btn os-log-more" data-act="addActivity">+ Aktivitas lain</button></div><div class="os-click-grid">'
     +'<button type="button" data-act="osFastStudy" data-minutes="60"><b><span class="os-quick-icon">📚</span> Belajar</b><span>Catat 60 menit</span></button>'
@@ -3781,6 +3852,7 @@ document.addEventListener('toggle',e=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&focus.phase==='focus'&&focus.startedAt)syncPomodoroDraft({persist:true})});
 window.addEventListener('beforeunload',()=>{if(focus.phase==='focus'&&focus.startedAt)syncPomodoroDraft({persist:true})});
 document.addEventListener('click',e=>{
+  osRememberResourceLink(e.target.closest?.('a[href]'));
   const chartPoint=e.target.closest?.('[data-chart-point]');
   if(chartPoint){const wrap=chartPoint.closest('[data-interactive-chart]'),same=wrap?.dataset.chartLocked===chartPoint.dataset.chartIndex;if(wrap){wrap.querySelectorAll('.chart-point.selected').forEach(x=>x.classList.remove('selected'));if(same){delete wrap.dataset.chartLocked;const tip=wrap.querySelector('.chart-tooltip');if(tip)tip.hidden=true}else showChartPointTooltip(chartPoint,{lock:true})}return}
   document.querySelectorAll('[data-interactive-chart][data-chart-locked]').forEach(w=>{delete w.dataset.chartLocked;w.querySelectorAll('.chart-point.selected').forEach(x=>x.classList.remove('selected'));const tip=w.querySelector('.chart-tooltip');if(tip)tip.hidden=true});

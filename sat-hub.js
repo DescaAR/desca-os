@@ -31,7 +31,7 @@ const PATH=[
   {id:'review',name:'05 · Evaluate and Refine',summary:'Analyse your results, address weaknesses, and consolidate your learning.',site:'My Practice',href:'https://mypractice.collegeboard.org/'}
 ];
 function render({S,esc,head,filter}){
-  const settings=S.settings||{},stars=new Set(Array.isArray(settings.satFavouriteses)?settings.satFavouriteses:[]);
+  const settings=S.settings||{},stars=new Set(Array.isArray(settings.satFavorites)?settings.satFavorites:[]);
   const done=new Set(Array.isArray(settings.satStepsDone)?settings.satStepsDone:[]);
   const selected=GROUPS.some(g=>g.id===filter)?filter:'featured';
   const visible=SITES.filter(site=>selected==='featured'?site.featured:selected==='all'?true:selected==='saved'?stars.has(site.id):selected==='official'?site.official:selected==='learn'?site.kind==='learn':site.kind===selected);

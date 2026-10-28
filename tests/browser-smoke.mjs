@@ -38,14 +38,14 @@ try{
   await page.locator('.ll-chip[data-filter="saved"]').click();
   assert.ok(await page.locator('.ll-resource-card').count()>=1,'Favorite should persist through reload');
   await page.locator('[data-act="libraryAdd"]').first().click();
-  await page.locator('#libraryAddForm [name="title"]').fill('Portal Belajar Pribadi');
+  await page.locator('#libraryAddForm [name="title"]').fill('Personal Learning Portal');
   await page.locator('#libraryAddForm [name="url"]').fill('https://example.org/my-learning');
   await page.locator('#libraryAddForm [name="category"]').selectOption('math');
   await page.locator('#libraryAddForm button[type="submit"]').click();
-  await page.locator('.ll-resource-card').getByText('Portal Belajar Pribadi').waitFor();
+  await page.locator('.ll-resource-card').getByText('Personal Learning Portal').waitFor();
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('.ll-chip[data-filter="mine"]').click();
-  assert.ok((await page.locator('.ll-resource-grid').innerText()).includes('Portal Belajar Pribadi'),'Personal resource must persist after reload');
+  assert.ok((await page.locator('.ll-resource-grid').innerText()).includes('Personal Learning Portal'),'Personal resource must persist after reload');
   await noRenderError();
 
   await visit('academic');
@@ -114,6 +114,7 @@ try{
     }
   }
   console.log('LANGUAGE_AUDIT total UI lines to review: '+languageFindings);
+  assert.equal(languageFindings,0,'Rendered Desca OS pages still contain Indonesian user-interface copy');
 
   const languageModalAudit=[
     ['goals',['newS2Item','newS2Document','editS2Prep']],
@@ -128,19 +129,21 @@ try{
     ['dmath',['newDMathContent']],
     ['settings',['customPomodoro']]
   ];
+  let modalLanguageFindings=0;
   for(const [pageRoute,actions] of languageModalAudit){
     await visit(pageRoute);
     for(const action of actions){
       await page.evaluate(name=>{const trigger=document.createElement('button');trigger.dataset.act=name;document.body.appendChild(trigger);trigger.click();trigger.remove()},action);
       const copy=await page.locator('#modal').evaluate(el=>[el.innerText,...Array.from(el.querySelectorAll('input,textarea,select')).map(x=>x.getAttribute('placeholder')||'')].join('\n')).catch(()=>'');
       const matched=copy.split('\n').map(v=>v.trim()).filter(v=>indoUI.test(v) && v.length<260);
-      if(matched.length)console.log('MODAL_LANGUAGE_AUDIT '+pageRoute+'/'+action+' '+JSON.stringify([...new Set(matched)].slice(0,18)));
+      if(matched.length){modalLanguageFindings+=matched.length;console.log('MODAL_LANGUAGE_AUDIT '+pageRoute+'/'+action+' '+JSON.stringify([...new Set(matched)].slice(0,18)))}
       await page.evaluate(()=>{const backdrop=document.querySelector('#modalBackdrop');if(backdrop&&!backdrop.hidden){const close=document.querySelector('#modal [data-act="close"]');if(close)close.click();else backdrop.click();}});
     }
   }
 
 
 
+  assert.equal(modalLanguageFindings,0,'Desca OS forms still contain Indonesian interface labels');
   assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join(' | '));
   console.log('Browser smoke tests passed: Home, Learning Library, Academic, Math, SAT, Psikotes, favorites, themes and mobile.');
 }finally{

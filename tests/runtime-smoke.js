@@ -124,7 +124,7 @@ if(!hub.filtered(afterCustom,own,'mine').some(x=>x.id==='custom:x1'))throw Error
 const academicOptimized=run('academic',richState()).document.querySelector('#page').innerHTML;
 if(!academicOptimized.includes('Learning &amp; Assessment')&&!academicOptimized.includes('Learning & Assessment'))throw new Error('Academic Learning group missing');
 if(!academicOptimized.includes('Academia &amp; Research')&&!academicOptimized.includes('Academia & Research'))throw new Error('Academic Research group missing');
-if(!academicOptimized.includes('Other Resources'))throw new Error('Academic third group missing');
+if(!academicOptimized.includes('Additional Resources'))throw new Error('Academic third group missing');
 const homeOptimized=run('today',richState()).document.querySelector('#page').innerHTML;
 if(!homeOptimized.includes('os-shortcut-library')||!homeOptimized.includes('Volingo')||!homeOptimized.includes('SAT Bluebook'))throw new Error('Home one-click learning shortcuts missing');
 const scoreState=richState();

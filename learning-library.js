@@ -2,14 +2,14 @@
 (function(){
 'use strict';
 const CATEGORIES=[
- {id:'all',label:'Semua Sumber',icon:'◈'},
- {id:'math',label:'Matematika',icon:'∑',route:'math'},
- {id:'english',label:'Bahasa Inggris',icon:'EN',route:'english'},
+ {id:'all',label:'All Resources',icon:'◈'},
+ {id:'math',label:'Mathematics',icon:'∑',route:'math'},
+ {id:'english',label:'English Language',icon:'EN',route:'english'},
  {id:'sat',label:'SAT',icon:'SAT',route:'sat'},
- {id:'psikotes',label:'Psikotes',icon:'Ψ',route:'psikotes'},
- {id:'research',label:'Riset & AI',icon:'⌘',route:'research'},
- {id:'saved',label:'Favorit',icon:'★'},
- {id:'mine',label:'Ditambahkan',icon:'+'}
+ {id:'psikotes',label:'Psychometric Tests',icon:'Ψ',route:'psikotes'},
+ {id:'research',label:'Research & AI',icon:'⌘',route:'research'},
+ {id:'saved',label:'Favourites',icon:'★'},
+ {id:'mine',label:'My Resources',icon:'+'}
 ];
 const SUBJECTS=['math','english','sat','psikotes','research'];
 const normalizeUrl=url=>{
@@ -22,37 +22,37 @@ function catalog(S,englishCatalog=[]){
  const all=[],add=x=>{if(x)all.push(x)};
  for(const s of globalThis.DescaMathHub?.resources||[]){
   const isResearch=['research','ai'].includes(s.group);
-  add(row('math:'+s.id,s.name,s.url,isResearch?'research':'math','math',s.tag||s.level||'Matematika',s.desc,'Gratis / akses terbuka',s.featured));
+  add(row('math:'+s.id,s.name,s.url,isResearch?'research':'math','math',s.tag||s.level||'Mathematics',s.desc,'Free / Open Access',s.featured));
  }
  for(const s of (S?.english?.sites?.length?S.english.sites:englishCatalog)){
-  add(row('english:'+s.id,s.title||s.name,s.url,'english','english',s.skill||'English',s.description||(s.useCases||[]).join(' · '),s.tier==='core'?'Sumber utama':'Cek ketentuan akses',s.tier==='core'));
+  add(row('english:'+s.id,s.title||s.name,s.url,'english','english',s.skill||'English',s.description||(s.useCases||[]).join(' · '),s.tier==='core'?'Primary Resource':'Check Access Terms',s.tier==='core'));
  }
  for(const s of globalThis.DescaSatHub?.sites||[]){
-  add(row('sat:'+s.id,s.name,s.url,'sat','sat',s.label||s.kind,s.desc,s.cost||'Cek ketentuan akses',s.featured));
+  add(row('sat:'+s.id,s.name,s.url,'sat','sat',s.label||s.kind,s.desc,s.cost||'Check Access Terms',s.featured));
  }
- for(const s of globalThis.DescaPsikotesHub?.sites||[]){
-  add(row('psikotes:'+s.id,s.name,s.url,'psikotes','psikotes',s.tag||'Psikotes',s.desc,s.access||'Cek ketentuan akses',s.featured));
+ for(const s of globalThis.DescaPsychometric TestsHub?.sites||[]){
+  add(row('psikotes:'+s.id,s.name,s.url,'psikotes','psikotes',s.tag||'Psychometric Tests',s.desc,s.access||'Check Access Terms',s.featured));
  }
  for(const s of (Array.isArray(S?.settings?.learningCustomResources)?S.settings.learningCustomResources:[])){
-  add(row('custom:'+s.id,s.title,s.url,SUBJECTS.includes(s.category)?s.category:'research','custom','Sumber pribadi',s.note||'Tautan yang kamu simpan sendiri.','Pribadi'));
+  add(row('custom:'+s.id,s.title,s.url,SUBJECTS.includes(s.category)?s.category:'research','custom','Personal Resource',s.note||'A resource from your personal collection.','Personal'));
  }
  // One URL is one card even when the same service is registered in multiple specialist pages.
  const seen=new Set();
  return all.filter(s=>{const url=new URL(s.url),key=url.origin+url.pathname.replace(/\/+$/,'')+url.search;
   if(seen.has(key))return false;seen.add(key);return true});
 }
-function isFavorite(S,x){
+function isFavouritese(S,x){
  const settings=S.settings||{};
- if(x.source==='math')return (settings.mathFavorites||[]).includes(x.id.slice(5));
- if(x.source==='sat')return (settings.satFavorites||[]).includes(x.id.slice(4));
- if(x.source==='psikotes')return (settings.psikotesFavorites||[]).includes(x.id.slice(9));
- return (settings.learningFavorites||[]).includes(x.id);
+ if(x.source==='math')return (settings.mathFavouriteses||[]).includes(x.id.slice(5));
+ if(x.source==='sat')return (settings.satFavouriteses||[]).includes(x.id.slice(4));
+ if(x.source==='psikotes')return (settings.psikotesFavouriteses||[]).includes(x.id.slice(9));
+ return (settings.learningFavouriteses||[]).includes(x.id);
 }
-function toggleFavorite(S,item){
+function toggleFavouritese(S,item){
  if(!item)return false;
  if(!S.settings)S.settings={};
- const field=item.source==='math'?'mathFavorites':item.source==='sat'?'satFavorites':item.source==='psikotes'?'psikotesFavorites':'learningFavorites';
- const value=field==='learningFavorites'?item.id:item.id.slice(item.source.length+1);
+ const field=item.source==='math'?'mathFavouriteses':item.source==='sat'?'satFavouriteses':item.source==='psikotes'?'psikotesFavouriteses':'learningFavouriteses';
+ const value=field==='learningFavouriteses'?item.id:item.id.slice(item.source.length+1);
  const old=new Set(Array.isArray(S.settings[field])?S.settings[field]:[]);
  old.has(value)?old.delete(value):old.add(value);
  S.settings[field]=[...old];return true
@@ -60,7 +60,7 @@ function toggleFavorite(S,item){
 function filtered(S,items,category='all',query=''){
  const key=String(query||'').toLocaleLowerCase('id').trim();
  return items.filter(x=>{
-  if(category==='saved'&&!isFavorite(S,x))return false;
+  if(category==='saved'&&!isFavouritese(S,x))return false;
   if(category==='mine'&&x.source!=='custom')return false;
   if(SUBJECTS.includes(category)&&x.category!==category)return false;
   if(key&&!([x.title,x.tag,x.desc,x.access,x.category].join(' ').toLocaleLowerCase('id').includes(key)))return false;
@@ -68,33 +68,33 @@ function filtered(S,items,category='all',query=''){
  }).sort((a,b)=>{
   const ar=(S.settings?.quickResourceRecent||[]),ai=ar.indexOf(a.id),bi=ar.indexOf(b.id);
   if(ai>=0||bi>=0)return (ai<0?1000:ai)-(bi<0?1000:bi);
-  const fav=Number(isFavorite(S,b))-Number(isFavorite(S,a));
+  const fav=Number(isFavouritese(S,b))-Number(isFavouritese(S,a));
   return fav||(Number(b.featured)-Number(a.featured))||a.title.localeCompare(b.title,'id')
  })
 }
 function resultHtml({S,esc,items,category='all',query=''}) {
  const result=filtered(S,items,category,query);
  const cards=result.map(x=>{
-  const fav=isFavorite(S,x),group=CATEGORIES.find(c=>c.id===x.category)||CATEGORIES[0];
-  return '<article class="ll-resource-card"><div class="ll-card-head"><span class="ll-card-icon" aria-hidden="true">'+esc(group.icon)+'</span><div class="ll-card-tags"><span>'+esc(group.label)+'</span><span>'+esc(x.tag)+'</span></div><button type="button" class="ll-fav '+(fav?'is-fav':'')+'" data-act="libraryStar" data-id="'+esc(x.id)+'" aria-label="'+esc(fav?'Hapus favorit '+x.title:'Simpan favorit '+x.title)+'" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button>'+(x.source==='custom'?'<button type="button" class="ll-remove" data-act="libraryRemove" data-id="'+esc(x.id)+'" aria-label="Hapus '+esc(x.title)+'" title="Hapus sumber">×</button>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.desc||'Materi dan sumber untuk memperdalam belajar.')+'</p><div class="ll-card-end"><small>'+esc(x.access||'Lihat situs')+'</small><a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank">Buka Website ↗</a></div></article>';
+  const fav=isFavouritese(S,x),group=CATEGORIES.find(c=>c.id===x.category)||CATEGORIES[0];
+  return '<article class="ll-resource-card"><div class="ll-card-head"><span class="ll-card-icon" aria-hidden="true">'+esc(group.icon)+'</span><div class="ll-card-tags"><span>'+esc(group.label)+'</span><span>'+esc(x.tag)+'</span></div><button type="button" class="ll-fav '+(fav?'is-fav':'')+'" data-act="libraryStar" data-id="'+esc(x.id)+'" aria-label="'+esc(fav?'Remove from favourites: '+x.title:'Add to favourites: '+x.title)+'" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button>'+(x.source==='custom'?'<button type="button" class="ll-remove" data-act="libraryRemove" data-id="'+esc(x.id)+'" aria-label="Remove '+esc(x.title)+'" title="Remove resource">×</button>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.desc||'Learning material designed to deepen subject knowledge.')+'</p><div class="ll-card-end"><small>'+esc(x.access||'Visit Website')+'</small><a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank">Open Website ↗</a></div></article>';
  }).join('');
- const empty='<div class="ll-empty"><div class="ll-empty-icon">⌕</div><h3>Belum ada sumber yang cocok</h3><p>Coba kategori lain atau kosongkan pencarian.</p><button type="button" data-act="libraryReset" class="ll-quiet-btn">Lihat semua sumber</button></div>';
- return '<div class="ll-result-meta"><strong>'+result.length+' sumber tersedia</strong><span>'+esc(query?'Hasil untuk “'+query+'”':CATEGORIES.find(c=>c.id===category)?.label||'Semua')+'</span></div><div class="ll-resource-grid">'+(cards||empty)+'</div>'
+ const empty='<div class="ll-empty"><div class="ll-empty-icon">⌕</div><h3>No resources match your criteria</h3><p>Select another subject or clear your search.</p><button type="button" data-act="libraryReset" class="ll-quiet-btn">Browse all resources</button></div>';
+ return '<div class="ll-result-meta"><strong>'+result.length+' resources available</strong><span>'+esc(query?'Results for “'+query+'”':CATEGORIES.find(c=>c.id===category)?.label||'All')+'</span></div><div class="ll-resource-grid">'+(cards||empty)+'</div>'
 }
 function render({S,esc,head,englishCatalog=[],category='all',query=''}){
- const items=catalog(S,englishCatalog),recent=S.settings?.quickResourceRecent||[],favCount=items.filter(s=>isFavorite(S,s)).length;
+ const items=catalog(S,englishCatalog),recent=S.settings?.quickResourceRecent||[],favCount=items.filter(s=>isFavouritese(S,s)).length;
  const recentRows=recent.map(id=>items.find(x=>x.id===id)).filter(Boolean).slice(0,4);
  const summaries=CATEGORIES.filter(x=>SUBJECTS.includes(x.id));
- const overview=head('Learning Library','Satu tempat untuk website belajar, referensi, latihan, dan riset. Pilih kategori, lalu langsung buka.');
+ const overview=head('Learning Library','A unified catalogue for substantive learning, deliberate practice, and independent research. Select a discipline and explore.');
  return overview+
-  '<section class="ll-hero"><div class="ll-hero-left"><div class="ll-eyebrow">DESCA LEARNING OS · YOUR RESOURCE SPACE</div><h2>Semua sumber belajar.<br><span>Satu tempat.</span></h2><p>Dari konsep dasar hingga riset matematika, bahasa Inggris, SAT, dan psikotes. Kumpulkan referensi tanpa membuat jadwal atau daftar tugas.</p><div class="ll-hero-actions"><a href="#ll-discover">Jelajahi sumber <span aria-hidden="true">↓</span></a><button type="button" data-act="libraryAdd" class="ll-outline">+ Simpan tautan</button></div></div><div class="ll-hero-stats"><div><strong>'+items.length+'</strong><span>Sumber belajar</span></div><div><strong>'+summaries.length+'</strong><span>Bidang belajar</span></div><div><strong data-library-favorites>'+favCount+'</strong><span>Favorit</span></div></div></section>'
-  +'<section class="ll-subjects" aria-label="Kategori belajar"><div class="ll-section-top"><div><span class="ll-eyebrow">LEARNING AREAS</span><h2>Pilih bidang belajar</h2><p>Buka kategori untuk melihat sumber yang paling sesuai.</p></div></div><div class="ll-subject-grid">'+summaries.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-subject"><span class="ll-subject-icon">'+esc(c.icon)+'</span><span><b>'+esc(c.label)+'</b><small>'+items.filter(x=>x.category===c.id).length+' sumber</small></span><span class="ll-subject-arrow">↗</span></button>').join('')+'</div></section>'
-  +(recentRows.length?'<section class="ll-continue"><div class="ll-section-top"><div><span class="ll-eyebrow">CONTINUE LEARNING</span><h2>Terakhir dibuka</h2></div></div><div class="ll-continue-grid">'+recentRows.map(x=>'<a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank"><span>'+esc(CATEGORIES.find(c=>c.id===x.category)?.icon||'◈')+'</span><b>'+esc(x.title)+'</b><small>↗</small></a>').join('')+'</div></section>':'')
-  +'<section class="ll-discover" id="ll-discover"><div class="ll-section-top"><div><span class="ll-eyebrow">RESOURCE EXPLORER</span><h2>Jelajahi koleksi</h2><p>Filter dengan sekali klik, atau cari judul dan materi tertentu.</p></div><button type="button" data-act="libraryAdd" class="ll-add-secondary">+ Tambah tautan</button></div><label for="learningSearch" class="ll-search-label"><span aria-hidden="true">⌕</span><input type="search" id="learningSearch" autocomplete="off" spellcheck="false" placeholder="Cari website, topik, atau materi..." value="'+esc(query)+'" aria-label="Cari sumber belajar"></label><div class="ll-filter-row" aria-label="Filter kategori sumber">'+CATEGORIES.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-chip '+(c.id===category?'active':'')+'" aria-pressed="'+(c.id===category)+'">'+esc(c.label)+'</button>').join('')+'</div><div id="learningResults" aria-live="polite">'+resultHtml({S,esc,items,category,query})+'</div></section>'
-  +'<aside class="ll-footnote">Sumber dari halaman Matematika, English, SAT, dan Psikotes digabungkan otomatis. Favorit pada tiap halaman tersinkron di Desca OS. Status gratis/berbayar mengikuti informasi katalog dan dapat berubah di situs penyedia. Untuk berkas PDF dan catatan riset, gunakan halaman Research yang sudah ada.</aside>';
+  '<section class="ll-hero"><div class="ll-hero-left"><div class="ll-eyebrow">DESCA LEARNING OS · YOUR RESOURCE SPACE</div><h2>Every learning resource.<br><span>One destination.</span></h2><p>Progress from foundational concepts to advanced mathematical inquiry, academic English, examination preparation, and research—without administrative clutter.</p><div class="ll-hero-actions"><a href="#ll-discover">Explore resources <span aria-hidden="true">↓</span></a><button type="button" data-act="libraryAdd" class="ll-outline">+ Save a resource</button></div></div><div class="ll-hero-stats"><div><strong>'+items.length+'</strong><span>Learning resources</span></div><div><strong>'+summaries.length+'</strong><span>Learning disciplines</span></div><div><strong data-library-favorites>'+favCount+'</strong><span>Favourites</span></div></div></section>'
+  +'<section class="ll-subjects" aria-label="Learning disciplines"><div class="ll-section-top"><div><span class="ll-eyebrow">LEARNING AREAS</span><h2>Explore your disciplines</h2><p>Select a discipline to discover its most relevant resources.</p></div></div><div class="ll-subject-grid">'+summaries.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-subject"><span class="ll-subject-icon">'+esc(c.icon)+'</span><span><b>'+esc(c.label)+'</b><small>'+items.filter(x=>x.category===c.id).length+' resources</small></span><span class="ll-subject-arrow">↗</span></button>').join('')+'</div></section>'
+  +(recentRows.length?'<section class="ll-continue"><div class="ll-section-top"><div><span class="ll-eyebrow">CONTINUE LEARNING</span><h2>Recently accessed</h2></div></div><div class="ll-continue-grid">'+recentRows.map(x=>'<a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank"><span>'+esc(CATEGORIES.find(c=>c.id===x.category)?.icon||'◈')+'</span><b>'+esc(x.title)+'</b><small>↗</small></a>').join('')+'</div></section>':'')
+  +'<section class="ll-discover" id="ll-discover"><div class="ll-section-top"><div><span class="ll-eyebrow">RESOURCE EXPLORER</span><h2>Explore the collection</h2><p>Filter with a single click, or search for a particular resource or concept.</p></div><button type="button" data-act="libraryAdd" class="ll-add-secondary">+ Add a resource</button></div><label for="learningSearch" class="ll-search-label"><span aria-hidden="true">⌕</span><input type="search" id="learningSearch" autocomplete="off" spellcheck="false" placeholder="Search resources, subjects, or concepts..." value="'+esc(query)+'" aria-label="Search learning resources"></label><div class="ll-filter-row" aria-label="Filter resources by discipline">'+CATEGORIES.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-chip '+(c.id===category?'active':'')+'" aria-pressed="'+(c.id===category)+'">'+esc(c.label)+'</button>').join('')+'</div><div id="learningResults" aria-live="polite">'+resultHtml({S,esc,items,category,query})+'</div></section>'
+  +'<aside class="ll-footnote">Resources from Mathematics, English, SAT, and Psychometric Tests are consolidated automatically. Your favourites remain synchronised across sections. Access conditions are indicative and may change; consult the provider for current terms. Research papers and notes remain available in the Research workspace.</aside>';
 }
 function addForm(esc){
- return '<div class="modal-head"><div><div class="eyebrow">LEARNING LIBRARY</div><h2 id="modalTitle">Simpan sumber belajar</h2><p class="modal-subtitle">Cukup nama dan tautan. Ini opsional—sumber bawaan sudah tersedia.</p></div><button class="icon-btn" data-act="close" aria-label="Tutup">×</button></div><form id="libraryAddForm"><div class="field"><label>Nama website</label><input name="title" type="text" required minlength="2" maxlength="90" placeholder="Nama sumber belajar" autocomplete="off"></div><div class="field"><label>Link website</label><input name="url" required type="url" placeholder="https://..." inputmode="url"></div><div class="field"><label>Bidang</label><select name="category">'+CATEGORIES.filter(c=>SUBJECTS.includes(c.id)).map(c=>'<option value="'+c.id+'">'+esc(c.label)+'</option>').join('')+'</select></div><button type="submit" class="btn btn-primary" style="width:100%;margin-top:14px">Simpan sumber</button></form>';
+ return '<div class="modal-head"><div><div class="eyebrow">LEARNING LIBRARY</div><h2 id="modalTitle">Save a learning resource</h2><p class="modal-subtitle">Just a title and a link. Your curated collection is already available.</p></div><button class="icon-btn" data-act="close" aria-label="Close">×</button></div><form id="libraryAddForm"><div class="field"><label>Resource title</label><input name="title" type="text" required minlength="2" maxlength="90" placeholder="Name your resource" autocomplete="off"></div><div class="field"><label>Website URL</label><input name="url" required type="url" placeholder="https://..." inputmode="url"></div><div class="field"><label>Discipline</label><select name="category">'+CATEGORIES.filter(c=>SUBJECTS.includes(c.id)).map(c=>'<option value="'+c.id+'">'+esc(c.label)+'</option>').join('')+'</select></div><button type="submit" class="btn btn-primary" style="width:100%;margin-top:14px">Save resource</button></form>';
 }
-globalThis.DescaLearningLibrary={render,catalog,filtered,resultHtml,addForm,toggleFavorite,isFavorite,normalizeUrl,categories:CATEGORIES,subjects:SUBJECTS};
+globalThis.DescaLearningLibrary={render,catalog,filtered,resultHtml,addForm,toggleFavouritese,isFavouritese,normalizeUrl,categories:CATEGORIES,subjects:SUBJECTS};
 })();

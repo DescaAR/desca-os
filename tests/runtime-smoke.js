@@ -138,7 +138,7 @@ if(scoreData.totalTasks!==0||scoreData.completedActivities!==24)throw new Error(
 const shortcutsWithFavorites=run('today',{...richState(),settings:{...richState().settings,satFavorites:['bluebook'],psikotesFavorites:['sikotesku'],quickResourceRecent:['sat:bluebook']}}).__DESCA_TEST__.osQuickResourceLinks();
 if(!shortcutsWithFavorites.includes('SAT Bluebook')||!shortcutsWithFavorites.includes('Sikotesku'))throw new Error('Favorites and recent resources must be accessible on Home');
 const manifest=JSON.parse(fs.readFileSync('version.json','utf8'));
-if(manifest.build!==104)throw new Error('Version manifest must match build');
+if(manifest.build!==105)throw new Error('Version manifest must match build');
 if(!app.includes("fetch('./version.json?update-check='"))throw new Error('Update check must read version manifest rather than search app.js');
 if(app.includes('Build v96.'))throw new Error('Recovery page still shows an obsolete build');
 

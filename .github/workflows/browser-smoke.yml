@@ -1,0 +1,42 @@
+name: Browser UX Smoke Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.html'
+      - '*.js'
+      - '*.css'
+      - 'version.json'
+      - 'tests/browser-smoke.mjs'
+      - '.github/workflows/browser-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+      - name: Start static test server
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/desca-browser-server.log 2>&1 &
+          echo $! > /tmp/desca-browser-server.pid
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:8765/ >/dev/null; then exit 0; fi
+            sleep 0.5
+          done
+          cat /tmp/desca-browser-server.log
+          exit 1
+      - name: Run real-browser smoke tests
+        run: node tests/browser-smoke.mjs
+      - name: Show server logs if failed
+        if: failure()
+        run: cat /tmp/desca-browser-server.log || true

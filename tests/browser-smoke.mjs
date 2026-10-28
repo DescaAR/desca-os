@@ -12,9 +12,10 @@ async function visit(route){await page.goto(origin+'#'+route,{waitUntil:'domcont
 async function noRenderError(){assert.equal(await page.locator('.render-error-card').count(),0,'Page should not show a render error');}
 try{
   await visit('today');
+  assert.equal(await page.locator('html').getAttribute('lang'),'en','The document language must be English');
   await page.locator('.os-shortcut-library').waitFor();
   assert.ok(await page.locator('.os-shortcut-link').count()>=4,'Home should have accessible resource shortcuts');
-  assert.ok((await page.locator('#page').innerText()).includes('Persiapan S2'),'Home must retain the S2 goal');
+  assert.ok((await page.locator('#page').innerText()).includes('Postgraduate Preparation'),'Home must retain the S2 goal');
   await noRenderError();
 
   await visit('library');

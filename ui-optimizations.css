@@ -71,3 +71,12 @@ html[data-theme="dark"] .os-academic-group,html[data-theme="dark"] .os-shortcut-
   #page .os-s2-home-card>strong{min-width:0;max-width:100%;font-size:clamp(24px,7vw,32px)}
   #page .os-home-archive .os-tab-row{max-width:100%;overflow-x:auto}
 }
+
+/* High-specificity responsive reset for legacy desktop sidebar and search widths. */
+@media(max-width:820px){
+  html body .app-shell>.main,
+  html body .app-shell.collapsed>.main{margin-left:0!important;width:100%!important;max-width:100%!important;min-width:0!important}
+  html body .topbar .top-actions #searchOpen{width:36px!important;max-width:36px!important;min-width:36px!important;flex:0 0 36px!important;flex-basis:36px!important;white-space:nowrap!important;overflow:hidden!important;padding:0!important}
+  html body .topbar .top-actions #searchOpen>.search-label,
+  html body .topbar .top-actions #searchOpen>kbd{display:none!important}
+}

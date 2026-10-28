@@ -59,3 +59,15 @@ html[data-theme="dark"] .os-academic-group,html[data-theme="dark"] .os-shortcut-
   .topbar #themeToggle,.topbar .notification-bell>span{font-size:18px!important}
   .topbar .mobile-menu{flex:none}
 }
+
+/* Additional layout guard: override legacy ID-based button widths on small screens. */
+@media(max-width:600px){
+  #searchOpen{width:34px!important;min-width:34px!important;max-width:34px!important;flex:0 0 34px!important;padding:0!important;justify-content:center!important}
+  #searchOpen .search-label,#searchOpen kbd{display:none!important}
+  .topbar>div:first-child{flex:0 1 135px!important;max-width:135px!important;min-width:0!important}
+  .topbar .crumb{max-width:85px!important}
+  .main,.page,#page{min-width:0;max-width:100%;box-sizing:border-box}
+  #page .os-goal-spotlight,#page .os-s2-spotlight,#page .os-s2-home-card,#page .os-home-archive{min-width:0;max-width:100%;box-sizing:border-box}
+  #page .os-s2-home-card>strong{min-width:0;max-width:100%;font-size:clamp(24px,7vw,32px)}
+  #page .os-home-archive .os-tab-row{max-width:100%;overflow-x:auto}
+}

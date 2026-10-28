@@ -41,7 +41,7 @@
 .sat-site-card:hover{transform:translateY(-2px);border-color:var(--app-border-strong,var(--line))}
 .sat-site-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .sat-site-avatar{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;border:1px solid color-mix(in srgb,var(--app-blue) 17%,var(--app-border));background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue));font-size:19px;font-weight:850}
-.sat-star{width:37px;height:37px;display:grid;place-items:center;border:1px solid var(--app-border,var(--line));background:var(--app-surface-2,var(--soft));border-radius:11px;color:var(--app-muted,var(--muted));font:23px/1 inherit;cursor:pointer}
+.sat-star{width:37px;height:37px;display:grid;place-items:center;border:1px solid var(--app-border,var(--line));background:var(--app-surface-2,var(--soft));border-radius:11px;color:var(--app-muted,var(--muted));font-size:23px;line-height:1;font-family:inherit;cursor:pointer}
 .sat-star.active{color:#95610a!important;background:#fff4d3!important;border-color:#ebd49a!important}
 .sat-site-card h3{margin:0 0 8px;color:var(--app-text,var(--text))!important;overflow-wrap:anywhere;font-size:15px;font-weight:850;line-height:1.35;letter-spacing:-.03em}
 .sat-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 11px}

@@ -122,8 +122,8 @@ if(!own.some(x=>x.id==='custom:x1'))throw Error('Personal study resources not li
 if(!hub.filtered(afterCustom,own,'mine').some(x=>x.id==='custom:x1'))throw Error('Personal filter not functional');
 
 const academicOptimized=run('academic',richState()).document.querySelector('#page').innerHTML;
-if(!academicOptimized.includes('Learning &amp; Tests')&&!academicOptimized.includes('Learning & Tests'))throw new Error('Academic Learning group missing');
-if(!academicOptimized.includes('Academic &amp; Research')&&!academicOptimized.includes('Academic & Research'))throw new Error('Academic Research group missing');
+if(!academicOptimized.includes('Learning &amp; Assessment')&&!academicOptimized.includes('Learning & Assessment'))throw new Error('Academic Learning group missing');
+if(!academicOptimized.includes('Academia &amp; Research')&&!academicOptimized.includes('Academia & Research'))throw new Error('Academic Research group missing');
 if(!academicOptimized.includes('Other Resources'))throw new Error('Academic third group missing');
 const homeOptimized=run('today',richState()).document.querySelector('#page').innerHTML;
 if(!homeOptimized.includes('os-shortcut-library')||!homeOptimized.includes('Volingo')||!homeOptimized.includes('SAT Bluebook'))throw new Error('Home one-click learning shortcuts missing');
@@ -147,7 +147,7 @@ if(!taskUI.includes('s2-prep-card')||taskUI.includes('os-task-workspace')||taskU
 const taskRouteUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
 if(!taskRouteUI.includes('s2-prep-card')||taskRouteUI.includes('os-task-workspace'))throw new Error('Legacy Tasks route must redirect to Goals');
 const goalsUI=run('goals',richState()).document.querySelector('#page').innerHTML;
-if(!goalsUI.includes('Persiapan S2')||!goalsUI.includes('s2-prep-card')||!goalsUI.includes('s2-document')||!goalsUI.includes('s2-pipeline')||goalsUI.includes('Goal Baru')||goalsUI.includes('goal-detail'))throw new Error('Goals must only contain S2 preparation');
+if(!goalsUI.includes('Postgraduate Preparation')||!goalsUI.includes('s2-prep-card')||!goalsUI.includes('s2-document')||!goalsUI.includes('s2-pipeline')||goalsUI.includes('Goal Baru')||goalsUI.includes('goal-detail'))throw new Error('Goals must only contain S2 preparation');
 if(goalsUI.includes('goal-linked-tasks')||goalsUI.includes('LINKED TASKS'))throw new Error('Task list must not appear within Goals');
 const focusedS2=run('goals',richState()).__DESCA_TEST__.S;
 if(focusedS2.goals.some(g=>!(/\\bS2\\b|pascasarjana|master|magister/i.test(g.title)||g.baselineKey==='s2')))throw new Error('Non-S2 goals must no longer be active');
@@ -158,11 +158,11 @@ if(!s2Spotlight.includes('os-s2-home-card')||s2Spotlight.includes('Goals in prog
 const homeNavigation=run('today',richState()).document.querySelector('#sideNav').innerHTML;
 if(homeNavigation.includes('data-route="tasks"')||!homeNavigation.includes('data-route="goals"'))throw new Error('Primary navigation must replace Tasks with Goals');
 const studyUI=run('study',richState()).document.querySelector('#page').innerHTML;
-if(!studyUI.includes('Analisis Belajar')||!studyUI.includes('os-advanced-disclosure')||!studyUI.includes('Topic Mastery'))throw new Error('Study core/advanced layout missing');
+if(!studyUI.includes('Learning Analytics')||!studyUI.includes('os-advanced-disclosure')||!studyUI.includes('Topic Mastery'))throw new Error('Study core/advanced layout missing');
 const researchUI=run('research',richState()).document.querySelector('#page').innerHTML;
 if(!researchUI.includes('Graf &amp; Analisis Riset')&&!researchUI.includes('Graf & Analisis Riset'))throw new Error('Research graph disclosure missing');
 const englishUI=run('english',richState()).document.querySelector('#page').innerHTML;
-if(!englishUI.includes('https://app.volingo.my.id/')||!englishUI.includes('Jelajahi 7 Kategori'))throw new Error('English quick-start/disclosure missing');
+if(!englishUI.includes('https://app.volingo.my.id/')||!englishUI.includes('Explore Seven Learning Categories'))throw new Error('English quick-start/disclosure missing');
 const financeUI=run('finance',richState()).document.querySelector('#page').innerHTML;
 if(!financeUI.includes('data-act="osExpenseQuick"')||!financeUI.includes('data-act="osIncomeQuick"')||!financeUI.includes('Laporan Keuangan Lengkap'))throw new Error('Finance quick workflow missing');
 const academicTabs=run('academic',richState()).document.querySelector('#page').innerHTML;
@@ -240,7 +240,7 @@ console.log('Light-theme contrast smoke OK: readable surface tokens and preserve
 // v97 regression: Review hero must not inherit white .card background,
 // and Daily Score must use a contrasting dark centre under the numeric label.
 const lightReview=run('reviews',richState()).document.querySelector('#page').innerHTML;
-if(!lightReview.includes('class="card review-hero"')||!lightReview.includes('class="review-number"')||!lightReview.includes('Aktivitas dicatat')||!lightReview.includes('Sesi belajar & English'))throw new Error('Review must show a legible activity-first weekly summary');
+if(!lightReview.includes('class="card review-hero"')||!lightReview.includes('class="review-number"')||!lightReview.includes('Activities Recorded')||!lightReview.includes('Study & English Sessions'))throw new Error('Review must show a legible activity-first weekly summary');
 if(lightReview.includes('+ Planning Horizon')||lightReview.includes('routine adherence')||lightReview.includes('tasks completed'))throw new Error('Review header must not surface removed task/planning controls');
 const ringHome=run('today',richState()).document.querySelector('#page').innerHTML;
 if(!ringHome.includes('class="score-ring"')||!ringHome.includes('class="score-copy"'))throw new Error('Home Daily Score widget missing');
@@ -264,7 +264,7 @@ const targetForms=[
 for(const [label,markup] of targetForms){
   if(markup.includes('Target tanggal')||/name="(?:due|targetDate)"\s+type="date"/i.test(markup)||/type="date"\s+name="(?:due|targetDate)"/i.test(markup))throw new Error(label+' still exposes Target tanggal');
 }
-if(!targetForms[2][1].includes('name="targetDays"')||!targetForms[2][1].includes('Selesai dalam (hari)'))throw new Error('Reading must still support a days-based goal');
+if(!targetForms[2][1].includes('name="targetDays"')||!targetForms[2][1].includes('Finish Within (days)'))throw new Error('Reading must still support a days-based goal');
 if(noDateUI.s2DocumentSection().includes('Belum diberi target tanggal')||noDateUI.s2DocumentSection().includes('linked task'))throw new Error('S2 documents should have no date or task schedule information');
 const noDateGoals=run('goals',richState()).document.querySelector('#page').innerHTML;
 if(noDateGoals.includes('Target tanggal')||noDateGoals.includes('Belum diberi target tanggal'))throw new Error('S2 Goals still displays target date labels');
@@ -274,13 +274,13 @@ console.log('Target tanggal removal smoke OK: S2, books, study and finance');
 // v99 Mathematics Hub: all 22 provided websites + 10 essential sources + complete S1–S3 path.
 const mathApp=run('math',richState());
 const mathHtml=mathApp.document.querySelector('#page').innerHTML;
-if(!mathHtml.includes('Matematika')||!mathHtml.includes('math-hero')||!mathHtml.includes('math-filter-bar')||!mathHtml.includes('math-learning-path'))throw new Error('Matematika workspace missing');
-if((mathHtml.match(/class="math-resource-card"/g)||[]).length!==10)throw new Error('Matematika must default to 10 recommended references');
+if(!mathHtml.includes('Mathematics')||!mathHtml.includes('math-hero')||!mathHtml.includes('math-filter-bar')||!mathHtml.includes('math-learning-path'))throw new Error('Mathematics workspace missing');
+if((mathHtml.match(/class="math-resource-card"/g)||[]).length!==10)throw new Error('Mathematics must default to 10 recommended references');
 if(!mathHtml.includes('href="https://ocw.mit.edu/"')||!mathHtml.includes('href="https://arxiv.org/archive/math"')||!mathHtml.includes('href="https://sagecell.sagemath.org/"'))throw new Error('Reference links not rendered');
 if(!mathHtml.includes('target="_blank" rel="noopener noreferrer"'))throw new Error('External reference links need safe new-tab attributes');
-if(!mathHtml.includes('data-act="mathStar"')||!mathHtml.includes('data-act="mathFilter"'))throw new Error('Matematika favorite/filter controls missing');
+if(!mathHtml.includes('data-act="mathStar"')||!mathHtml.includes('data-act="mathFilter"'))throw new Error('Mathematics favorite/filter controls missing');
 const mathLib=mathApp.DescaMathHub;
-if(!mathLib||mathLib.resources.length!==22||mathLib.resources.filter(x=>x.featured).length!==10||mathLib.roadmap.length!==5||mathLib.groups.length!==8)throw new Error('Matematika catalog or learning path incomplete');
+if(!mathLib||mathLib.resources.length!==22||mathLib.resources.filter(x=>x.featured).length!==10||mathLib.roadmap.length!==5||mathLib.groups.length!==8)throw new Error('Mathematics catalog or learning path incomplete');
 if(mathLib.resources.some(x=>!x.name||!/^https:\/\//.test(x.url)||!x.desc))throw new Error('Math catalog item missing title, HTTPS link or description');
 if(new Set(mathLib.resources.map(x=>x.id)).size!==22)throw new Error('Duplicated Math resource identifiers');
 for(const id of ['mit','libretexts','openlogic','aim','proofwiki','3b1b','hatcher','spielman','stacks','nlab','lean','arxiv','zbmath','mathoverflow','mathse','openalex','sagecell','sagemath','networkx','mathlib','chatgpt','gemini']){
@@ -288,9 +288,9 @@ for(const id of ['mit','libretexts','openlogic','aim','proofwiki','3b1b','hatche
 }
 const mathCss=fs.readFileSync('math-hub.css','utf8');
 for(const selector of ['.math-hero{','.math-resource-grid{','.math-star{','.math-learning-path{','.math-filter{']){
-  if(!mathCss.includes(selector))throw new Error('Matematika responsive stylesheet missing '+selector);
+  if(!mathCss.includes(selector))throw new Error('Mathematics responsive stylesheet missing '+selector);
 }
-if(mathApp.__DESCA_TEST__.commandParse('buka matematika')?.route!=='math')throw new Error('Matematika command route missing');
-console.log('Matematika Hub verified: 22 sources, 10 featured, 5 roadmap stages, filters, favorites, accessibility');
+if(mathApp.__DESCA_TEST__.commandParse('buka matematika')?.route!=='math')throw new Error('Mathematics command route missing');
+console.log('Mathematics Hub verified: 22 sources, 10 featured, 5 roadmap stages, filters, favorites, accessibility');
 
 console.log('Runtime smoke OK:',routes.length,'routes x 2 states =',routes.length*2,'renders + interaction checks');

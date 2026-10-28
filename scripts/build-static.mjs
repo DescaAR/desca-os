@@ -3,13 +3,13 @@ import {mkdir,cp,readFile,writeFile,rm,stat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {transform} from 'esbuild';
 
-const build=102;
+const build=103;
 const out='dist';
 await rm(out,{recursive:true,force:true});
 await mkdir(out,{recursive:true});
 const copyNames=['index.html','sw.js','manifest.webmanifest','version.json','runtime-guard.js',
-  'math-hub.js','sat-hub.js','psikotes-hub.js'];
-const cssNames=['styles.css','ui-v21.css','math-hub.css','sat-hub.css','psikotes-hub.css','ui-optimizations.css'];
+  'math-hub.js','sat-hub.js','psikotes-hub.js','learning-library.js'];
+const cssNames=['styles.css','ui-v21.css','math-hub.css','sat-hub.css','psikotes-hub.css','ui-optimizations.css','learning-library.css'];
 for(const file of copyNames)await cp(file,join(out,file));
 for(const folder of ['assets','modules'])await cp(folder,join(out,folder),{recursive:true});
 

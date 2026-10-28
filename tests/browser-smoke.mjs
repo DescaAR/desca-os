@@ -132,7 +132,7 @@ try{
 
   // Language-quality audit of actually rendered UI; do not alter user-generated data.
   await page.setViewportSize({width:1280,height:800});
-  const languageRoutes=['today','goals','library','math','english','sat','psikotes','academic','study','research','projects','dmath','books','life','quran','running','health','work','finance','journal','settings','reviews','progress'];
+  const languageRoutes=['today','goals','library','math','english','sat','psikotes','academic','study','research','projects','dmath','books','life','quran','running','health','work','finance','journal','settings','reviews','progress','timeline','analytics','notifications','recovery','vault'];
   const indoUI=/\b(?:belajar|sumber|halaman|semua|tambah|simpan|hapus|pilih|buka|latihan|pembahasan|lanjutkan|mulai|selesai|belum|sudah|rencana|persiapan|tugas|kegiatan|berkas|waktu|hari|bulan|minggu|nilai|catatan|keuangan|penghasilan|pemasukan|pengeluaran|tercatat|kembali|ketika|dengan|untuk|yang|dari|tanpa|atau|juga|jika|bukan|dalam|hanya|sekarang|kamu|kalian|sebaiknya|membaca|tidak|kebutuhan|diisi|berikutnya|diperbarui|tersimpan|kosong|lokasi|kota|wajib|sholat|ibadah|kesiapan|kampus|ditinjau|pendanaan|dokumen|kerjakan|terkumpul|contoh|perencanaan|penting|istirahat|pembayaran|keberhasilan|kegagalan|langkah|mendukung|pemulihan|notifikasi|terbaru|pencatatan|pembaruan|berikutnya|pengaturan|menyimpan|memuat|menghapus|penelitian|universitas|persyaratan|pendaftaran|menggunakan|dihitung|dibutuhkan|dijadwalkan|spontan|berdasarkan|manfaat)\b/i;
   let languageFindings=0;
   for(const pageRoute of languageRoutes){
@@ -162,7 +162,7 @@ try{
     ['quran',['newQuranEntry','logQuranSession']],
     ['running',['newSport','sportsSettings','newRun']],
     ['work',['newWorkJob','workSession','workPayment']],
-    ['finance',['newFinance','newBudget','newDebt','newFinanceGoal']],
+    ['finance',['newFinance','newBudget','newDebt','newFinanceGoal','newInvestment']],
     ['dmath',['newDMathContent']],
     ['settings',['customPomodoro']]
   ];

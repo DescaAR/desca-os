@@ -55,6 +55,10 @@ try{
   await page.locator('.os-shortcut-library').waitFor();
   await noRenderError();
   const bounds=await page.evaluate(()=>({viewport:document.documentElement.clientWidth,full:document.documentElement.scrollWidth}));
+  if(bounds.full>bounds.viewport+5){
+    const offenders=await page.evaluate(()=>Array.from(document.querySelectorAll('body *')).map(el=>({tag:el.tagName,cls:typeof el.className==='string'?el.className.slice(0,105):'',width:Math.round(el.getBoundingClientRect().width),right:Math.round(el.getBoundingClientRect().right),left:Math.round(el.getBoundingClientRect().left)})).filter(x=>x.right>document.documentElement.clientWidth+10&&x.left>=0).sort((a,b)=>b.right-a.right).slice(0,16));
+    console.error('Mobile horizontal overflow offenders:',JSON.stringify(offenders));
+  }
   assert.ok(bounds.full<=bounds.viewport+5,'Home should not overflow horizontally on mobile: '+JSON.stringify(bounds));
   await visit('academic');
   await noRenderError();

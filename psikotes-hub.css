@@ -1,0 +1,77 @@
+/* Desca OS · Psikotes Resource Hub. Tokens adapt to light/dark themes. */
+.psy-kicker{font-size:10px;letter-spacing:.13em;font-weight:850;color:var(--app-blue,#3767e9);display:block}
+.psy-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:23px;align-items:center;overflow:hidden;border-radius:23px;padding:clamp(24px,3.4vw,38px);background:radial-gradient(circle at 92% 3%,rgba(82,189,209,.24),transparent 40%),radial-gradient(circle at 5% 95%,rgba(73,146,244,.17),transparent 40%),linear-gradient(123deg,#13274b,#163d69 65%,#20536f);border:1px solid #306077;color:#fff;box-shadow:0 17px 38px rgba(18,48,76,.13)}
+.psy-hero:after{content:"Ψ";position:absolute;right:17%;top:-90px;font-size:280px;font-weight:800;color:rgba(255,255,255,.04);pointer-events:none}
+.psy-hero>*{position:relative;z-index:1;min-width:0}
+.psy-hero .psy-kicker{color:#9bedef}
+.psy-hero h2{font-size:clamp(27px,2.95vw,40px);font-weight:850;letter-spacing:-.057em;line-height:1.16;color:white!important;margin:9px 0 13px}
+.psy-hero p{font-size:13px;line-height:1.77;max-width:640px;color:#e1effe!important;margin:0}
+.psy-hero-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.psy-hero-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 15px;background:#ebf8ff;color:#143963!important;font-size:12px;font-weight:820;text-decoration:none;border-radius:11px}
+.psy-hero-actions a+a{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.27);color:#fff!important}
+.psy-hero-actions a:hover{background:#fff}
+.psy-hero-actions a+a:hover{background:rgba(255,255,255,.22)}
+.psy-hero-metrics{display:grid;gap:10px}
+.psy-hero-metrics>div{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 15px;min-height:60px;border-radius:14px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.18)}
+.psy-hero-metrics strong{font-size:27px;color:#fff;font-weight:850;letter-spacing:-.045em}
+.psy-hero-metrics span{font-size:11px;color:#e4f2ff;font-weight:730;text-align:right}
+.psy-library,.psy-topic-section,.psy-roadmap{margin-top:29px}
+.psy-section-head,.psy-roadmap-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+.psy-section-head h2,.psy-roadmap-heading h2{font-size:clamp(19px,1.8vw,25px);font-weight:850;letter-spacing:-.05em;color:var(--app-text,var(--text))!important;margin:4px 0 6px}
+.psy-section-head p,.psy-roadmap-heading p{font-size:12px;line-height:1.65;color:var(--app-muted,var(--muted))!important;margin:0}
+.psy-filter-wrap{overflow-x:auto;padding-bottom:5px;scrollbar-width:thin;margin-bottom:12px}
+.psy-filter-bar{display:flex;gap:8px;align-items:center;min-width:max-content}
+.psy-filter{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:39px;padding:8px 12px;border-radius:10px;border:1px solid var(--app-border-strong,var(--line));background:var(--app-surface,var(--card));color:var(--app-text-2,var(--text));font-family:inherit;font-weight:740;font-size:11.5px;white-space:nowrap;cursor:pointer}
+.psy-filter:hover{border-color:var(--app-blue,var(--blue))}
+.psy-filter.active{border-color:var(--app-blue,var(--blue));color:var(--app-blue,var(--blue));background:var(--app-blue-soft,var(--soft))}
+.psy-filter span{font-size:10px;background:var(--app-surface-2,var(--soft));border-radius:5px;padding:2px 5px}
+.psy-list-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.psy-list-meta strong{font-size:13px;color:var(--app-text,var(--text))}
+.psy-list-meta>span{font-size:11px;color:var(--app-muted,var(--muted))}
+.psy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.psy-site{display:flex;flex-direction:column;min-width:0;min-height:284px;border:1px solid var(--app-border,var(--line));background:var(--app-surface,var(--card));border-radius:19px;padding:19px;box-shadow:var(--app-shadow-sm,0 5px 18px rgba(20,40,75,.05));transition:transform .15s,border-color .15s}
+.psy-site:hover{transform:translateY(-2px);border-color:var(--app-border-strong,var(--line))}
+.psy-site-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.psy-mark{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:var(--app-blue-soft,var(--soft));border:1px solid var(--app-border,var(--line));font-size:19px;font-weight:850;color:var(--app-blue,var(--blue))}
+.psy-star{display:grid;place-items:center;width:37px;height:37px;flex:none;cursor:pointer;font-family:inherit;font-size:23px;line-height:1;border:1px solid var(--app-border,var(--line));border-radius:11px;background:var(--app-surface-2,var(--soft));color:var(--app-muted,var(--muted))}
+.psy-star.selected{color:#946009!important;background:#fff4d3!important;border-color:#ecd49a!important}
+.psy-site h3{font-size:15px;font-weight:840;letter-spacing:-.03em;line-height:1.4;color:var(--app-text,var(--text))!important;margin:0 0 9px;overflow-wrap:anywhere}
+.psy-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.psy-tags span{border:1px solid var(--app-border,var(--line));border-radius:7px;background:var(--app-surface-2,var(--soft));color:var(--app-text-2,var(--text));font-size:10px;font-weight:740;line-height:1.4;padding:4px 7px}
+.psy-site p{font-size:12px!important;line-height:1.68!important;color:var(--app-muted,var(--muted))!important;margin:0 0 12px;flex:1}
+.psy-caps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 13px}
+.psy-caps span{font-size:10px;color:var(--app-blue,var(--blue));font-weight:710;padding:4px 7px;background:var(--app-blue-soft,var(--soft));border-radius:7px}
+.psy-site-bottom{display:flex;align-items:center;justify-content:space-between;gap:7px;border-top:1px solid var(--app-border,var(--line));padding-top:13px}
+.psy-site-bottom small{color:var(--app-muted,var(--muted));font-size:10px;line-height:1.5;font-weight:730}
+.psy-site-bottom a{flex:none;display:inline-flex;align-items:center;min-height:35px;padding:7px 10px;border-radius:9px;background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue))!important;text-decoration:none;font-size:11px;font-weight:800}
+.psy-site-bottom a:hover{background:var(--app-blue,var(--blue));color:white!important}
+.psy-empty{grid-column:1/-1;text-align:center;padding:35px;border:1px dashed var(--app-border-strong,var(--line));border-radius:17px;background:var(--app-surface,var(--card))}
+.psy-empty strong{font-size:15px;color:var(--app-text,var(--text))}
+.psy-empty p{font-size:12px;color:var(--app-muted,var(--muted))}
+.psy-topic-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.psy-topic{position:relative;min-height:136px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:16px;border:1px solid var(--app-border,var(--line));border-radius:15px;background:var(--app-surface,var(--card));font-family:inherit;cursor:pointer}
+.psy-topic:hover{border-color:var(--app-blue,var(--blue));background:var(--app-surface-2,var(--soft))}
+.psy-topic b{display:block;margin:0 20px 6px 0;color:var(--app-text,var(--text));font-size:12px;font-weight:810}
+.psy-topic small{color:var(--app-text-2,var(--text));font-size:11px;line-height:1.45;margin:0 0 10px}
+.psy-topic>span:last-child{font-size:10px;line-height:1.5;font-weight:720;color:var(--app-blue,var(--blue));margin-top:auto}
+.psy-topic-arrow{position:absolute;right:14px;top:13px;color:var(--app-muted,var(--muted))}
+.psy-roadmap{padding:23px;border:1px solid var(--app-border,var(--line));border-radius:21px;background:var(--app-surface,var(--card))}
+.psy-roadmap-counter{display:flex;flex-direction:column;text-align:right;flex:none}
+.psy-roadmap-counter strong{font-size:22px;font-weight:850;color:var(--app-text,var(--text))}
+.psy-roadmap-counter small{font-size:10px;color:var(--app-muted,var(--muted))}
+.psy-progress{height:7px;border-radius:99px;background:var(--app-surface-3,var(--soft));overflow:hidden;margin-bottom:18px}
+.psy-progress span{display:block;height:100%;background:var(--app-blue,var(--blue));border-radius:99px;transition:width .16s}
+.psy-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.psy-stage{display:flex;align-items:flex-start;gap:11px;padding:15px;border:1px solid var(--app-border,var(--line));border-radius:13px}
+.psy-stage.done{background:color-mix(in srgb,#1a9f82 6%,var(--app-surface));border-color:color-mix(in srgb,#1a9f82 36%,var(--app-border))}
+.psy-step-check{width:34px;height:34px;flex:none;border-radius:10px;background:var(--app-surface-2,var(--soft));border:1px solid var(--app-border-strong,var(--line));color:var(--app-text,var(--text));font-family:inherit;font-size:20px;cursor:pointer}
+.psy-stage.done .psy-step-check{color:#fff;background:#178b77;border-color:#178b77}
+.psy-stage h3{margin:0 0 6px;font-size:13px;font-weight:830;line-height:1.4;color:var(--app-text,var(--text))}
+.psy-stage p{margin:0 0 9px;font-size:11.5px;line-height:1.6;color:var(--app-muted,var(--muted))!important}
+.psy-stage a{font-size:11px;font-weight:810;color:var(--app-blue,var(--blue))!important;text-decoration:none}
+.psy-note{margin:19px 0 27px;padding:15px 18px;border-radius:0 12px 12px 0;border-left:3px solid var(--app-blue,var(--blue));background:var(--app-surface-2,var(--soft));color:var(--app-text-2,var(--text));font-size:11.5px;line-height:1.75}
+.psy-hero-actions a:focus-visible,.psy-filter:focus-visible,.psy-star:focus-visible,.psy-site-bottom a:focus-visible,.psy-topic:focus-visible,.psy-step-check:focus-visible,.psy-stage a:focus-visible{outline:3px solid var(--app-cyan,#39cddc);outline-offset:3px}
+@media(max-width:1100px){.psy-topic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:950px){.psy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.psy-hero{grid-template-columns:1fr}.psy-hero-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.psy-hero-metrics>div{display:block;padding:10px 6px;min-height:0;text-align:center}.psy-hero-metrics span{display:block;text-align:center}.psy-stage-grid{grid-template-columns:1fr}}
+@media(max-width:540px){.psy-grid,.psy-topic-grid{grid-template-columns:1fr}.psy-hero h2{font-size:29px}.psy-hero{padding:23px}.psy-topic{min-height:108px}.psy-roadmap{padding:17px}.psy-hero-metrics span{font-size:10px}.psy-site{min-height:0}}

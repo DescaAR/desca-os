@@ -8,6 +8,8 @@ const CATEGORIES=[
  {id:'sat',label:'SAT',icon:'SAT',route:'sat'},
  {id:'psikotes',label:'Psychometric Tests',icon:'Ψ',route:'psikotes'},
  {id:'research',label:'Research & AI',icon:'⌘',route:'research'},
+ {id:'advanced',label:'Advanced Study',icon:'∫'},
+ {id:'recent',label:'Recently Opened',icon:'↗'},
  {id:'saved',label:'Favourites',icon:'★'},
  {id:'mine',label:'My Resources',icon:'+'}
 ];
@@ -15,14 +17,14 @@ const SUBJECTS=['math','english','sat','psikotes','research'];
 const normalizeUrl=url=>{
  try{const u=new URL(String(url||'').trim());if(!['https:','http:'].includes(u.protocol)||u.username||u.password)return'';return u.href}catch{return''}
 };
-const row=(id,title,url,category,source,tag,desc,access='',featured=false)=>{
- const link=normalizeUrl(url);return link?{id:String(id),title:String(title||''),url:link,category,source,tag:String(tag||category),desc:String(desc||''),access:String(access||''),featured:!!featured}:null
+const row=(id,title,url,category,source,tag,desc,access='',featured=false,stage='')=>{
+ const link=normalizeUrl(url);return link?{id:String(id),title:String(title||''),url:link,category,source,tag:String(tag||category),desc:String(desc||''),access:String(access||''),featured:!!featured,stage:String(stage||'')}:null
 };
 function catalog(S,englishCatalog=[]){
  const all=[],add=x=>{if(x)all.push(x)};
  for(const s of globalThis.DescaMathHub?.resources||[]){
   const isResearch=['research','ai'].includes(s.group);
-  add(row('math:'+s.id,s.name,s.url,isResearch?'research':'math','math',s.tag||s.level||'Mathematics',s.desc,'Free / Open Access',s.featured));
+  add(row('math:'+s.id,s.name,s.url,isResearch?'research':'math','math',s.tag||s.level||'Mathematics',s.desc,'Free / Open Access',s.featured,s.group));
  }
  for(const s of (S?.english?.sites?.length?S.english.sites:englishCatalog)){
   add(row('english:'+s.id,s.title||s.name,s.url,'english','english',s.skill||'English',s.description||(s.useCases||[]).join(' · '),s.tier==='core'?'Primary Resource':'Check Access Terms',s.tier==='core'));
@@ -57,23 +59,27 @@ function toggleFavorite(S,item){
  old.has(value)?old.delete(value):old.add(value);
  S.settings[field]=[...old];return true
 }
-function filtered(S,items,category='all',query=''){
- const key=String(query||'').toLocaleLowerCase('id').trim();
+function filtered(S,items,category='all',query='',sort='recommended'){
+ const key=String(query||'').toLocaleLowerCase('en').trim();
+ const recent=Array.isArray(S.settings?.quickResourceRecent)?S.settings.quickResourceRecent:[];
  return items.filter(x=>{
   if(category==='saved'&&!isFavorite(S,x))return false;
   if(category==='mine'&&x.source!=='custom')return false;
+  if(category==='recent'&&!recent.includes(x.id))return false;
+  if(category==='advanced'&&!(x.stage==='advanced'||x.category==='research'))return false;
   if(SUBJECTS.includes(category)&&x.category!==category)return false;
   if(key&&!([x.title,x.tag,x.desc,x.access,x.category].join(' ').toLocaleLowerCase('id').includes(key)))return false;
   return true;
  }).sort((a,b)=>{
-  const ar=(S.settings?.quickResourceRecent||[]),ai=ar.indexOf(a.id),bi=ar.indexOf(b.id);
+  if(sort==='alphabetical')return a.title.localeCompare(b.title,'en',{sensitivity:'base'});
+  const ai=recent.indexOf(a.id),bi=recent.indexOf(b.id);
   if(ai>=0||bi>=0)return (ai<0?1000:ai)-(bi<0?1000:bi);
   const fav=Number(isFavorite(S,b))-Number(isFavorite(S,a));
-  return fav||(Number(b.featured)-Number(a.featured))||a.title.localeCompare(b.title,'id')
+  return fav||(Number(b.featured)-Number(a.featured))||a.title.localeCompare(b.title,'en',{sensitivity:'base'})
  })
 }
-function resultHtml({S,esc,items,category='all',query=''}) {
- const result=filtered(S,items,category,query);
+function resultHtml({S,esc,items,category='all',query='',sort='recommended'}) {
+ const result=filtered(S,items,category,query,sort);
  const cards=result.map(x=>{
   const fav=isFavorite(S,x),group=CATEGORIES.find(c=>c.id===x.category)||CATEGORIES[0];
   return '<article class="ll-resource-card"><div class="ll-card-head"><span class="ll-card-icon" aria-hidden="true">'+esc(group.icon)+'</span><div class="ll-card-tags"><span>'+esc(group.label)+'</span><span>'+esc(x.tag)+'</span></div><button type="button" class="ll-fav '+(fav?'is-fav':'')+'" data-act="libraryStar" data-id="'+esc(x.id)+'" aria-label="'+esc(fav?'Remove from favourites: '+x.title:'Add to favourites: '+x.title)+'" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button>'+(x.source==='custom'?'<button type="button" class="ll-remove" data-act="libraryRemove" data-id="'+esc(x.id)+'" aria-label="Remove '+esc(x.title)+'" title="Remove resource">×</button>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.desc||'Learning material designed to deepen subject knowledge.')+'</p><div class="ll-card-end"><small>'+esc(x.access||'Visit Website')+'</small><a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank">Open Website ↗</a></div></article>';
@@ -81,7 +87,7 @@ function resultHtml({S,esc,items,category='all',query=''}) {
  const empty='<div class="ll-empty"><div class="ll-empty-icon">⌕</div><h3>No resources match your criteria</h3><p>Select another subject or clear your search.</p><button type="button" data-act="libraryReset" class="ll-quiet-btn">Browse all resources</button></div>';
  return '<div class="ll-result-meta"><strong>'+result.length+' resources available</strong><span>'+esc(query?'Results for “'+query+'”':CATEGORIES.find(c=>c.id===category)?.label||'All')+'</span></div><div class="ll-resource-grid">'+(cards||empty)+'</div>'
 }
-function render({S,esc,head,englishCatalog=[],category='all',query=''}){
+function render({S,esc,head,englishCatalog=[],category='all',query='',sort='recommended'}){
  const items=catalog(S,englishCatalog),recent=S.settings?.quickResourceRecent||[],favCount=items.filter(s=>isFavorite(S,s)).length;
  const recentRows=recent.map(id=>items.find(x=>x.id===id)).filter(Boolean).slice(0,4);
  const summaries=CATEGORIES.filter(x=>SUBJECTS.includes(x.id));
@@ -89,8 +95,13 @@ function render({S,esc,head,englishCatalog=[],category='all',query=''}){
  return overview+
   '<section class="ll-hero"><div class="ll-hero-left"><div class="ll-eyebrow">DESCA LEARNING OS · YOUR RESOURCE SPACE</div><h2>Every learning resource.<br><span>One destination.</span></h2><p>Progress from foundational concepts to advanced mathematical inquiry, academic English, examination preparation, and research—without administrative clutter.</p><div class="ll-hero-actions"><a href="#ll-discover">Explore resources <span aria-hidden="true">↓</span></a><button type="button" data-act="libraryAdd" class="ll-outline">+ Save a resource</button></div></div><div class="ll-hero-stats"><div><strong>'+items.length+'</strong><span>Learning resources</span></div><div><strong>'+summaries.length+'</strong><span>Learning disciplines</span></div><div><strong data-library-favorites>'+favCount+'</strong><span>Favourites</span></div></div></section>'
   +'<section class="ll-subjects" aria-label="Learning disciplines"><div class="ll-section-top"><div><span class="ll-eyebrow">LEARNING AREAS</span><h2>Explore your disciplines</h2><p>Select a discipline to discover its most relevant resources.</p></div></div><div class="ll-subject-grid">'+summaries.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-subject"><span class="ll-subject-icon">'+esc(c.icon)+'</span><span><b>'+esc(c.label)+'</b><small>'+items.filter(x=>x.category===c.id).length+' resources</small></span><span class="ll-subject-arrow">↗</span></button>').join('')+'</div></section>'
+  +'<section class="ll-pathways" aria-label="Suggested learning pathways"><div class="ll-section-top"><div><span class="ll-eyebrow">ACADEMIC PROGRESSION</span><h2>From foundations to original research</h2><p>Follow a coherent progression without additional schedules or administrative overhead.</p></div></div><div class="ll-pathway-grid">'+[
+   ['01','Build mathematical foundations','Develop proof fluency, conceptual understanding, and command of core mathematical structures.','math'],
+   ['02','Advance to postgraduate study','Explore graduate-level texts, demanding problem sets, and specialised mathematical theories.','advanced'],
+   ['03','Investigate original research','Consult scholarly literature, evaluate arguments critically, and develop independent research questions.','research']
+  ].map(([n,title,desc,filter])=>'<button type="button" class="ll-pathway" data-act="libraryFilter" data-filter="'+filter+'"><span class="ll-pathway-num">'+n+'</span><span><b>'+esc(title)+'</b><small>'+esc(desc)+'</small></span><span aria-hidden="true">↗</span></button>').join('')+'</div></section>'
   +(recentRows.length?'<section class="ll-continue"><div class="ll-section-top"><div><span class="ll-eyebrow">CONTINUE LEARNING</span><h2>Recently accessed</h2></div></div><div class="ll-continue-grid">'+recentRows.map(x=>'<a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank"><span>'+esc(CATEGORIES.find(c=>c.id===x.category)?.icon||'◈')+'</span><b>'+esc(x.title)+'</b><small>↗</small></a>').join('')+'</div></section>':'')
-  +'<section class="ll-discover" id="ll-discover"><div class="ll-section-top"><div><span class="ll-eyebrow">RESOURCE EXPLORER</span><h2>Explore the collection</h2><p>Filter with a single click, or search for a particular resource or concept.</p></div><button type="button" data-act="libraryAdd" class="ll-add-secondary">+ Add a resource</button></div><label for="learningSearch" class="ll-search-label"><span aria-hidden="true">⌕</span><input type="search" id="learningSearch" autocomplete="off" spellcheck="false" placeholder="Search resources, subjects, or concepts..." value="'+esc(query)+'" aria-label="Search learning resources"></label><div class="ll-filter-row" aria-label="Filter resources by discipline">'+CATEGORIES.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-chip '+(c.id===category?'active':'')+'" aria-pressed="'+(c.id===category)+'">'+esc(c.label)+'</button>').join('')+'</div><div id="learningResults" aria-live="polite">'+resultHtml({S,esc,items,category,query})+'</div></section>'
+  +'<section class="ll-discover" id="ll-discover"><div class="ll-section-top"><div><span class="ll-eyebrow">RESOURCE EXPLORER</span><h2>Explore the collection</h2><p>Filter with a single click, or search for a particular resource or concept.</p></div><button type="button" data-act="libraryAdd" class="ll-add-secondary">+ Add a resource</button></div><label for="learningSearch" class="ll-search-label"><span aria-hidden="true">⌕</span><input type="search" id="learningSearch" autocomplete="off" spellcheck="false" placeholder="Search resources, subjects, or concepts..." value="'+esc(query)+'" aria-label="Search learning resources"></label><div class="ll-filter-row" aria-label="Filter resources by discipline">'+CATEGORIES.map(c=>'<button type="button" data-act="libraryFilter" data-filter="'+c.id+'" class="ll-chip '+(c.id===category?'active':'')+'" aria-pressed="'+(c.id===category)+'">'+esc(c.label)+'</button>').join('')+'</div><div class="ll-sort-row" role="group" aria-label="Resource ordering"><span>Sort resources</span><button type="button" data-act="librarySort" data-sort="recommended" aria-pressed="'+(sort==='recommended')+'" class="ll-sort '+(sort==='recommended'?'active':'')+'">Recommended</button><button type="button" data-act="librarySort" data-sort="alphabetical" aria-pressed="'+(sort==='alphabetical')+'" class="ll-sort '+(sort==='alphabetical'?'active':'')+'">A–Z</button></div><div id="learningResults" aria-live="polite" aria-atomic="false">'+resultHtml({S,esc,items,category,query,sort})+'</div></section>'
   +'<aside class="ll-footnote">Resources from Mathematics, English, SAT, and Psychometric Tests are consolidated automatically. Your favourites remain synchronised across sections. Access conditions are indicative and may change; consult the provider for current terms. Research papers and notes remain available in the Research workspace.</aside>';
 }
 function addForm(esc){

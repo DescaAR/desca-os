@@ -41,18 +41,18 @@ function catalog(S,englishCatalog=[]){
  return all.filter(s=>{const url=new URL(s.url),key=url.origin+url.pathname.replace(/\/+$/,'')+url.search;
   if(seen.has(key))return false;seen.add(key);return true});
 }
-function isFavouritese(S,x){
+function isFavorite(S,x){
  const settings=S.settings||{};
- if(x.source==='math')return (settings.mathFavouriteses||[]).includes(x.id.slice(5));
- if(x.source==='sat')return (settings.satFavouriteses||[]).includes(x.id.slice(4));
- if(x.source==='psikotes')return (settings.psikotesFavouriteses||[]).includes(x.id.slice(9));
- return (settings.learningFavouriteses||[]).includes(x.id);
+ if(x.source==='math')return (settings.mathFavorites||[]).includes(x.id.slice(5));
+ if(x.source==='sat')return (settings.satFavorites||[]).includes(x.id.slice(4));
+ if(x.source==='psikotes')return (settings.psikotesFavorites||[]).includes(x.id.slice(9));
+ return (settings.learningFavorites||[]).includes(x.id);
 }
-function toggleFavouritese(S,item){
+function toggleFavorite(S,item){
  if(!item)return false;
  if(!S.settings)S.settings={};
- const field=item.source==='math'?'mathFavouriteses':item.source==='sat'?'satFavouriteses':item.source==='psikotes'?'psikotesFavouriteses':'learningFavouriteses';
- const value=field==='learningFavouriteses'?item.id:item.id.slice(item.source.length+1);
+ const field=item.source==='math'?'mathFavorites':item.source==='sat'?'satFavorites':item.source==='psikotes'?'psikotesFavorites':'learningFavorites';
+ const value=field==='learningFavorites'?item.id:item.id.slice(item.source.length+1);
  const old=new Set(Array.isArray(S.settings[field])?S.settings[field]:[]);
  old.has(value)?old.delete(value):old.add(value);
  S.settings[field]=[...old];return true
@@ -60,7 +60,7 @@ function toggleFavouritese(S,item){
 function filtered(S,items,category='all',query=''){
  const key=String(query||'').toLocaleLowerCase('id').trim();
  return items.filter(x=>{
-  if(category==='saved'&&!isFavouritese(S,x))return false;
+  if(category==='saved'&&!isFavorite(S,x))return false;
   if(category==='mine'&&x.source!=='custom')return false;
   if(SUBJECTS.includes(category)&&x.category!==category)return false;
   if(key&&!([x.title,x.tag,x.desc,x.access,x.category].join(' ').toLocaleLowerCase('id').includes(key)))return false;
@@ -68,21 +68,21 @@ function filtered(S,items,category='all',query=''){
  }).sort((a,b)=>{
   const ar=(S.settings?.quickResourceRecent||[]),ai=ar.indexOf(a.id),bi=ar.indexOf(b.id);
   if(ai>=0||bi>=0)return (ai<0?1000:ai)-(bi<0?1000:bi);
-  const fav=Number(isFavouritese(S,b))-Number(isFavouritese(S,a));
+  const fav=Number(isFavorite(S,b))-Number(isFavorite(S,a));
   return fav||(Number(b.featured)-Number(a.featured))||a.title.localeCompare(b.title,'id')
  })
 }
 function resultHtml({S,esc,items,category='all',query=''}) {
  const result=filtered(S,items,category,query);
  const cards=result.map(x=>{
-  const fav=isFavouritese(S,x),group=CATEGORIES.find(c=>c.id===x.category)||CATEGORIES[0];
+  const fav=isFavorite(S,x),group=CATEGORIES.find(c=>c.id===x.category)||CATEGORIES[0];
   return '<article class="ll-resource-card"><div class="ll-card-head"><span class="ll-card-icon" aria-hidden="true">'+esc(group.icon)+'</span><div class="ll-card-tags"><span>'+esc(group.label)+'</span><span>'+esc(x.tag)+'</span></div><button type="button" class="ll-fav '+(fav?'is-fav':'')+'" data-act="libraryStar" data-id="'+esc(x.id)+'" aria-label="'+esc(fav?'Remove from favourites: '+x.title:'Add to favourites: '+x.title)+'" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button>'+(x.source==='custom'?'<button type="button" class="ll-remove" data-act="libraryRemove" data-id="'+esc(x.id)+'" aria-label="Remove '+esc(x.title)+'" title="Remove resource">×</button>':'')+'</div><h3>'+esc(x.title)+'</h3><p>'+esc(x.desc||'Learning material designed to deepen subject knowledge.')+'</p><div class="ll-card-end"><small>'+esc(x.access||'Visit Website')+'</small><a href="'+esc(x.url)+'" data-os-resource="'+esc(x.id)+'" rel="noopener noreferrer" target="_blank">Open Website ↗</a></div></article>';
  }).join('');
  const empty='<div class="ll-empty"><div class="ll-empty-icon">⌕</div><h3>No resources match your criteria</h3><p>Select another subject or clear your search.</p><button type="button" data-act="libraryReset" class="ll-quiet-btn">Browse all resources</button></div>';
  return '<div class="ll-result-meta"><strong>'+result.length+' resources available</strong><span>'+esc(query?'Results for “'+query+'”':CATEGORIES.find(c=>c.id===category)?.label||'All')+'</span></div><div class="ll-resource-grid">'+(cards||empty)+'</div>'
 }
 function render({S,esc,head,englishCatalog=[],category='all',query=''}){
- const items=catalog(S,englishCatalog),recent=S.settings?.quickResourceRecent||[],favCount=items.filter(s=>isFavouritese(S,s)).length;
+ const items=catalog(S,englishCatalog),recent=S.settings?.quickResourceRecent||[],favCount=items.filter(s=>isFavorite(S,s)).length;
  const recentRows=recent.map(id=>items.find(x=>x.id===id)).filter(Boolean).slice(0,4);
  const summaries=CATEGORIES.filter(x=>SUBJECTS.includes(x.id));
  const overview=head('Learning Library','A unified catalogue for substantive learning, deliberate practice, and independent research. Select a discipline and explore.');
@@ -96,5 +96,5 @@ function render({S,esc,head,englishCatalog=[],category='all',query=''}){
 function addForm(esc){
  return '<div class="modal-head"><div><div class="eyebrow">LEARNING LIBRARY</div><h2 id="modalTitle">Save a learning resource</h2><p class="modal-subtitle">Just a title and a link. Your curated collection is already available.</p></div><button class="icon-btn" data-act="close" aria-label="Close">×</button></div><form id="libraryAddForm"><div class="field"><label>Resource title</label><input name="title" type="text" required minlength="2" maxlength="90" placeholder="Name your resource" autocomplete="off"></div><div class="field"><label>Website URL</label><input name="url" required type="url" placeholder="https://..." inputmode="url"></div><div class="field"><label>Discipline</label><select name="category">'+CATEGORIES.filter(c=>SUBJECTS.includes(c.id)).map(c=>'<option value="'+c.id+'">'+esc(c.label)+'</option>').join('')+'</select></div><button type="submit" class="btn btn-primary" style="width:100%;margin-top:14px">Save resource</button></form>';
 }
-globalThis.DescaLearningLibrary={render,catalog,filtered,resultHtml,addForm,toggleFavouritese,isFavouritese,normalizeUrl,categories:CATEGORIES,subjects:SUBJECTS};
+globalThis.DescaLearningLibrary={render,catalog,filtered,resultHtml,addForm,toggleFavorite,isFavorite,normalizeUrl,categories:CATEGORIES,subjects:SUBJECTS};
 })();

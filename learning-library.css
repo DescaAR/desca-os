@@ -25,3 +25,23 @@ html[data-theme="light"] .ll-discover,html[data-theme="light"] .ll-subject{backg
 @media(max-width:480px){.ll-resource-grid,.ll-continue-grid{grid-template-columns:1fr}.ll-subject-grid{grid-template-columns:1fr 1fr;gap:8px}.ll-subject{padding:10px;min-height:76px}.ll-subject-icon{width:28px;height:28px}.ll-subject b{font-size:11px}.ll-hero{padding:23px}.ll-hero h2{font-size:29px}.ll-section-top{align-items:flex-start}.ll-add-secondary{font-size:11px;padding:9px}.ll-filter-row{flex-wrap:nowrap;overflow-x:auto;padding-bottom:7px}.ll-chip{flex:none}.ll-card-end{flex-wrap:wrap}}
 
 .ll-remove{flex:none;display:grid;place-items:center;width:30px;height:34px;border:1px solid var(--app-border,var(--line));border-radius:8px;background:var(--app-surface,var(--card));color:var(--app-muted,var(--muted));font:inherit;font-size:21px;cursor:pointer}.ll-remove:hover{color:#b42328;border-color:#d9a2a3;background:var(--app-surface-2,var(--soft))}.ll-remove:focus-visible{outline:3px solid var(--app-blue,var(--blue));outline-offset:2px}
+
+/* v107: compact postgraduate pathways, deliberate hierarchy, and accessible sorting. */
+.ll-pathways{margin-top:26px}
+.ll-pathway-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.ll-pathway{min-width:0;display:flex;align-items:flex-start;gap:12px;padding:17px;text-align:left;background:var(--app-surface,var(--card));color:var(--app-text,var(--text));border:1px solid var(--app-border-strong,var(--line));border-radius:15px;font:inherit;cursor:pointer;transition:border-color .16s,transform .16s,box-shadow .16s}
+.ll-pathway:hover{border-color:var(--app-blue,var(--blue));transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,48,76,.075)}
+.ll-pathway-num{display:grid;place-items:center;flex:0 0 33px;height:33px;border-radius:10px;background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue));font-size:11px;font-weight:850}
+.ll-pathway>span:nth-child(2){flex:1;min-width:0}.ll-pathway b{display:block;color:var(--app-text,var(--text));font-size:13px;line-height:1.4;font-weight:800}.ll-pathway small{display:block;color:var(--app-muted,var(--muted));margin-top:7px;font-size:11.5px;line-height:1.6}
+.ll-pathway>span:last-child{color:var(--app-blue,var(--blue));font-weight:800}
+.ll-sort-row{display:flex;align-items:center;justify-content:flex-end;gap:7px;margin:-3px 0 14px;flex-wrap:wrap}
+.ll-sort-row>span{color:var(--app-muted,var(--muted));font-size:11.5px;font-weight:700;margin-right:5px}
+.ll-sort{min-height:35px;padding:7px 12px;background:var(--app-surface-2,var(--soft));border:1px solid var(--app-border-strong,var(--line));border-radius:9px;color:var(--app-text-2,var(--text));font:inherit;font-size:11.5px;font-weight:720;cursor:pointer}
+.ll-sort:hover,.ll-sort.active{border-color:var(--app-blue,var(--blue));color:var(--app-blue,var(--blue));background:var(--app-blue-soft,var(--soft))}
+.ll-pathway:focus-visible,.ll-sort:focus-visible{outline:3px solid var(--app-blue,var(--blue));outline-offset:3px}
+.ll-resource-card{transition:border-color .16s,box-shadow .16s}.ll-resource-card:hover{box-shadow:0 8px 24px rgba(18,48,76,.06)}
+html[data-theme="light"] .ll-pathway{background:#fff;border-color:#d8e1ec}html[data-theme="light"] .ll-pathway:hover{border-color:#2c67d0}html[data-theme="light"] .ll-pathway small{color:#4c5f76}
+html[data-theme="dark"] .ll-pathway,html[data-theme="dark"] .ll-sort{color:var(--app-text,var(--text))}
+@media(max-width:900px){.ll-pathway-grid{grid-template-columns:1fr}.ll-pathway{padding:14px 16px}.ll-pathway small{max-width:64ch}}
+@media(max-width:480px){.ll-sort-row{justify-content:flex-start}.ll-pathways{margin-top:22px}.ll-pathway b{font-size:12.5px}}
+@media(prefers-reduced-motion:reduce){.ll-pathway,.ll-resource-card{transition:none}.ll-pathway:hover{transform:none}}

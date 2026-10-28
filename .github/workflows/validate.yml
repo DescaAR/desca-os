@@ -17,6 +17,7 @@ jobs:
         run: |
           node --check app.js
           node --check math-hub.js
+          node --check sat-hub.js
           node --check runtime-guard.js
           node --check modules/growth-utils.js
           node --check tests/runtime-smoke.js
@@ -26,6 +27,12 @@ jobs:
         run: |
           test -f index.html
           test -f runtime-guard.js
+          test -f sat-hub.js
+          test -f sat-hub.css
+          grep -q 'sat-hub.js?v=100' index.html
+          grep -q 'sat-hub.css?v=100' index.html
+          grep -q 'sat:satPage' app.js
+          grep -q '\[.sat.,.SAT.\]' app.js
           test -f styles.css
           test -f manifest.webmanifest
           test -f sw.js
@@ -107,7 +114,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=99' app.js
+          grep -q 'const BUILD_NUMBER=100' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -158,7 +165,7 @@ jobs:
           grep -q 'function parseICSDateTime' app.js
           grep -q 'v70 — Books OS + Control Layer' ui-v21.css
           grep -q 'Desca OS v86' ui-v21.css
-          grep -q 'ui-v21.css?v=99' index.html
+          grep -q 'ui-v21.css?v=100' index.html
           grep -q 'id="mobileFab"' index.html
           grep -q '"short_name":"Books"' manifest.webmanifest
           grep -q 'v62 — Guided UX + modern input system' ui-v21.css

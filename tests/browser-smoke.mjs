@@ -34,8 +34,8 @@ try{
     ['newS2Document','Identification']
   ]){
     await page.evaluate(name=>{const trigger=document.createElement('button');trigger.dataset.act=name;document.body.appendChild(trigger);trigger.click();trigger.remove()},action);
-    const copy=await page.locator('#modal').innerText();
-    assert.ok(copy.includes(expected),'Postgraduate form is not consistently English: '+action);
+    const copy=await page.locator('#modal').textContent();
+    assert.ok(copy.includes(expected),'Postgraduate form is not consistently English: '+action+' '+JSON.stringify(copy?.slice(0,450)));
     await page.evaluate(()=>document.querySelector('#modal [data-act="close"]')?.click());
   }
 

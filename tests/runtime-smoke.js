@@ -166,10 +166,11 @@ if(!englishUI.includes('https://app.volingo.my.id/')||!englishUI.includes('Jelaj
 const financeUI=run('finance',richState()).document.querySelector('#page').innerHTML;
 if(!financeUI.includes('data-act="osExpenseQuick"')||!financeUI.includes('data-act="osIncomeQuick"')||!financeUI.includes('Laporan Keuangan Lengkap'))throw new Error('Finance quick workflow missing');
 const academicTabs=run('academic',richState()).document.querySelector('#page').innerHTML;
-if(academicTabs.includes('data-route="vault"')||academicTabs.includes('>Library</button>'))throw new Error('Library must not appear in Academic tabs');
+if(academicTabs.includes('data-route="vault"'))throw new Error('Vault must not reappear in Learning tabs');
+if(!academicTabs.includes('data-route="library"'))throw new Error('Learning Library must be accessible from the Learning group');
 if(!academicTabs.includes('data-route="books"')||!academicTabs.includes('>Reading</button>'))throw new Error('Reading tab must remain available');
 const academicNavigation=run('english',richState()).document.querySelector('#sideNav').innerHTML;
-if(!/class="nav-item active" data-route="academic"/.test(academicNavigation))throw new Error('Academic subpage should highlight parent navigation');
+if(!/class="nav-item active" data-route="library"/.test(academicNavigation))throw new Error('Learning subpage should highlight Learning main navigation');
 const cal=run('calendar',richState()).document.querySelector('#page').innerHTML;
 if(!cal.includes('s2-prep-card')||cal.includes('month-calendar-card'))throw new Error('Legacy Calendar route must redirect to Goals');
 

@@ -15,7 +15,7 @@ const DMATH_PRESETS={
   facebook:{metric:'Followers',contentLabel:'Posts / Reels',defaultFormat:'Post'},
   website:{metric:'Monthly Visitors',contentLabel:'Articles / Updates',defaultFormat:'Article'}
 };
-const R={today:['Home','◉','CORE'],planner:['Planner','▦','CORE'],calendar:['Calendar','▦','CORE'],deadlines:['Deadline Center','!','CORE'],goals:['Goals','◎','GROWTH'],academic:['Academic','A','GROWTH'],math:['Matematika','∑','GROWTH'],study:['Study','▣','GROWTH'],english:['English Learning','EN','GROWTH'],sat:['SAT Preparation','SAT','GROWTH'],psikotes:['Psikotes','Ψ','GROWTH'],research:['Research','⌘','GROWTH'],projects:['Projects','◇','GROWTH'],dmath:['DMath Learning','D','GROWTH'],work:['Work','W','GROWTH'],vault:['Document Vault','▣','GROWTH'],life:['Life Log','◫','LIFE'],quran:['Ibadah','Q','LIFE'],books:['Books','B','LIFE'],running:['Olahraga','↗','LIFE'],health:['Health','♥','LIFE'],finance:['Finance','¤','LIFE'],journal:['Journal','✎','LIFE'],progress:['Progress','▤','INSIGHTS'],timeline:['Timeline','⌁','INSIGHTS'],analytics:['Analytics','▥','INSIGHTS'],reviews:['Reviews','↻','INSIGHTS'],notifications:['Notifications','•','INSIGHTS'],recovery:['Recovery','↶','SYSTEM'],settings:['Settings','⚙','SYSTEM']};
+const R={today:['Home','◉','CORE'],planner:['Planner','▦','CORE'],calendar:['Calendar','▦','CORE'],deadlines:['Deadline Center','!','CORE'],goals:['Goals','◎','GROWTH'],academic:['University','A','GROWTH'],library:['Learning Library','◈','GROWTH'],math:['Matematika','∑','GROWTH'],study:['Study','▣','GROWTH'],english:['English Learning','EN','GROWTH'],sat:['SAT Preparation','SAT','GROWTH'],psikotes:['Psikotes','Ψ','GROWTH'],research:['Research','⌘','GROWTH'],projects:['Projects','◇','GROWTH'],dmath:['DMath Learning','D','GROWTH'],work:['Work','W','GROWTH'],vault:['Document Vault','▣','GROWTH'],life:['Life Log','◫','LIFE'],quran:['Ibadah','Q','LIFE'],books:['Books','B','LIFE'],running:['Olahraga','↗','LIFE'],health:['Health','♥','LIFE'],finance:['Finance','¤','LIFE'],journal:['Journal','✎','LIFE'],progress:['Progress','▤','INSIGHTS'],timeline:['Timeline','⌁','INSIGHTS'],analytics:['Analytics','▥','INSIGHTS'],reviews:['Reviews','↻','INSIGHTS'],notifications:['Notifications','•','INSIGHTS'],recovery:['Recovery','↶','SYSTEM'],settings:['Settings','⚙','SYSTEM']};
 const DAILY_ROUTINE_PRESETS=[
 {id:'routine_daily_plan',presetKey:'daily-plan',title:'Rencana Hari & Cek Prioritas',time:'06:30',duration:15,category:'personal',obligation:'mandatory',days:[0,1,2,3,4,5,6],goalId:null,active:true},
 {id:'routine_quran',presetKey:'quran-review',title:'Hafalan / Murajaah',time:'07:00',duration:20,category:'quran',obligation:'important',days:[0,1,2,3,4,5,6],goalId:null,active:true},
@@ -1962,7 +1962,7 @@ async function googleSyncAll({silent=false}={}){
 function googleStatusLabel(){return googleReady()?(G.busy?'SYNCING':'CONNECTED'):'NOT CONNECTED'}
 function googleTaskListOptions(){return G.taskLists.length?G.taskLists.map(x=>'<option value="'+esc(x.id)+'" '+(S.settings.googleTaskListId===x.id?'selected':'')+'>'+esc(x.title||'Untitled')+'</option>').join(''):'<option value="'+esc(S.settings.googleTaskListId||'')+'">'+esc(S.settings.googleTaskListTitle||'Connect Google first')+'</option>'}
 async function googleDriveBackupFile(){const q=encodeURIComponent("name='desca-os-backup.json' and 'appDataFolder' in parents and trashed=false"),data=await googleFetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q='+q+'&fields=files(id,name,modifiedTime)&pageSize=10');return(data.files||[])[0]||null}
-const BUILD_NUMBER=102;
+const BUILD_NUMBER=103;
 let vaultUnlockedSession=false;
 function bytesToB64(bytes){let bin='';const u=bytes instanceof Uint8Array?bytes:new Uint8Array(bytes);for(let i=0;i<u.length;i+=0x8000)bin+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(bin)}
 function b64ToBytes(b64){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
@@ -2226,6 +2226,7 @@ function routeIconSvg(k){
     projects:'<path d="M3.5 7.5h6l1.5-2h9.5v13h-17z"/><path d="M3.5 10h17"/>',
     dmath:'<rect x="4" y="4" width="16" height="16" rx="5"/><path d="M9 8h3.2c2.6 0 4.3 1.6 4.3 4s-1.7 4-4.3 4H9z"/>',
     academic:'<path d="M3 9 12 4l9 5-9 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+    library:'<path d="M4 5.5c3-1.2 5.7-.8 8 1v12c-2.3-1.8-5-2.2-8-1z"/><path d="M20 5.5c-3-1.2-5.7-.8-8 1v12c2.3-1.8 5-2.2 8-1z"/><path d="M12 6.5v12"/>',
     deadlines:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17h.01"/>',
     notifications:'<path d="M6 16h12l-1.5-2v-4a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 19h4"/>',
     vault:'<path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>',
@@ -2251,11 +2252,11 @@ function categoryIconSvg(k){
   return routeIconSvg(routeMap[k]||'today')
 }
 function badgeHtml(n,cls=''){return n>0?'<span class="nav-badge '+cls+'" aria-label="'+n+' item perlu perhatian">'+(n>99?'99+':n)+'</span>':''}
-const OS_MAIN_NAV=[['today','Home'],['goals','Goals'],['academic','Academic'],['life','Lifestyle'],['work','Finance & Work']];
+const OS_MAIN_NAV=[['today','Home'],['goals','Goals'],['library','Learning'],['life','Lifestyle'],['work','Finance & Work']];
 const OS_HUB_SECTIONS={
   today:[['today','Home'],['progress','Progress'],['analytics','Analytics'],['reviews','Reviews']],
   goals:[['goals','Goals']],
-  academic:[['academic','University'],['math','Matematika'],['study','Study'],['research','Research'],['projects','Projects'],['dmath','DMath'],['english','English'],['sat','SAT'],['psikotes','Psikotes'],['books','Reading']],
+  library:[['library','Learning Library'],['academic','University'],['math','Matematika'],['study','Study'],['research','Research'],['projects','Projects'],['dmath','DMath'],['english','English'],['sat','SAT'],['psikotes','Psikotes'],['books','Reading']],
   life:[['life','Overview'],['quran','Prayer & Quran'],['running','Exercise'],['health','Health'],['journal','Journal']],
   work:[['work','Work'],['finance','Finance']]
 };
@@ -2264,7 +2265,7 @@ function osSectionFor(r){
   return null
 }
 const OS_ACADEMIC_GROUPS=[
-  {id:'learning',name:'Learning & Tests',items:['math','english','sat','psikotes']},
+  {id:'learning',name:'Learning & Tests',items:['library','math','english','sat','psikotes']},
   {id:'research',name:'Academic & Research',items:['academic','study','research']},
   {id:'resources',name:'Other Resources',items:['projects','dmath','books']}
 ];
@@ -2273,7 +2274,7 @@ function osSectionTabs(){
   if(!parent||route==='today'||OS_HUB_SECTIONS[parent].length<=1)return'';
   const sections=OS_HUB_SECTIONS[parent],title=OS_MAIN_NAV.find(([id])=>id===parent)?.[1]||'Workspace';
   const tabs=items=>items.map(([key,label])=>'<button type="button" class="os-tab '+(route===key?'active':'')+'" data-route="'+key+'" aria-current="'+(route===key?'page':'false')+'">'+esc(label)+'</button>').join('');
-  if(parent==='academic')return '<section class="os-section-tabs os-academic-tabs" aria-label="Navigasi Academic"><div class="os-section-label">ACADEMIC <span>· Pilih kelompok, lalu halaman</span></div><div class="os-academic-group-row">'
+  if(parent==='library')return '<section class="os-section-tabs os-academic-tabs" aria-label="Navigasi Learning"><div class="os-section-label">LEARNING <span>· Pilih kategori atau halaman</span></div><div class="os-academic-group-row">'
     +OS_ACADEMIC_GROUPS.map(g=>{
       const entries=sections.filter(([key])=>g.items.includes(key)),active=entries.some(([key])=>key===route);
       return '<details class="os-academic-group" '+(active?'open':'')+'><summary aria-label="'+esc(g.name)+'"><span>'+esc(g.name)+'</span><small>'+entries.length+' tools</small><span class="os-academic-chevron" aria-hidden="true">⌄</span></summary><div class="os-tab-row">'+tabs(entries)+'</div></details>';
@@ -2292,6 +2293,12 @@ function nav(){
 }
 
 const PAGE_GUIDES={
+  library:{title:'Learning Library',intro:'Semua sumber belajar dalam satu tempat tanpa jadwal.',steps:[
+    {selector:'.ll-hero',title:'Learning OS',desc:'Sumber belajar dan akses untuk menambah website.'},
+    {selector:'.ll-subject-grid',title:'Bidang Belajar',desc:'Pilih matematika, English, SAT, psikotes, atau riset.'},
+    {selector:'.ll-search-label',title:'Cari Sumber',desc:'Cari materi jika perlu atau pilih filter tanpa mengetik.'},
+    {selector:'.ll-resource-grid',title:'Website',desc:'Buka situs atau beri bintang untuk menyimpan favorit.'}
+  ]},
   today:{title:'Today',intro:'Pusat kendali harian. Fokus utamanya memilih satu tindakan terbaik sekarang, melihat risiko penting, lalu mencatat apa pun dengan cepat.',steps:[
     {selector:'.os-goal-spotlight',title:'Persiapan S2',desc:'Pantau kesiapan kuliah S2 langsung dari Home.'},
     {selector:'.desca-score-card',title:'Main Desca Score',desc:'Ringkasan rank utama dari Discipline, Knowledge, Health, Execution, dan Consistency.'},
@@ -2709,6 +2716,17 @@ function examModeCard(){
   const m=activeExamMode();if(!m)return'<article class="card academic-mode-empty"><div class="card-head"><div><h2>Exam / Competition Mode</h2><p>Temporarily shift quests and priority toward a major exam, competition, or seminar.</p></div><button class="btn btn-secondary" data-act="newExamMode">Activate Mode</button></div></article>';
   const days=Math.max(0,Math.round((new Date(m.date+'T12:00:00')-new Date(today()+'T12:00:00'))/86400000)),done=S.activities.filter(a=>a.date>=add(today(),-6)&&a.category===m.category).reduce((n,a)=>n+(+a.duration||0),0);
   return'<article class="card exam-mode-card"><div class="exam-mode-mark">⚔</div><div><div class="eyebrow">ACTIVE FOCUS MODE</div><h2>'+esc(m.title)+'</h2><p>'+days+' days remaining • '+cat(m.category)+' • '+mins(done)+' this week</p>'+prog(done/Math.max(1,(+m.dailyTarget||120)*7)*100)+'</div><div class="button-row compact"><button class="mini-btn" data-act="editExamMode" data-id="'+m.id+'">Edit</button><button class="mini-btn" data-act="endExamMode" data-id="'+m.id+'">End</button></div></article>'
+}
+let libraryCategory='all',libraryQuery='';
+function libraryPage(){
+  $('#page').innerHTML=globalThis.DescaLearningLibrary.render({S,esc,head,englishCatalog:ENGLISH_SITE_CATALOG,category:libraryCategory,query:libraryQuery})
+}
+function refreshLibraryResults(){
+  const hub=globalThis.DescaLearningLibrary,items=hub.catalog(S,ENGLISH_SITE_CATALOG),results=$('#learningResults');
+  if(results)results.innerHTML=hub.resultHtml({S,esc,items,category:libraryCategory,query:libraryQuery});
+  const counter=document.querySelector('[data-library-favorites]');
+  if(counter)counter.textContent=items.filter(x=>hub.isFavorite(S,x)).length;
+  document.querySelectorAll('.ll-chip').forEach(b=>{const active=b.dataset.filter===libraryCategory;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active?'true':'false')})
 }
 let satFilter='featured';
 let psikotesFilter='featured';
@@ -3357,7 +3375,7 @@ function settingsPage(){
   const notif=notificationSupported()?Notification.permission:'unsupported';
   $('#page').innerHTML=head('Settings','Desca OS bekerja tanpa login. Koneksi eksternal hanya tambahan jika kamu membutuhkannya.')+localFirstStatusCard()+'<div class="grid two-col"><article class="card"><div class="card-head"><h2>Profile & Targets</h2></div><div class="form-grid"><div class="field"><label>Nama</label><input id="sn" value="'+esc(S.profile.name)+'"></div><div class="field"><label>Daily target (menit)</label><input id="sd" type="number" min="1" value="'+S.profile.dailyFocusTarget+'"></div><div class="field"><label>Weekly target (menit)</label><input id="sw" type="number" min="1" value="'+S.profile.weeklyTarget+'"></div></div><button class="btn btn-primary" style="margin-top:12px" data-act="saveSettings">Simpan</button></article>'+aiSettingsCard()+experienceSettingsCard()+pwaInstallCard()+offlineQueueCard()+dataConfidenceCard()+automationSettingsCard()+googleSettingsCard()+'<article class="card"><div class="card-head"><div><h2>Pomodoro Engine</h2><p>Preset dapat dipilih langsung dari Today.</p></div><span class="pill blue">'+S.settings.pomodoroPreset+'</span></div><div class="form-grid"><div class="field"><label>Focus (menit)</label><input id="spf" type="number" min="5" max="180" value="'+S.settings.pomodoroFocus+'"></div><div class="field"><label>Short break</label><input id="sps" type="number" min="1" max="60" value="'+S.settings.pomodoroShortBreak+'"></div><div class="field"><label>Long break</label><input id="spl" type="number" min="1" max="90" value="'+S.settings.pomodoroLongBreak+'"></div><div class="field"><label>Sesi sebelum long break</label><input id="spc" type="number" min="1" max="12" value="'+S.settings.pomodoroCycles+'"></div></div></article><article class="card"><div class="card-head"><div><h2>Notifications & Reminders</h2><p>Reminder lokal tanpa akun.</p></div><span class="pill '+(notif==='granted'?'green':'orange')+'">'+esc(notif)+'</span></div><div class="field"><label>Reminder lead (menit)</label><input id="slead" type="number" min="0" max="180" value="'+S.settings.reminderLead+'"></div><div class="callout" style="margin-top:10px">Background status: <b>'+backgroundNotificationStatus()+'</b>.</div><button class="btn btn-primary" style="margin-top:12px" data-act="requestNotifications">'+(notif==='granted'?'Notification Aktif':'Aktifkan Notification')+'</button></article><article class="card"><div class="card-head"><h2>Data & Privacy</h2></div><div class="callout">Default-nya data tetap di browser ini. Google dan cloud hanya bekerja kalau kamu memilih untuk menghubungkannya.</div><div class="simple-list" style="margin-top:12px"><button class="btn btn-secondary" data-act="theme">Toggle dark mode</button><button class="btn btn-secondary" data-act="export">Export JSON</button><button class="btn btn-secondary" data-route="recovery">Recovery Center</button><button class="btn btn-secondary" data-act="resetData">Reset semua data</button></div></article>'+cloudBackupCard()+advancedSystemSettingsCard()+'</div>'
 }
-function render(){if(['tasks','planner','calendar','deadlines','inbox'].includes(route))route='goals';if(guideRoute&&guideRoute!==route)closePageGuide();nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;document.documentElement.dataset.reduceMotion=S.settings.reduceMotion?'true':'false';const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,planner:plannerPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,math:mathPage,english:englishPage,sat:satPage,psikotes:psikotesPage,research:researchPage,projects:projectsPage,dmath:dmathPage,work:workPage,vault:vaultPage,quran:quranPage,books:booksPage,running:sportsPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();const sectionTabs=osSectionTabs();if(sectionTabs)$('#page').innerHTML=sectionTabs+$('#page').innerHTML;if(route==='today')$('#page').innerHTML+=osHomeArchive();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v96'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v'+BUILD_NUMBER+'.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
+function render(){if(['tasks','planner','calendar','deadlines','inbox'].includes(route))route='goals';if(guideRoute&&guideRoute!==route)closePageGuide();nav();side();let pb=$('.profile-chip b');if(pb)pb.textContent=S.profile.name||'Desca';document.documentElement.dataset.theme=S.settings.theme;document.documentElement.dataset.reduceMotion=S.settings.reduceMotion?'true':'false';const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.content=S.settings.theme==='dark'?'#0B111B':'#F5F7FB';document.body.classList.toggle('collapsed',!!S.settings.sidebarCollapsed);const sb=$('#sidebarToggle');if(sb){sb.textContent=S.settings.sidebarCollapsed?'→':'←';sb.title=S.settings.sidebarCollapsed?'Perluas sidebar':'Ciutkan sidebar';sb.setAttribute('aria-label',sb.title)}$('#themeToggle').textContent=S.settings.theme==='dark'?'☀':'☾';const nb=$('#notificationBadge'),nc=systemNotifications().length+(S.notificationsCenter||[]).filter(n=>!n.read).length;if(nb){nb.textContent=nc>99?'99+':String(nc);nb.hidden=!nc}const pageFn=({today:todayPage,planner:plannerPage,inbox:inboxPage,tasks:tasksPage,calendar:calendarPage,deadlines:deadlineCenterPage,life:lifePage,progress:progressPage,goals:goalsPage,academic:academicPage,study:studyPage,math:mathPage,english:englishPage,sat:satPage,psikotes:psikotesPage,research:researchPage,library:libraryPage,projects:projectsPage,dmath:dmathPage,work:workPage,vault:vaultPage,quran:quranPage,books:booksPage,running:sportsPage,health:healthPage,finance:financePage,journal:journalPage,timeline:timelinePage,analytics:analyticsPage,reviews:reviewPage,notifications:notificationsPage,recovery:recoveryPage,settings:settingsPage}[route]||todayPage);try{pageFn();const sectionTabs=osSectionTabs();if(sectionTabs)$('#page').innerHTML=sectionTabs+$('#page').innerHTML;if(route==='today')$('#page').innerHTML+=osHomeArchive();updateFocusOverlay();renderFocusCockpit();applyDashboardLayout();maybeAutomaticSnapshots();S.meta.lastRenderError=null}catch(err){console.error('Desca OS render error',route,err);S.meta.lastRenderError={route,message:String(err?.message||err),at:new Date().toISOString(),build:'v96'};const p=$('#page');if(p)p.innerHTML='<div class="page-head"><div><div class="eyebrow">RECOVERY</div><h1>Halaman gagal dimuat</h1><p>Desca OS menangkap error agar halaman tidak blank. Build v'+BUILD_NUMBER+'.</p></div></div><article class="card render-error-card"><b>'+esc(S.meta.lastRenderError.message)+'</b><div class="button-row" style="margin-top:14px"><button class="btn btn-primary" data-act="retryRender">Coba Lagi</button><button class="btn btn-secondary" data-route="settings">Buka Settings</button></div></article>'}}
 function contextualCategory(r=route){return{study:'study',research:'research',projects:'project',dmath:'dmath',quran:'quran',books:'reading',running:'health',health:'health',finance:'finance',work:'work'}[r]||'personal'}
 function applyAutoDefaults(root=$('#modal')){if(!root)return;root.querySelectorAll('input[type="date"]').forEach(el=>{if(!el.value&&['date','startDate'].includes(el.name))el.value=today()});root.querySelectorAll('input[type="month"]').forEach(el=>{if(!el.value)el.value=today().slice(0,7)});const form=root.querySelector('form');if(form&&['activityForm','runningForm','quranSessionForm'].includes(form.id)){const tm=form.querySelector('[name="startTime"]');if(tm&&!tm.value)tm.value=localTime()}const catSel=form?.querySelector('[name="category"]');if(catSel&&!catSel.value)catSel.value=contextualCategory()}
 function open(html){$('#modal').innerHTML=html;$('#modalBackdrop').hidden=false;document.body.classList.add('modal-open');requestAnimationFrame(()=>{applyAutoDefaults();$('#modal input:not([disabled]),#modal textarea,#modal select')?.focus()})}
@@ -3782,7 +3800,8 @@ function osQuickResourceCatalog(){
     ...(globalThis.DescaMathHub?.resources||[]).map(x=>({id:'math:'+x.id,name:x.name,url:x.url,group:'Matematika',mark:'∑'})),
     ...(globalThis.DescaSatHub?.sites||[]).map(x=>({id:'sat:'+x.id,name:x.name,url:x.url,group:'SAT',mark:'SAT'})),
     ...(globalThis.DescaPsikotesHub?.sites||[]).map(x=>({id:'psikotes:'+x.id,name:x.name,url:x.url,group:'Psikotes',mark:'Ψ'})),
-    ...(S.english?.sites||[]).filter(x=>x.url).map(x=>({id:'english:'+x.id,name:x.title,url:x.url,group:'English',mark:'EN'}))
+    ...(S.english?.sites||[]).filter(x=>x.url).map(x=>({id:'english:'+x.id,name:x.title,url:x.url,group:'English',mark:'EN'})),
+    ...(globalThis.DescaLearningLibrary?.catalog(S,ENGLISH_SITE_CATALOG)||[]).map(x=>({id:x.id,name:x.title,url:x.url,group:x.category==='research'?'Riset & AI':x.category,mark:({math:'∑',english:'EN',sat:'SAT',psikotes:'Ψ',research:'⌘'})[x.category]||'◈'}))
   ];
   const byUrl=new Map();
   for(const x of [...defaults,...extra]){
@@ -3799,7 +3818,8 @@ function osQuickResourceLinks(){
   for(const x of resources)if(
     (x.id.startsWith('sat:')&&(S.settings.satFavorites||[]).includes(x.id.slice(4)))||
     (x.id.startsWith('psikotes:')&&(S.settings.psikotesFavorites||[]).includes(x.id.slice(9)))||
-    (x.id.startsWith('math:')&&(S.settings.mathFavorites||[]).includes(x.id.slice(5)))
+    (x.id.startsWith('math:')&&(S.settings.mathFavorites||[]).includes(x.id.slice(5)))||
+    (S.settings.learningFavorites||[]).includes(x.id)
   )pick(x);
   for(const id of ['english:volingo','sat:khan','sat:bluebook','psikotes:sikotesku'])pick(byId.get(id));
   const modified=S.meta?.modifiedAt?new Date(S.meta.modifiedAt):null;
@@ -3864,7 +3884,11 @@ document.addEventListener('click',e=>{
   if(a==='newDecision')openDecision();if(a==='editDecision'){const d=S.decisions.find(v=>v.id===id);if(d)openDecision(d)}if(a==='newPlan')openPlan();if(a==='editPlan'){const p=S.plans.find(v=>v.id===id);if(p)openPlan(p)}if(a==='weeklyReset')weeklyResetModal();if(a==='flushOfflineQueue')flushOfflineQueue();if(a==='openImportCenter')importCenterModal();if(a==='explainPriority')explainPriority(id);if(a==='openSearch')openSearch();if(a==='skipOnboarding'){S.meta.onboardingDone=true;save('Skip onboarding');close()}if(a==='runOnboarding')openOnboarding();
   if(a==='openPageGuide')openPageGuide(x.dataset.routeGuide||route);if(a==='closePageGuide')closePageGuide();if(a==='showGuideStep')showGuideStep(x.dataset.guideIndex);if(a==='resolveScheduleConflicts')resolveScheduleConflicts();if(a==='smartPlanEnergy')replanRemainingDay(false);if(a==='openHeatDay')openHeatDay(x.dataset.date);if(a==='autoOrganizeInbox')autoOrganizeInbox();if(a==='closeDayNow')performDayClosure(false);if(a==='openProjectWorkspace')openProjectWorkspace(id);if(a==='startProjectFocus')startProjectFocus(id);if(a==='openScenarioSimulator')openScenarioSimulator(x.dataset.type||'goal',id||'');if(a==='finishFocus')finishFocusSession(x.dataset.outcome||'complete');if(a==='installPwa')installPwa();
 
-  if(a==='close')close();if(a==='retryRender')render();if(a==='startRoutineTimer')startRoutineTimer(id);if(a==='snoozeNowNext')snoozeNowNext(x.dataset.kind,id,30);if(a==='undo')undoLast();if(a==='replanDay')replanRemainingDay();if(a==='dismissRankUp'){S.meta.pendingRankUp=null;save('Dismiss rank up');render()}if(a==='timelineFilter'){timelineFilter=x.dataset.filter||'all';render()}if(a==='startDay'){S.meta.morningStartedDate=today();save('Start day');render()}if(a==='takeRecoveryDay'){if(!(S.meta.recoveryDays||[]).includes(today()))S.meta.recoveryDays.push(today());S.meta.lastRecoveryGuardDate=today();save('Recovery day');toast('Recovery Day protected');render()}if(a==='cancelRecoveryDay'){S.meta.recoveryDays=(S.meta.recoveryDays||[]).filter(d=>d!==today());save('Resume normal day');render()}if(a==='customizeDashboard')openDashboardCustomize();if(a==='weeklyPlanning')weeklyPlanningModal();if(a==='buildWeekPlan')buildWeekPlan();if(a==='askCopilot')openCopilot(x.dataset.query||'');if(a==='openFocusCockpit'){focusCockpitOpen=true;renderFocusCockpit()}if(a==='closeFocusCockpit'){focusCockpitOpen=false;renderFocusCockpit()}if(a==='saveCockpitNote'){const t=activeTimer();if(t){t.notes=$('#focusCockpitScratch')?.value||t.notes||'';save('Focus cockpit note');toast('Scratchpad saved')}}if(a==='shareAchievement')downloadAchievementCard();if(a==='psikotesFilter'){psikotesFilter=globalThis.DescaPsikotesHub.groups.some(g=>g.id===x.dataset.filter)?x.dataset.filter:'featured';render();if(x.classList.contains('psy-topic'))requestAnimationFrame(()=>document.querySelector('.psy-library')?.scrollIntoView({behavior:'smooth',block:'start'}));return}
+  if(a==='close')close();if(a==='retryRender')render();if(a==='startRoutineTimer')startRoutineTimer(id);if(a==='snoozeNowNext')snoozeNowNext(x.dataset.kind,id,30);if(a==='undo')undoLast();if(a==='replanDay')replanRemainingDay();if(a==='dismissRankUp'){S.meta.pendingRankUp=null;save('Dismiss rank up');render()}if(a==='timelineFilter'){timelineFilter=x.dataset.filter||'all';render()}if(a==='startDay'){S.meta.morningStartedDate=today();save('Start day');render()}if(a==='takeRecoveryDay'){if(!(S.meta.recoveryDays||[]).includes(today()))S.meta.recoveryDays.push(today());S.meta.lastRecoveryGuardDate=today();save('Recovery day');toast('Recovery Day protected');render()}if(a==='cancelRecoveryDay'){S.meta.recoveryDays=(S.meta.recoveryDays||[]).filter(d=>d!==today());save('Resume normal day');render()}if(a==='customizeDashboard')openDashboardCustomize();if(a==='weeklyPlanning')weeklyPlanningModal();if(a==='buildWeekPlan')buildWeekPlan();if(a==='askCopilot')openCopilot(x.dataset.query||'');if(a==='openFocusCockpit'){focusCockpitOpen=true;renderFocusCockpit()}if(a==='closeFocusCockpit'){focusCockpitOpen=false;renderFocusCockpit()}if(a==='saveCockpitNote'){const t=activeTimer();if(t){t.notes=$('#focusCockpitScratch')?.value||t.notes||'';save('Focus cockpit note');toast('Scratchpad saved')}}if(a==='shareAchievement')downloadAchievementCard();if(a==='libraryFilter'){libraryCategory=globalThis.DescaLearningLibrary.categories.some(c=>c.id===x.dataset.filter)?x.dataset.filter:'all';refreshLibraryResults();if(x.classList.contains('ll-subject'))document.querySelector('#ll-discover')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(a==='libraryStar'){const item=globalThis.DescaLearningLibrary.catalog(S,ENGLISH_SITE_CATALOG).find(v=>v.id===id);if(!item)return;globalThis.DescaLearningLibrary.toggleFavorite(S,item);save('Learning resource favorite');refreshLibraryResults();return}
+  if(a==='libraryReset'){libraryCategory='all';libraryQuery='';const search=$('#learningSearch');if(search)search.value='';refreshLibraryResults();return}
+  if(a==='libraryAdd'){open(globalThis.DescaLearningLibrary.addForm(esc));return}
+  if(a==='psikotesFilter'){psikotesFilter=globalThis.DescaPsikotesHub.groups.some(g=>g.id===x.dataset.filter)?x.dataset.filter:'featured';render();if(x.classList.contains('psy-topic'))requestAnimationFrame(()=>document.querySelector('.psy-library')?.scrollIntoView({behavior:'smooth',block:'start'}));return}
   if(a==='psikotesStar'){const sid=x.dataset.id;if(!globalThis.DescaPsikotesHub.sites.some(z=>z.id===sid))return;const fav=new Set(Array.isArray(S.settings.psikotesFavorites)?S.settings.psikotesFavorites:[]);fav.has(sid)?fav.delete(sid):fav.add(sid);S.settings.psikotesFavorites=[...fav];save('Psikotes resource favorite');render();return}
   if(a==='psikotesStep'){const sid=x.dataset.id;if(!globalThis.DescaPsikotesHub.steps.some(z=>z.id===sid))return;const completed=new Set(Array.isArray(S.settings.psikotesStepsDone)?S.settings.psikotesStepsDone:[]);completed.has(sid)?completed.delete(sid):completed.add(sid);S.settings.psikotesStepsDone=[...completed];save('Psikotes study progress');render();return}
   if(a==='satFilter'){satFilter=globalThis.DescaSatHub.groups.some(g=>g.id===x.dataset.filter)?x.dataset.filter:'featured';render();return}
@@ -4037,6 +4061,18 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('submit',async e=>{
   e.preventDefault();let f=e.target,fd=new FormData(f),d=Object.fromEntries(fd);
+  if(f.id==='libraryAddForm'){
+    const hub=globalThis.DescaLearningLibrary,name=String(d.title||'').trim(),url=hub.normalizeUrl(d.url);
+    if(name.length<2||name.length>90||!url){toast('Isi nama dan tautan http/https yang valid');return}
+    const items=hub.catalog(S,ENGLISH_SITE_CATALOG);
+    if(items.some(x=>x.url.replace(/\/$/,'').toLowerCase()===url.replace(/\/$/,'').toLowerCase())){toast('Website sudah ada di koleksi');return}
+    if(!S.settings.learningCustomResources)S.settings.learningCustomResources=[];
+    if(S.settings.learningCustomResources.length>=200){toast('Batas 200 tautan pribadi tercapai');return}
+    const entry={id:uid('resource'),title:name,url,category:hub.subjects.includes(d.category)?d.category:'research'};
+    S.settings.learningCustomResources.push(entry);
+    S.settings.learningFavorites=[...new Set([...(S.settings.learningFavorites||[]),'custom:'+entry.id])];
+    save('Add personal learning resource');close();libraryCategory='mine';libraryQuery='';render();toast('Sumber belajar tersimpan');return
+  }
 
   if(f.id==='osTaskSearchForm'){osTaskQuery=String(d.q||'').trim();render();return}
   if(f.id==='universalCaptureForm'){universalCaptureSubmit(f,d);return}
@@ -4121,6 +4157,7 @@ document.addEventListener('submit',async e=>{
 });
 
 $('#quickAdd').onclick=()=>quick('activity');const mobileFab=$('#mobileFab');if(mobileFab)mobileFab.onclick=()=>quick('activity');$('#searchOpen').onclick=()=>openSearch();const bell=$('#notificationBell');if(bell)bell.onclick=()=>{route='notifications';location.hash='notifications';render()};$('#themeToggle').onclick=()=>{S.settings.theme=S.settings.theme==='dark'?'light':'dark';save();render()};$('#sidebarToggle').onclick=()=>{S.settings.sidebarCollapsed=!S.settings.sidebarCollapsed;save();render()};$('#mobileMenu').onclick=()=>$('#sidebar').classList.toggle('open');$('#modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')close()};document.addEventListener('input',e=>{
+  if(e.target?.id==='learningSearch'){libraryQuery=String(e.target.value||'').slice(0,120);refreshLibraryResults();return}
   const customPomo=e.target.closest?.('#customPomodoroForm');
   if(customPomo){
     const focusV=clamp(+customPomo.elements.focus?.value||25,5,180),shortV=clamp(+customPomo.elements.short?.value||5,1,60),longV=clamp(+customPomo.elements.long?.value||15,1,90);

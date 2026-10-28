@@ -5,7 +5,7 @@ if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Err
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
-const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm};})();`);
+const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm,descaScoreData,osQuickResourceLinks,osQuickResourceCatalog,OS_ACADEMIC_GROUPS};})();`);
 const routes=['today','math','sat','psikotes','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
@@ -100,6 +100,27 @@ if(!psyHtml('saved',{psikotesFavorites:['sikotesku']}).includes('Sikotesku'))thr
 if(!psyHtml('all',{psikotesStepsDone:['orientasi','penalaran']}).includes('2/4'))throw new Error('Learning progress missing');
 
 
+
+const academicOptimized=run('academic',richState()).document.querySelector('#page').innerHTML;
+if(!academicOptimized.includes('Learning &amp; Tests')&&!academicOptimized.includes('Learning & Tests'))throw new Error('Academic Learning group missing');
+if(!academicOptimized.includes('Academic &amp; Research')&&!academicOptimized.includes('Academic & Research'))throw new Error('Academic Research group missing');
+if(!academicOptimized.includes('Other Resources'))throw new Error('Academic third group missing');
+const homeOptimized=run('today',richState()).document.querySelector('#page').innerHTML;
+if(!homeOptimized.includes('os-shortcut-library')||!homeOptimized.includes('Volingo')||!homeOptimized.includes('SAT Bluebook'))throw new Error('Home one-click learning shortcuts missing');
+const scoreState=richState();
+scoreState.tasks=[];
+const d=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Jakarta',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+// 24 completed activities must be sufficient for 100 Execution, with no Tasks.
+scoreState.activities=Array.from({length:24},(_,i)=>({id:'score-a'+i,date:d,category:'study',duration:30,completed:true}));
+const scoreData=run('today',scoreState).__DESCA_TEST__.descaScoreData();
+if(scoreData.dimensions.execution!==100)throw new Error('Execution Score wrongly requires Tasks');
+if(scoreData.totalTasks!==0||scoreData.completedActivities!==24)throw new Error('Execution details inconsistent');
+const shortcutsWithFavorites=run('today',{...richState(),settings:{...richState().settings,satFavorites:['bluebook'],psikotesFavorites:['sikotesku'],quickResourceRecent:['sat:bluebook']}}).__DESCA_TEST__.osQuickResourceLinks();
+if(!shortcutsWithFavorites.includes('SAT Bluebook')||!shortcutsWithFavorites.includes('Sikotesku'))throw new Error('Favorites and recent resources must be accessible on Home');
+const manifest=JSON.parse(fs.readFileSync('version.json','utf8'));
+if(manifest.build!==102)throw new Error('Version manifest must match build');
+if(!app.includes("fetch('./version.json?update-check='"))throw new Error('Update check must read version manifest rather than search app.js');
+if(app.includes('Build v96.'))throw new Error('Recovery page still shows an obsolete build');
 
 const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
 if(!taskUI.includes('s2-prep-card')||taskUI.includes('os-task-workspace')||taskUI.includes('data-view="active"'))throw new Error('Tasks route should render Goals instead of task filters');

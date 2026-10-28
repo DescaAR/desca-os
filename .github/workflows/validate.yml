@@ -18,6 +18,7 @@ jobs:
           node --check app.js
           node --check math-hub.js
           node --check sat-hub.js
+          node --check psikotes-hub.js
           node --check runtime-guard.js
           node --check modules/growth-utils.js
           node --check tests/runtime-smoke.js
@@ -29,8 +30,13 @@ jobs:
           test -f runtime-guard.js
           test -f sat-hub.js
           test -f sat-hub.css
-          grep -q 'sat-hub.js?v=100' index.html
-          grep -q 'sat-hub.css?v=100' index.html
+          test -f psikotes-hub.js
+          test -f psikotes-hub.css
+          grep -q 'psikotes-hub.js?v=101' index.html
+          grep -q 'psikotes-hub.css?v=101' index.html
+          grep -q 'psikotes:psikotesPage' app.js
+          grep -q 'sat-hub.js?v=101' index.html
+          grep -q 'sat-hub.css?v=101' index.html
           grep -q 'sat:satPage' app.js
           grep -q '\[.sat.,.SAT.\]' app.js
           test -f styles.css
@@ -114,7 +120,7 @@ jobs:
           grep -q 'function notificationsPage' app.js
           grep -q 'function deadlineCenterPage' app.js
           grep -q 'function academicPage' app.js
-          grep -q 'const BUILD_NUMBER=100' app.js
+          grep -q 'const BUILD_NUMBER=101' app.js
           grep -q 'function descaScoreData' app.js
           grep -q 'function scheduleConflictData' app.js
           grep -q 'function taskPriorityParts' app.js
@@ -165,7 +171,7 @@ jobs:
           grep -q 'function parseICSDateTime' app.js
           grep -q 'v70 — Books OS + Control Layer' ui-v21.css
           grep -q 'Desca OS v86' ui-v21.css
-          grep -q 'ui-v21.css?v=100' index.html
+          grep -q 'ui-v21.css?v=101' index.html
           grep -q 'id="mobileFab"' index.html
           grep -q '"short_name":"Books"' manifest.webmanifest
           grep -q 'v62 — Guided UX + modern input system' ui-v21.css

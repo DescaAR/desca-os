@@ -115,6 +115,32 @@ try{
   }
   console.log('LANGUAGE_AUDIT total UI lines to review: '+languageFindings);
 
+  const languageModalAudit=[
+    ['goals',['newS2Item','newS2Document','editS2Prep']],
+    ['english',['newEnglishSession','newEnglishWebsite','englishSettings']],
+    ['study',['newStudyTopic']],
+    ['research',['newResearchPaper','newResearchNote']],
+    ['books',['newBook']],
+    ['quran',['newQuranEntry','logQuranSession']],
+    ['running',['newSport','sportsSettings','newRun']],
+    ['work',['newWorkJob','workSession','workPayment']],
+    ['finance',['newFinance','newBudget','newDebt','newFinanceGoal']],
+    ['dmath',['newDMathContent']],
+    ['settings',['customPomodoro']]
+  ];
+  for(const [pageRoute,actions] of languageModalAudit){
+    await visit(pageRoute);
+    for(const action of actions){
+      await page.evaluate(name=>{const trigger=document.createElement('button');trigger.dataset.act=name;document.body.appendChild(trigger);trigger.click();trigger.remove()},action);
+      const copy=await page.locator('#modal').evaluate(el=>[el.innerText,...Array.from(el.querySelectorAll('input,textarea,select')).map(x=>x.getAttribute('placeholder')||'')].join('\n')).catch(()=>'');
+      const matched=copy.split('\n').map(v=>v.trim()).filter(v=>indoUI.test(v) && v.length<260);
+      if(matched.length)console.log('MODAL_LANGUAGE_AUDIT '+pageRoute+'/'+action+' '+JSON.stringify([...new Set(matched)].slice(0,18)));
+      await page.evaluate(()=>{const backdrop=document.querySelector('#modalBackdrop');if(backdrop&&!backdrop.hidden){const close=document.querySelector('#modal [data-act="close"]');if(close)close.click();else backdrop.click();}});
+    }
+  }
+
+
+
   assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join(' | '));
   console.log('Browser smoke tests passed: Home, Learning Library, Academic, Math, SAT, Psikotes, favorites, themes and mobile.');
 }finally{

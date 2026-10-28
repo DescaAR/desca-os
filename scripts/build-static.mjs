@@ -3,7 +3,7 @@ import {mkdir,cp,readFile,writeFile,rm,stat} from 'node:fs/promises';
 import {join} from 'node:path';
 import {transform} from 'esbuild';
 
-const build=103;
+const build=104;
 const out='dist';
 await rm(out,{recursive:true,force:true});
 await mkdir(out,{recursive:true});

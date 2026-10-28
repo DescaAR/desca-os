@@ -1,12 +1,12 @@
 const fs=require('fs');
 const vm=require('vm');
-const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
+const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('sat-hub.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
 if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Error('Google Calendar OAuth scope must be removed');
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
 const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm};})();`);
-const routes=['today','math','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
+const routes=['today','math','sat','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
   return {
@@ -77,6 +77,12 @@ function run(route,state){
 for(const route of routes){run(route,null);run(route,richState())}
 const navigation=run('planner',richState()).document.querySelector('#sideNav').innerHTML;
 if((navigation.match(/class="nav-item /g)||[]).length!==5)throw new Error('Primary sidebar must contain exactly 5 sections');
+const satView=run('sat',richState());
+if(!satView.document.querySelector('#page').innerHTML.includes('DIGITAL SAT'))throw new Error('SAT hub hero not rendered');
+if(!satView.document.querySelector('#page').innerHTML.includes('College Board Question Bank'))throw new Error('SAT core websites missing');
+if(satView.DescaSatHub.sites.length!==10||satView.DescaSatHub.steps.length!==5)throw new Error('SAT content mismatch');
+if(!satView.document.querySelector('#page').innerHTML.includes('satFilter'))throw new Error('SAT filters missing');
+
 
 const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;
 if(!taskUI.includes('s2-prep-card')||taskUI.includes('os-task-workspace')||taskUI.includes('data-view="active"'))throw new Error('Tasks route should render Goals instead of task filters');

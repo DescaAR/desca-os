@@ -58,7 +58,7 @@ jobs:
           test -f sw.js
           test -f modules/growth-utils.js
           grep -q 'modules/growth-utils.js' index.html
-          grep -q 'runtime-guard.js?v=86' index.html
+          grep -q 'runtime-guard.js?v=108' index.html
           grep -q 'DescaRuntimeGuard' runtime-guard.js
           grep -q 'function taskXP' app.js
           grep -q 'function activityXP' app.js

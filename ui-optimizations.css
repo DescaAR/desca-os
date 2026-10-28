@@ -91,3 +91,14 @@ html[data-theme="dark"] .os-academic-group,html[data-theme="dark"] .os-shortcut-
 }
 
 .os-shortcut-all{margin-top:10px;padding:6px 10px;border-radius:8px;border:1px solid var(--app-border-strong,var(--line));background:var(--app-blue-soft,var(--soft));color:var(--app-blue,var(--blue));font:inherit;font-size:11.5px;font-weight:780;cursor:pointer}.os-shortcut-all:hover{border-color:var(--app-blue,var(--blue))}.os-shortcut-all:focus-visible{outline:3px solid var(--app-blue,var(--blue));outline-offset:3px}
+
+/* v107: resilient focus treatment, restrained spacing, and minimum text contrast. */
+html[data-theme="light"] .search-btn,html[data-theme="light"] .topbar .crumb{color:var(--app-text-2,var(--text))}
+html[data-theme="light"] .nav-label,html[data-theme="light"] .os-section-label{color:var(--app-text-2,var(--text))}
+button:focus-visible,a:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--app-blue,var(--blue))!important;outline-offset:3px}
+button:disabled{cursor:not-allowed}
+#page .page-head{margin-bottom:clamp(16px,2.2vw,23px)}
+#page .section-gap{row-gap:16px}
+#page .card p,#page .page-head p{overflow-wrap:anywhere}
+@media(max-width:600px){#page .page-head{margin-bottom:14px}.topbar .crumb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

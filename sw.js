@@ -1,7 +1,32 @@
-const CACHE='desca-os-v106-c2-english',ASSETS=['./','./index.html','./styles.css?v=72','./ui-v21.css?v=106','./math-hub.css?v=106','./runtime-guard.js?v=86','./modules/growth-utils.js?v=72','./math-hub.js?v=106','./sat-hub.css?v=106','./sat-hub.js?v=106','./psikotes-hub.css?v=106','./psikotes-hub.js?v=106','./learning-library.js?v=106','./learning-library.css?v=106','./ui-optimizations.css?v=106','./version.json','./app.js?v=106','./manifest.webmanifest','./assets/favicon.svg'];
+const CACHE='desca-os-v107-learning-reliability',ASSETS=['./','./index.html','./styles.css?v=72','./ui-v21.css?v=107','./math-hub.css?v=107','./runtime-guard.js?v=86','./modules/growth-utils.js?v=72','./math-hub.js?v=107','./sat-hub.css?v=107','./sat-hub.js?v=107','./psikotes-hub.css?v=107','./psikotes-hub.js?v=107','./learning-library.js?v=107','./learning-library.css?v=107','./ui-optimizations.css?v=107','./version.json','./app.js?v=107','./manifest.webmanifest','./assets/favicon.svg'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
-self.addEventListener('activate',e=>{e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))),checkReminderQueue()]))});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin===location.origin&&(u.pathname.endsWith('/app.js')||u.pathname.endsWith('/styles.css')||u.pathname.endsWith('/learning-library.js')||u.pathname.endsWith('/learning-library.css')||u.pathname.endsWith('/psikotes-hub.js')||u.pathname.endsWith('/psikotes-hub.css')||u.pathname.endsWith('/sat-hub.js')||u.pathname.endsWith('/sat-hub.css')||u.pathname.endsWith('/math-hub.js')||u.pathname.endsWith('/math-hub.css')||u.pathname.endsWith('/ui-optimizations.css')||u.pathname.endsWith('/version.json')||u.pathname.endsWith('/ui-v21.css')||u.pathname.endsWith('/runtime-guard.js')||u.pathname.endsWith('/index.html')||u.pathname.endsWith('/'))){e.respondWith(fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))));return}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res}).catch(()=>caches.match('./index.html'))))});
+self.addEventListener('activate',e=>{e.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(k=>Promise.all(k.filter(x=>x.startsWith('desca-os-v')&&x!==CACHE).map(x=>caches.delete(x)))),checkReminderQueue()]))});
+self.addEventListener('fetch',event=>{
+  const request=event.request;
+  if(request.method!=='GET')return;
+  const url=new URL(request.url);
+  // Never intercept or cache third-party requests, credentials, or unrelated origins.
+  if(url.origin!==self.location.origin)return;
+  const navigation=request.mode==='navigate';
+  const staticAsset=/\.(?:js|css|json|webmanifest|svg|png)$/i.test(url.pathname);
+  if(!navigation&&!staticAsset)return;
+  event.respondWith((async()=>{
+    try{
+      const response=await fetch(request);
+      if(response.ok){
+        const copy=response.clone();
+        event.waitUntil(caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{}));
+      }
+      return response;
+    }catch{
+      const offline=await caches.match(request,{ignoreSearch:true});
+      if(offline)return offline;
+      // An HTML fallback must never masquerade as CSS, JavaScript, or JSON.
+      if(navigation)return(await caches.match('./index.html'))||Response.error();
+      return Response.error();
+    }
+  })());
+});
 
 function reminderDB(){return new Promise((resolve,reject)=>{const r=indexedDB.open('desca-os-reminders-v1',1);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('reminders')){const s=db.createObjectStore('reminders',{keyPath:'id'});s.createIndex('at','at')}};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
 async function replaceReminders(rows=[]){const db=await reminderDB(),read=await new Promise((res,rej)=>{const tx=db.transaction('reminders','readonly'),q=tx.objectStore('reminders').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)}),shown=new Map(read.map(x=>[x.id,!!x.shown])),tx=db.transaction('reminders','readwrite'),store=tx.objectStore('reminders');store.clear();for(const x of rows)if(x&&x.id&&x.at)store.put({...x,shown:shown.get(x.id)||false});return new Promise((res,rej)=>{tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}

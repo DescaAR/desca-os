@@ -24,6 +24,17 @@ try{
   assert.ok(libraryCount>=40,'Library should aggregate at least 40 existing resources, got '+libraryCount);
   assert.equal(await page.locator('#sideNav .nav-item').count(),5,'Primary menu must remain five hubs');
   assert.ok((await page.locator('#sideNav').innerText()).includes('Learning'),'Main navigation should highlight Learning');
+
+  assert.equal(await page.locator('.ll-pathway').count(),3,'Learning should provide three postgraduate learning stages');
+  await page.locator('.ll-sort[data-sort="alphabetical"]').click();
+  assert.equal(await page.locator('.ll-sort[data-sort="alphabetical"]').getAttribute('aria-pressed'),'true','Alphabetical ordering must be activated');
+  const alphabeticTitles=await page.locator('.ll-resource-card h3').allInnerTexts();
+  assert.deepEqual(alphabeticTitles,alphabeticTitles.slice().sort((a,b)=>a.localeCompare(b,'en',{sensitivity:'base'})),'Resources should appear in alphabetical order');
+  await page.locator('.ll-sort[data-sort="recommended"]').click();
+  await page.locator('.ll-pathway[data-filter="advanced"]').click();
+  assert.ok(await page.locator('.ll-resource-card').count()>0,'Postgraduate learning pathway should surface advanced resources');
+  await page.locator('.ll-chip[data-filter="all"]').click();
+
   await page.locator('.ll-chip[data-filter="sat"]').click();
   assert.equal(await page.locator('.ll-resource-card').count(),10,'SAT library filter must contain all 10 existing SAT websites');
   await page.locator('.ll-chip[data-filter="all"]').click();

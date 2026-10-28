@@ -1,7 +1,7 @@
 {
   "app": "Desca OS",
-  "build": 106,
-  "version": "106",
+  "build": 107,
+  "version": "107",
   "released": "2026-10-28",
-  "notes": "Comprehensive C2 English language audit: 23 pages, 25+ forms, legacy empty states and postgraduate documentation"
+  "notes": "Learning pathways and resource sorting, accessible interface refinements, English UI improvements, clearer documentation, and safer offline caching"
 }

@@ -23,6 +23,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Build optimized static assets
+        run: |
+          npm install --no-save --package-lock=false esbuild@0.25.12
+          node scripts/build-static.mjs
+          node --check dist/app.min.js
+          grep -q 'app.min.js?v=102' dist/index.html
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
@@ -30,7 +39,7 @@ jobs:
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: .
+          path: dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

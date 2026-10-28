@@ -43,3 +43,19 @@ html[data-theme="dark"] .os-academic-group,html[data-theme="dark"] .os-shortcut-
 @media(max-width:1140px){.os-academic-group-row{grid-template-columns:1fr}.os-academic-group .os-tab-row{padding:0 13px 12px}.os-shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:660px){.os-shortcut-library{padding:16px}.os-shortcut-head{flex-direction:column;align-items:flex-start}.os-shortcut-saved{text-align:left;max-width:none}.os-shortcut-grid{grid-template-columns:1fr}.os-academic-group>summary{font-size:13px}.os-shortcut-link{min-height:59px}#page .page-head>div>p{font-size:13.5px}}
 @media(prefers-reduced-motion:reduce){.os-academic-chevron,.os-shortcut-link{transition:none}}
+
+/* v102 mobile regression fix: five topbar tools fit without widening the viewport. */
+@media(max-width:600px){
+  .topbar{max-width:100%;min-width:0;box-sizing:border-box;gap:7px!important}
+  .topbar>div:first-child{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:8px}
+  .topbar .crumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:95px;font-size:12px}
+  .topbar .top-actions{flex:0 0 auto!important;min-width:0!important;width:auto!important;gap:5px!important;flex-wrap:nowrap!important}
+  .topbar .top-actions>button{flex:0 0 34px!important;min-width:34px!important;max-width:34px!important;width:34px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:10px!important;display:grid!important;place-items:center!important;overflow:hidden}
+  .topbar .search-btn .search-label,.topbar .search-btn kbd,.topbar .guide-top-btn b{display:none!important}
+  .topbar .search-btn>span:first-child{display:block!important;font-size:21px!important;line-height:1!important}
+  .topbar .guide-top-btn>span{font-size:16px!important}
+  .topbar #quickAdd{font-size:0!important;color:#fff!important}
+  .topbar #quickAdd:before{content:"＋";font-size:23px;color:#fff!important;line-height:1}
+  .topbar #themeToggle,.topbar .notification-bell>span{font-size:18px!important}
+  .topbar .mobile-menu{flex:none}
+}

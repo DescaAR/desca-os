@@ -31,7 +31,7 @@ jobs:
           npm install --no-save --package-lock=false esbuild@0.25.12
           node scripts/build-static.mjs
           node --check dist/app.min.js
-          grep -q 'app.min.js?v=105' dist/index.html
+          grep -q 'app.min.js?v=106' dist/index.html
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:

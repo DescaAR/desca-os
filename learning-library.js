@@ -30,7 +30,7 @@ function catalog(S,englishCatalog=[]){
  for(const s of globalThis.DescaSatHub?.sites||[]){
   add(row('sat:'+s.id,s.name,s.url,'sat','sat',s.label||s.kind,s.desc,s.cost||'Check Access Terms',s.featured));
  }
- for(const s of globalThis.DescaPsychometric TestsHub?.sites||[]){
+ for(const s of globalThis.DescaPsikotesHub?.sites||[]){
   add(row('psikotes:'+s.id,s.name,s.url,'psikotes','psikotes',s.tag||'Psychometric Tests',s.desc,s.access||'Check Access Terms',s.featured));
  }
  for(const s of (Array.isArray(S?.settings?.learningCustomResources)?S.settings.learningCustomResources:[])){

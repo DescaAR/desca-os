@@ -1,12 +1,12 @@
 const fs=require('fs');
 const vm=require('vm');
-const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('sat-hub.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
+const app=fs.readFileSync('math-hub.js','utf8')+'\n'+fs.readFileSync('sat-hub.js','utf8')+'\n'+fs.readFileSync('psikotes-hub.js','utf8')+'\n'+fs.readFileSync('app.js','utf8');
 if(app.includes('https://www.googleapis.com/auth/calendar.events'))throw new Error('Google Calendar OAuth scope must be removed');
 if(app.includes('/calendar/v3'))throw new Error('Google Calendar API calls must be removed');
 if(app.includes('googleCalendarBanner()'))throw new Error('Google Calendar connection UI must be removed');
 if(!app.includes('https://www.googleapis.com/auth/tasks')||!app.includes('https://www.googleapis.com/auth/drive.appdata'))throw new Error('Preserve Tasks and Drive scopes');
 const instrumented=app.replace(/\}\)\(\);\s*$/,`globalThis.__DESCA_TEST__={S,bookPace,parseSmartCapture,commandParse,readingStats,osFastStudy,osFastEnglish,osFastSport,osFastWork,taskForm,activityForm,financeForm,englishSessionForm,workSessionForm,s2ItemForm,s2DocumentForm,s2DocumentSection,bookForm,studyTopicForm,financeGoalForm};})();`);
-const routes=['today','math','sat','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
+const routes=['today','math','sat','psikotes','planner','inbox','tasks','calendar','deadlines','goals','academic','study','research','projects','dmath','vault','life','quran','books','running','health','finance','journal','progress','timeline','analytics','reviews','notifications','recovery','settings'];
 
 function element(){
   return {
@@ -82,6 +82,23 @@ if(!satView.document.querySelector('#page').innerHTML.includes('DIGITAL SAT'))th
 if(!satView.document.querySelector('#page').innerHTML.includes('College Board Question Bank'))throw new Error('SAT core websites missing');
 if(satView.DescaSatHub.sites.length!==10||satView.DescaSatHub.steps.length!==5)throw new Error('SAT content mismatch');
 if(!satView.document.querySelector('#page').innerHTML.includes('satFilter'))throw new Error('SAT filters missing');
+
+const psikotesView=run('psikotes',richState());
+const psikotesHtml=psikotesView.document.querySelector('#page').innerHTML;
+if(!psikotesHtml.includes('APTITUDE')||!psikotesHtml.includes('psikotesFilter'))throw new Error('Psikotes page and filters missing');
+if(!psikotesHtml.includes('Practice Aptitude Tests')||!psikotesHtml.includes('Sikotesku'))throw new Error('Psikotes featured websites missing');
+const psikotesHub=psikotesView.DescaPsikotesHub;
+if(psikotesHub.sites.length!==10||psikotesHub.steps.length!==4||psikotesHub.topics.length!==8)throw new Error('Psikotes hub count mismatch');
+if(new Set(psikotesHub.sites.map(x=>x.url)).size!==10)throw new Error('Psikotes website URLs must be unique');
+const psyMockHead=(title)=>'<h1>'+title+'</h1>';
+const psyHtml=(filter,settings={})=>psikotesHub.render({S:{settings},esc:s=>String(s),head:psyMockHead,filter});
+if((psyHtml('all').match(/class="psy-site"/g)||[]).length!==10)throw new Error('All psychology practice sites not rendered');
+if((psyHtml('indonesia').match(/class="psy-site"/g)||[]).length!==5)throw new Error('Indonesian psychometric sites count wrong');
+if((psyHtml('international').match(/class="psy-site"/g)||[]).length!==5)throw new Error('International psychometric sites count wrong');
+if((psyHtml('kraepelin').match(/class="psy-site"/g)||[]).length!==3)throw new Error('Kraepelin filter mismatch');
+if(!psyHtml('saved',{psikotesFavorites:['sikotesku']}).includes('Sikotesku'))throw new Error('Favorite not persisted to view');
+if(!psyHtml('all',{psikotesStepsDone:['orientasi','penalaran']}).includes('2/4'))throw new Error('Learning progress missing');
+
 
 
 const taskUI=run('tasks',richState()).document.querySelector('#page').innerHTML;

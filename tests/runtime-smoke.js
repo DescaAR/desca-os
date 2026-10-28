@@ -164,7 +164,7 @@ if(!researchUI.includes('Graf &amp; Analisis Riset')&&!researchUI.includes('Graf
 const englishUI=run('english',richState()).document.querySelector('#page').innerHTML;
 if(!englishUI.includes('https://app.volingo.my.id/')||!englishUI.includes('Explore Seven Learning Categories'))throw new Error('English quick-start/disclosure missing');
 const financeUI=run('finance',richState()).document.querySelector('#page').innerHTML;
-if(!financeUI.includes('data-act="osExpenseQuick"')||!financeUI.includes('data-act="osIncomeQuick"')||!financeUI.includes('Laporan Keuangan Lengkap'))throw new Error('Finance quick workflow missing');
+if(!financeUI.includes('data-act="osExpenseQuick"')||!financeUI.includes('data-act="osIncomeQuick"')||!financeUI.includes('Comprehensive Financial Overview'))throw new Error('Finance quick workflow missing');
 const academicTabs=run('academic',richState()).document.querySelector('#page').innerHTML;
 if(academicTabs.includes('data-route="vault"'))throw new Error('Vault must not reappear in Learning tabs');
 if(!academicTabs.includes('data-route="library"'))throw new Error('Learning Library must be accessible from the Learning group');

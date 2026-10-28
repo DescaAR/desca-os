@@ -17,6 +17,36 @@ try{
   assert.ok((await page.locator('#page').innerText()).includes('Persiapan S2'),'Home must retain the S2 goal');
   await noRenderError();
 
+  await visit('library');
+  await page.locator('.ll-hero').waitFor();
+  const libraryCount=await page.locator('.ll-resource-card').count();
+  assert.ok(libraryCount>=40,'Library should aggregate at least 40 existing resources, got '+libraryCount);
+  assert.equal(await page.locator('#sideNav .nav-item').count(),5,'Primary menu must remain five hubs');
+  assert.ok((await page.locator('#sideNav').innerText()).includes('Learning'),'Main navigation should highlight Learning');
+  await page.locator('.ll-chip[data-filter="sat"]').click();
+  assert.equal(await page.locator('.ll-resource-card').count(),10,'SAT library filter must contain all 10 existing SAT websites');
+  await page.locator('.ll-chip[data-filter="all"]').click();
+  await page.locator('#learningSearch').fill('Kraepelin');
+  assert.ok(await page.locator('.ll-resource-card').count()>0,'Live search should find psychometric practice');
+  await page.locator('#learningSearch').fill('');
+  await page.locator('.ll-fav').first().click();
+  await page.locator('.ll-chip[data-filter="saved"]').click();
+  assert.ok(await page.locator('.ll-resource-card').count()>=1,'Unified favorites should be accessible');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.ll-hero').waitFor();
+  await page.locator('.ll-chip[data-filter="saved"]').click();
+  assert.ok(await page.locator('.ll-resource-card').count()>=1,'Favorite should persist through reload');
+  await page.locator('[data-act="libraryAdd"]').first().click();
+  await page.locator('#libraryAddForm [name="title"]').fill('Portal Belajar Pribadi');
+  await page.locator('#libraryAddForm [name="url"]').fill('https://example.org/my-learning');
+  await page.locator('#libraryAddForm [name="category"]').selectOption('math');
+  await page.locator('#libraryAddForm button[type="submit"]').click();
+  await page.locator('.ll-resource-card').getByText('Portal Belajar Pribadi').waitFor();
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.ll-chip[data-filter="mine"]').click();
+  assert.ok((await page.locator('.ll-resource-grid').innerText()).includes('Portal Belajar Pribadi'),'Personal resource must persist after reload');
+  await noRenderError();
+
   await visit('academic');
   assert.equal(await page.locator('details.os-academic-group').count(),3,'Academic should show 3 groups');
   assert.ok(await page.locator('details.os-academic-group[open]').count()>=1,'Current academic group must be open');
@@ -67,7 +97,7 @@ try{
   await noRenderError();
   assert.equal(await page.locator('details.os-academic-group').count(),3,'Mobile Academic groups must remain accessible');
   assert.deepEqual(errors,[],'Uncaught browser errors: '+errors.join(' | '));
-  console.log('Browser smoke tests passed: Home, Academic, Math, SAT, Psikotes, favorites, themes and mobile.');
+  console.log('Browser smoke tests passed: Home, Learning Library, Academic, Math, SAT, Psikotes, favorites, themes and mobile.');
 }finally{
   await browser.close();
 }

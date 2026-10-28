@@ -45,7 +45,7 @@ const PATH=[
  {id:'simulasi',label:'04 · Complete a Mock Assessment',text:'Complete a representative assessment, evaluate your performance, and address areas of weakness.',site:'Psikotes Kerja / SHL',url:'https://psikoteskerja.id/'}
 ];
 function render({S,esc,head,filter}){
- const prefs=S.settings||{},stars=new Set(Array.isArray(prefs.psikotesFavouriteses)?prefs.psikotesFavouriteses:[]),done=new Set(Array.isArray(prefs.psikotesStepsDone)?prefs.psikotesStepsDone:[]);
+ const prefs=S.settings||{},stars=new Set(Array.isArray(prefs.psikotesFavorites)?prefs.psikotesFavorites:[]),done=new Set(Array.isArray(prefs.psikotesStepsDone)?prefs.psikotesStepsDone:[]);
  const chosen=GROUPS.some(g=>g.id===filter)?filter:'featured';
  const visible=SITES.filter(s=>chosen==='featured'?s.featured:chosen==='all'?true:chosen==='saved'?stars.has(s.id):chosen==='indonesia'||chosen==='international'?s.region===chosen:s.topics.includes(chosen));
  const label=GROUPS.find(g=>g.id===chosen).label;
